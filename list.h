@@ -22,7 +22,7 @@ typedef struct list
 } List;
 
 // Return true if the two value are ordered
-typedef bool (*list_comparator_t)(void *left, void *right);
+typedef bool (*ListComparator)(void *left, void *right);
 
 /* --- List object constructor and destructor ------------------------------- */
 
@@ -33,48 +33,42 @@ List *list_create(void);
 void list_destroy(List *l);
 
 // Create a copy of the list.
-List *list_clone(List *list);
+List *list_clone(List *this);
 
 /* --- List operation ------------------------------------------------------- */
 
 // Clear all the item in the list.
-void list_clear(List *list);
+void list_clear(List *this);
 
 // Insert a list item sorted.
-void list_insert_sorted(List *list, void *value, list_comparator_t comparator);
+void list_insert_sorted(List *this, void *value, ListComparator comparator);
 
 // Take a look at the **first item** of the list.
-bool list_peek(List *list, void **value);
-
-// Take a look at the **first item** of the list, and push it to the **tail** of the list
-bool list_peek_and_pushback(List *list, void **value);
+bool list_peek(List *this, void **value);
 
 // Take a look at the **last item** of the list.
-bool list_peekback(List *list, void **value);
-
-// Take a look at the **last item** of the list, and push it to the **head** of the list
-bool list_peekback_and_push(List *list, void **value);
+bool list_peekback(List *this, void **value);
 
 // Take a look at the item at the **position specified by index** in the list.
-bool list_peekat(List *list, int index, void **value);
+bool list_peekat(List *this, int index, void **value);
 
 // Push an item to the **head** of the list.
-void list_push(List *list, void *value);
+void list_push(List *this, void *value);
 
 // Push an item to the **tail** of the list
-void list_pushback(List *list, void *value);
+void list_pushback(List *this, void *value);
 
 // Pop the head item of the list.
-bool list_pop(List *list, void **value);
+bool list_pop(List *this, void **value);
 
 // Pop the tail item of the list.
-bool list_popback(List *list, void **value);
+bool list_popback(List *this, void **value);
 
 // Check if the list conatain a given item.
-bool list_containe(List *list, void *value);
+bool list_containe(List *this, void *value);
 
 // Remove the first occurence of an item in the list.
-bool list_remove(List *list, void *value);
+bool list_remove(List *this, void *value);
 
 // Is the list empty?
 #define list_empty(__list) ((__list)->count == 0)
