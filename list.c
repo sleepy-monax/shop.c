@@ -38,6 +38,7 @@ void list_clear(List *this)
     {
         ListItem *next = current->next;
 
+        free(current->value);
         free(current);
         current = next;
     }
@@ -263,6 +264,7 @@ bool list_remove(List *this, void *value)
             }
 
             this->count--;
+            free(item->value);
             free(item);
 
             return true;
