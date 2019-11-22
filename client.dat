@@ -1,0 +1,47 @@
+CODE 7851
+NOM Cambier
+PRENOM Thierry
+PT_FIDELITE 2000
+EMAIL Cambier_Thierry@gmail.com
+
+CODE 8464
+NOM Joly
+PRENOM Lucien
+PT_FIDELITE 500
+EMAIL Joly_Lucien@gmail.com
+
+CODE 7418
+NOM Durieux
+PRENOM Valentin
+PT_FIDELITE 1000
+EMAIL Durieux_Valentin@gmail.com
+
+CODE 1247
+NOM Bureau
+PRENOM Florimont
+PT_FIDELITE 1500
+EMAIL Bureau_Florimont@gmail.com
+
+CODE 9969
+NOM Burdiaux
+PRENOM Mathieu
+PT_FIDELITE 1200
+EMAIL Burdiaux_Mathieu@gmail.com
+
+CODE 0964
+NOM Vanderhagen
+PRENOM Thomas
+PT_FIDELITE 200
+EMAIL VH_Thomas@hotmail.com
+
+CODE 6708
+NOM Ledune
+PRENOM Baudrient
+PT_FIDELITE 700
+EMAIL LeduneB@gmail.com
+
+CODE 7841
+NOM Wenger
+PRENOM Lara
+PT_FIDELITE 2500
+EMAIL Lara_We@outlook.de
