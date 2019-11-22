@@ -6,7 +6,7 @@
 
 typedef int BareCode;
 
-/* --- Clients -------------------------------------------------------------- */
+/* --- ClientsList -------------------------------------------------------------- */
 
 #define CLIENT_FIRST_NAME_SIZE 64
 #define CLIENT_LAST_NAME_SIZE 64
@@ -23,22 +23,22 @@ typedef struct
     int points;
 } Client;
 
-typedef List Clients;
+typedef List ClientsList;
 
-Clients *clients_create(FILE *file)
+ClientsList *clients_create(FILE *file)
 {
-    Clients *this = list_create();
+    ClientsList *this = list_create();
 
     // TODO: load clients from file...
 
     return this;
 }
 
-void clients_sync(Clients *clients, FILE *file)
+void clients_sync(ClientsList *clients, FILE *file)
 {
 }
 
-Clients *client_lookup(Clients *clients, BareCode id)
+Client *client_lookup(ClientsList *clients, BareCode id)
 {
     list_foreach(item, clients)
     {
@@ -53,7 +53,7 @@ Clients *client_lookup(Clients *clients, BareCode id)
     return NULL;
 }
 
-void clients_destroy(Clients *clients)
+void clients_destroy(ClientsList *clients)
 {
     list_destroy(clients);
 }
@@ -79,7 +79,7 @@ typedef struct
 typedef List Stocks;
 
 // Creer une liste de stock en fonction d'un fichier
-Stocks *stocks_create(const char *item_list);
+Stocks *stocks_create(FILE *file);
 
 // Destruit la liste des stockes.
 void stocks_destroy(Stocks *this);
@@ -100,7 +100,10 @@ typedef struct
 typedef List Basket;
 
 // Creer un nouveau panier.
-Basket *basket_create();
+Basket *basket_create()
+{
+    return list_create();
+}
 
 // Detruit le panier de l'utilisateur.
 Basket *basket_destroy(Basket *basket);
