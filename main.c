@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,7 +34,6 @@ ClientsList *clients_create(FILE *file)
     char title[12];
 
     fscanf(file, "%s", title);
-
     // Scanning the file until EOF
     while (!feof(file))
     {
@@ -68,8 +68,19 @@ ClientsList *clients_create(FILE *file)
     return this;
 }
 
+void clients_display(ClientsList *clients)
+{
+    list_foreach(item, clients)
+    {
+        Client *client = (Client *)item->value;
+        printf("%04d %s %s\n", client->id, client->firstname, client->lastname);
+    }
+}
+
 void clients_sync(ClientsList *clients, FILE *file)
 {
+    (void)clients;
+    (void)file;
 }
 
 Client *client_lookup(ClientsList *clients, BareCode id)
@@ -131,55 +142,68 @@ typedef List StockList;
 StockList *stocks_create(FILE *file)
 {
     StockList *this = list_create();
-    Item item = {};
-    ItemCategory ic;
 
-    char title[10], cat[15];
+    char title[10];
 
     fscanf(file, "%s", title);
     while (!feof(file))
     {
-        fscanf(file, "%4d", &item.id);
+        assert(strcmp(title, "ITEM") == 0);
+        Item *item = malloc(sizeof(Item));
+        *item = (Item){};
+        fscanf(file, "%4d", &item->id);
         fscanf(file, "%s", title);
 
-        while (strcmp(title, "CATEGORIE") != 0)
+        while (strcmp(title, "ITEM") != 0 && !feof(file))
         {
+            printf("%s\n", title);
+            fflush(stdout);
             if (strcmp(title, "LABEL") == 0)
             {
-                fscanf(file, "%s", item.label);
+                fscanf(file, "%s", item->label);
             }
             else if (strcmp(title, "PRIX") == 0)
             {
-                fscanf(file, "%f", &item.price);
+                fscanf(file, "%f", &item->price);
             }
             else if (strcmp(title, "REDUCTION") == 0)
             {
-                fscanf(file, "%d", &item.reduction);
+                fscanf(file, "%d", &item->reduction);
             }
             else if (strcmp(title, "CONSIGNE") == 0)
             {
-                item.isConsigned = true;
+                item->isConsigned = true;
             }
             else if (strcmp(title, "CATEGORIE") == 0)
             {
-                const char categorie[64];
-                fscanf(file, "%s", &categorie);
+                char categorie[64];
+                fscanf(file, "%s", categorie);
 
                 for (int i = 0; item_category_string[i] != NULL; i++)
                 {
                     if (strcmp(categorie, item_category_string[i]) == 0)
                     {
-                        item.category = (ItemCategory)i;
+                        item->category = (ItemCategory)i;
                     }
                 }
             }
 
-            fscanf(file, "%s", cat);
+            fscanf(file, "%s", title);
         }
+
+        list_pushback(this, item);
     }
 
-    // listpush();
     return this;
+}
+
+void stocks_display(StockList *stocks)
+{
+    list_foreach(item, stocks)
+    {
+        Item *itemInStocks = (Item *)item->value;
+        printf("%04d %s %s\n", itemInStocks->id, itemInStocks->label, item_category_string[itemInStocks->category]);
+    }
 }
 
 // Destruit la liste des stockes.
@@ -191,8 +215,19 @@ void stocks_destroy(StockList *this)
 // Cherche un item dans les stocks
 //
 // Notes: return NULL si l'objet ne peux pas etre trouver
-Item *stocks_lookup_item(StockList *this, BareCode barecode)
+Item *stocks_lookup_item(StockList *stocks, BareCode barecode)
 {
+    list_foreach(item, stocks)
+    {
+        Item *itemInStocks = (Item *)item->value;
+
+        if (itemInStocks->id == barecode)
+        {
+            return itemInStocks;
+        }
+    }
+
+    return NULL;
 }
 
 /* --- Basket --------------------------------------------------------------- */
@@ -231,14 +266,15 @@ int main(int argc, char const *argv[])
     fStock = fopen("stock.dat", "r");
     fClient = fopen("client.dat", "r");
 
-    ClientsList *clientsL;
-    StockList *StockL;
+    // Lecture stock.dat
+    StockList *stocks = stocks_create(fStock);
+
+    stocks_display(stocks);
 
     // Lecture client.dat
-    clientsL = clients_create(fClient);
+    ClientsList *clients = clients_create(fClient);
 
-    // Lecture stock.dat
-    StockL = stocks_create(fStock);
+    clients_display(clients);
 
     return 0;
 }
