@@ -41,7 +41,7 @@ ClientsList *clients_create(FILE *file)
         fscanf(file, "%4d", &client.id);
         fscanf(file, "%s", title);
 
-        while (strcmp(title,"EMAIL") != 0)
+        while (strcmp(title, "EMAIL") != 0)
         {
             if (strcmp(title, "NOM") == 0)
             {
@@ -61,7 +61,7 @@ ClientsList *clients_create(FILE *file)
         fscanf(file, "%s", client.email);
         fscanf(file, "%s", title);
     }
-    
+
     // pas sur comment ça foncionne :
     // list_push(this, client);
 
@@ -70,7 +70,6 @@ ClientsList *clients_create(FILE *file)
 
 void clients_sync(ClientsList *clients, FILE *file)
 {
-
 }
 
 Client *client_lookup(ClientsList *clients, BareCode id)
@@ -112,7 +111,7 @@ typedef enum
 } ItemCategory;
 
 #define ITEM_STRING_ENTRY(__x) #__x,
-const char *item_category_string[] = {ITEM_CATEGORY_LIST(ITEM_STRING_ENTRY)};
+const char *item_category_string[] = {ITEM_CATEGORY_LIST(ITEM_STRING_ENTRY) NULL};
 
 #define ITEM_LABEL_SIZE 64
 
@@ -121,7 +120,7 @@ typedef struct
     BareCode id;
     char label[ITEM_LABEL_SIZE];
     float price;
-    int reduction;  // in pourcent
+    int reduction; // in pourcent
     ItemCategory category;
     bool isConsigned;
 } Item;
@@ -132,10 +131,9 @@ typedef List StockList;
 StockList *stocks_create(FILE *file)
 {
     StockList *this = list_create();
-    Item item;
-    item.isConsigned = false;
+    Item item = {};
     ItemCategory ic;
-    
+
     char title[10], cat[15];
 
     fscanf(file, "%s", title);
@@ -162,21 +160,30 @@ StockList *stocks_create(FILE *file)
             {
                 item.isConsigned = true;
             }
+            else if (strcmp(title, "CATEGORIE") == 0)
+            {
+                const char categorie[64];
+                fscanf(file, "%s", &categorie);
+
+                for (int i = 0; item_category_string[i] != NULL; i++)
+                {
+                    if (strcmp(categorie, item_category_string[i]) == 0)
+                    {
+                        item.category = (ItemCategory)i;
+                    }
+                }
+            }
+
             fscanf(file, "%s", cat);
-            
-            // here, compare the value of cat, depending of the result, into item.category
-
         }
-
     }
 
     // listpush();
-    return this; 
-
+    return this;
 }
 
 // Destruit la liste des stockes.
-void stocks_destroy(Stocks *this)
+void stocks_destroy(StockList *this)
 {
     list_destroy(this);
 }
@@ -186,9 +193,7 @@ void stocks_destroy(Stocks *this)
 // Notes: return NULL si l'objet ne peux pas etre trouver
 Item *stocks_lookup_item(StockList *this, BareCode barecode)
 {
-
 }
-
 
 /* --- Basket --------------------------------------------------------------- */
 
@@ -223,19 +228,17 @@ int main(int argc, char const *argv[])
     (void)argv;
 
     FILE *fStock, *fClient;
-    fStock = fopen("stock.dat","r");
-    fClient = fopen("client.dat","r");
+    fStock = fopen("stock.dat", "r");
+    fClient = fopen("client.dat", "r");
 
     ClientsList *clientsL;
     StockList *StockL;
 
-
     // Lecture client.dat
-    clientsL = clients_create (fClient);
+    clientsL = clients_create(fClient);
 
     // Lecture stock.dat
     StockL = stocks_create(fStock);
-
 
     return 0;
 }
