@@ -60,12 +60,24 @@ void clients_destroy(ClientsList *clients)
 
 /* --- Stocks --------------------------------------------------------------- */
 
+#define ITEM_CATEGORY_LIST(__ENTRY) \
+    __ENTRY(UNDEFINED)              \
+    __ENTRY(OTHER)                  \
+    __ENTRY(ALCOHOL)                \
+    __ENTRY(FRESH_PRODUCT)          \
+    __ENTRY(COMPUTER)               \
+    __ENTRY(ELECTRONIC)             \
+    __ENTRY(TOYS)
+
+#define ITEM_ENUM_ENTRY(__x) __ITEM_##__x,
+
 typedef enum
 {
-    ITEM_UNDEFINED,
-    ITEM_ALCOHOL,
-    ITEM_FRESH_PRODUCT,
+    ITEM_CATEGORY_LIST(ITEM_ENUM_ENTRY)
 } ItemCategory;
+
+#define ITEM_STRING_ENTRY(__x) #__x,
+const char *item_category_string[] = {ITEM_CATEGORY_LIST(ITEM_STRING_ENTRY)};
 
 #define ITEM_LABEL_SIZE 64
 
@@ -82,7 +94,10 @@ typedef List Stocks;
 Stocks *stocks_create(FILE *file);
 
 // Destruit la liste des stockes.
-void stocks_destroy(Stocks *this);
+void stocks_destroy(Stocks *this)
+{
+    list_destroy(this);
+}
 
 // Cherche un item dans les stocks
 //
