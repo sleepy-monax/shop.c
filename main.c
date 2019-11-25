@@ -29,41 +29,45 @@ typedef List ClientsList;
 ClientsList *clients_create(FILE *file)
 {
     ClientsList *this = list_create();
-    Client client;
 
-    char title[12];
+    char title[64];
 
     fscanf(file, "%s", title);
     // Scanning the file until EOF
     while (!feof(file))
     {
+        assert(strcmp(title, "CLIENT") == 0);
+        Client* client = (Client*)malloc(sizeof(Client));
+        *client = (Client){};
+
         // Scanning each client
-        fscanf(file, "%4d", &client.id);
+        fscanf(file, "%4d", &client->id);
         fscanf(file, "%s", title);
 
-        while (strcmp(title, "EMAIL") != 0)
+        while (strcmp(title, "CLIENT") != 0 && !feof(file))
         {
             if (strcmp(title, "NOM") == 0)
             {
-                fscanf(file, "%s", client.lastname);
+                fscanf(file, "%s", client->lastname);
             }
             else if (strcmp(title, "PRENOM") == 0)
             {
-                fscanf(file, "%s", client.lastname);
+                fscanf(file, "%s", client->firstname);
             }
             else if (strcmp(title, "PT_FIDELITE") == 0)
             {
-                fscanf(file, "%d", &client.points);
+                fscanf(file, "%d", &client->points);
             }
+            else if (strcmp(title, "EMAIL") == 0)
+            {
+                fscanf(file, "%s", client->email);
+            }
+
+            fscanf(file, "%s", title);
         }
-
-        // here, we know that we are at the end of the client characterisations
-        fscanf(file, "%s", client.email);
-        fscanf(file, "%s", title);
+        
+        list_pushback(this, client);
     }
-
-    // pas sur comment ça foncionne :
-    // list_push(this, client);
 
     return this;
 }
@@ -156,7 +160,6 @@ StockList *stocks_create(FILE *file)
 
         while (strcmp(title, "ITEM") != 0 && !feof(file))
         {
-            printf("%s\n", title);
             fflush(stdout);
             if (strcmp(title, "LABEL") == 0)
             {
@@ -269,12 +272,18 @@ int main(int argc, char const *argv[])
     // Lecture stock.dat
     StockList *stocks = stocks_create(fStock);
 
+    printf("\nList des articles: \n");
     stocks_display(stocks);
+
 
     // Lecture client.dat
     ClientsList *clients = clients_create(fClient);
 
+    printf("\nList des clients:\n");
     clients_display(clients);
+
+    stocks_destroy(stocks);
+    clients_destroy(clients);
 
     return 0;
 }
