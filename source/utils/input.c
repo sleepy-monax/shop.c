@@ -69,7 +69,7 @@ InputValidState user_input_valid(const char *format, const char *input)
     return INPUT_VALID;
 }
 
-int user_select(const char **options)
+int user_select(const char *prompt, const char **options)
 {
     char c;
     bool stop = false;
@@ -78,6 +78,8 @@ int user_select(const char **options)
     while (!stop)
     {
         printf("\e[1;1H\e[2J");
+
+        printf("%s:\n\n", prompt);
 
         for (int i = 0; options[i]; i++)
         {

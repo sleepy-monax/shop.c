@@ -10,7 +10,7 @@ void select_what_todo(StockList *stocks)
         NULL,
     };
 
-    switch (user_select(choices))
+    switch (user_select("Donc on fait quoi", choices))
     {
     case 0:
         printf("vous avez choisi d'effectuer un achat\n");
