@@ -1,8 +1,8 @@
-SOURCES=$(wildcard *.c)
-INCLUDES=$(wildcard *.h)
+SOURCES=$(wildcard source/*.c) $(wildcard source/**/*.c)
+INCLUDES=$(wildcard source/*.h) $(wildcard source/**/*.h)
 
 shop.out: $(SOURCES) $(INCLUDES)
-	gcc -g -flto -Wall -Werror -Wextra -fsanitize=address -fsanitize=undefined $(SOURCES) -o shop.out
+	gcc -Isource -g -flto -Wall -Werror -Wextra -fsanitize=address -fsanitize=undefined $(SOURCES) -o shop.out
 
 test: shop.out
 	./shop.out
