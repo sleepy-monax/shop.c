@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <ctype.h>
 
 #include "list.h"
 
@@ -37,7 +39,7 @@ ClientsList *clients_create(FILE *file)
     while (!feof(file))
     {
         assert(strcmp(title, "CLIENT") == 0);
-        Client* client = (Client*)malloc(sizeof(Client));
+        Client *client = (Client *)malloc(sizeof(Client));
         *client = (Client){};
 
         // Scanning each client
@@ -65,7 +67,7 @@ ClientsList *clients_create(FILE *file)
 
             fscanf(file, "%s", title);
         }
-        
+
         list_pushback(this, client);
     }
 
@@ -260,6 +262,158 @@ void basket_print_bill(Basket *this, FILE *file);
 
 /* --- Entry point of the application --------------------------------------- */
 
+#include <termios.h>
+
+void setup_user_input(void)
+{
+    struct termios info;
+    int result = 0;
+
+    result = tcgetattr(0, &info);
+
+    if (result == -1)
+    {
+        perror("Failled to setup user input");
+        abort();
+    }
+
+    info.c_lflag &= ~(ECHO | ICANON);
+
+    result = tcsetattr(0, TCSANOW, &info);
+}
+
+void restore_user_input(void)
+{
+    struct termios info;
+    int result = 0;
+
+    result = tcgetattr(0, &info);
+
+    if (result == -1)
+    {
+        perror("Failled to setup user input");
+        abort();
+    }
+
+    info.c_lflag |= (ECHO | ICANON);
+
+    result = tcsetattr(0, TCSAFLUSH, &info);
+}
+
+typedef enum
+{
+    INPUT_INVALID,
+    INPUT_VALID,
+    INPUT_OK,
+} InputValidState;
+
+//void user_input_display(const char *format, const char *input)
+//{
+//    int format_index = 0;
+//    int input_index = 0;
+//}
+
+InputValidState user_input_valid(const char *format, const char *input)
+{
+    for (int i = 0; input[i]; i++)
+    {
+        char in_c = input[i];
+        if (format[i] == '_' && !(isalpha(in_c) || isdigit(in_c)))
+            return INPUT_INVALID;
+
+        if (format[i] == '.' && !isalpha(in_c))
+            return INPUT_INVALID;
+
+        if (format[i] == '#' && !isdigit(in_c))
+            return INPUT_INVALID;
+    }
+
+    return INPUT_VALID;
+}
+
+typedef void (*ListCallback)(const char *user_input, void *args);
+
+void user_input(const char *format, char *result, ListCallback list_callback, void *list_callback_args)
+{
+    (void)list_callback;
+    (void)list_callback_args;
+    char c;
+    int index = 0;
+
+    printf("\e[1;1H\e[2J");
+    fflush(stdout);
+
+    printf("\e[s");
+    do
+    {
+        printf("\e[u");
+        printf("\e[s");
+
+        printf("\e[37m");
+
+        printf(format);
+
+        printf("\e[0m");
+
+        assert(read(STDIN_FILENO, &c, 1) == 1);
+
+        printf("\e[u");
+
+        printf("\e[s");
+
+        if (c == 127 && index > 0)
+        {
+            index--;
+            result[index] = '\0';
+        }
+        else if (iscntrl(c))
+        {
+            // do nothing with it
+        }
+        else if (index < (int)strlen(format))
+        {
+            result[index] = c;
+            result[index + 1] = '\0';
+            index++;
+        }
+
+        printf("%s%s\e[0m\n", user_input_valid(format, result) ? "\e[32m" : "\e[31m", result);
+
+        printf("\e[J");
+
+        if (list_callback)
+        {
+            list_callback(result, list_callback_args);
+        }
+
+        fflush(stdout);
+    } while (c != '\n');
+}
+
+bool strStartWith(const char *pre, const char *str)
+{
+    size_t lenpre = strlen(pre),
+           lenstr = strlen(str);
+
+    return lenstr < lenpre ? false : memcmp(pre, str, lenpre) == 0;
+}
+
+void autocomplete_client_list(const char *user_input, ClientsList *clients)
+{
+    list_foreach(item, clients)
+    {
+        Client *client = (Client *)item->value;
+
+        char client_id_string[5];
+        sprintf(client_id_string, "%03d", client->id);
+
+        if (strStartWith(user_input, client_id_string))
+        {
+            printf("%04d %s %s\n", client->id, client->firstname, client->lastname);
+        }
+    }
+}
+
 int main(int argc, char const *argv[])
 {
     (void)argc;
@@ -275,12 +429,17 @@ int main(int argc, char const *argv[])
     printf("\nList des articles: \n");
     stocks_display(stocks);
 
-
     // Lecture client.dat
     ClientsList *clients = clients_create(fClient);
 
     printf("\nList des clients:\n");
     clients_display(clients);
+
+    char input[128];
+    setup_user_input();
+    user_input("####", input, (ListCallback)autocomplete_client_list, (void *)clients);
+    printf("\nuserinput: %s\n", input);
+    restore_user_input();
 
     stocks_destroy(stocks);
     clients_destroy(clients);
