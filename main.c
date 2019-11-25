@@ -136,7 +136,7 @@ typedef struct
 {
     BareCode id;
     char label[ITEM_LABEL_SIZE];
-    float price;
+    float price, consignedValue;
     int reduction; // in pourcent
     ItemCategory category;
     bool isConsigned;
@@ -178,6 +178,7 @@ StockList *stocks_create(FILE *file)
             else if (strcmp(title, "CONSIGNE") == 0)
             {
                 item->isConsigned = true;
+                fscanf(file, "%f", &item->consignedValue);
             }
             else if (strcmp(title, "CATEGORIE") == 0)
             {
@@ -208,6 +209,18 @@ void stocks_display(StockList *stocks)
     {
         Item *itemInStocks = (Item *)item->value;
         printf("%04d %s %s\n", itemInStocks->id, itemInStocks->label, item_category_string[itemInStocks->category]);
+    }
+}
+
+void stocks_display_consigned(StockList *stocks)
+{
+    list_foreach(item, stocks)
+    {
+        Item *itemInStocks = (Item *)item->value;
+        if (itemInStocks->isConsigned)
+        {
+             printf("%04d %s %s\n", itemInStocks->id, itemInStocks->label, item_category_string[itemInStocks->category]);
+        }
     }
 }
 
@@ -351,7 +364,7 @@ void user_input(const char *format, char *result, ListCallback list_callback, vo
 
         printf("\e[37m");
 
-        printf(format);
+        printf("%s", format);
 
         printf("\e[0m");
 
@@ -414,6 +427,64 @@ void autocomplete_client_list(const char *user_input, ClientsList *clients)
     }
 }
 
+void autocomplete_stock_list_consigned(const char *user_input, StockList *stocks)
+{
+    list_foreach(item, stocks)
+    {
+        Item *itemInStocks = (Item *)item->value;
+
+        char item_id_string[5];
+        sprintf(item_id_string, "%03d", itemInStocks->id);
+
+        if (strStartWith(user_input, item_id_string) && itemInStocks->isConsigned)
+        {
+            printf("%04d %s %5.2f€\n", itemInStocks->id, itemInStocks->label, itemInStocks->consignedValue);
+        }
+    }
+}
+
+void consigned_bottles_operation (StockList *stock)
+{
+    float totValue = 0.;
+    int nb_bottles = 0;
+    BareCode inserted_br;
+    char choice='y', input[128];
+    Item *found_item;
+
+    while (choice == 'y')
+    {
+        printf("Inserez le codebarre de la bouteille a rendre : \n\n");
+        stocks_display_consigned(stock);
+        setup_user_input();
+        user_input("####", input, (ListCallback)autocomplete_stock_list_consigned, (void *)stock);
+        inserted_br = atoi(input);
+        restore_user_input();
+
+        //scanf("%4d", &inserted_br);
+        found_item = stocks_lookup_item (stock, inserted_br);
+        
+        if (found_item != NULL && found_item->isConsigned)
+        {
+            printf("Entrez le nombre de bouteilles a rendre :\n> ");
+            while (nb_bottles < 1)
+            {
+                scanf("%d", &nb_bottles);
+                if (nb_bottles < 1) printf("Erreur, recommencez\n> ");
+            }
+            totValue += found_item->consignedValue * nb_bottles;
+            nb_bottles = 0;
+            printf("Vous allez recuperer %5.2f€, voulez-vous continuer ? (y/n) :\n> ", totValue);
+            choice = ' ';
+            while (!(choice == 'y' || choice == 'n'))
+            {
+                scanf(" %c", &choice);
+                if (!(choice == 'y' || choice == 'n')) printf("Erreur, recommencez\n> ");
+            }
+        }
+        else printf("Erreur, le codebarre entré ne correpond pas a un article consigne\n");   
+    }
+}
+
 int main(int argc, char const *argv[])
 {
     (void)argc;
@@ -423,23 +494,56 @@ int main(int argc, char const *argv[])
     fStock = fopen("stock.dat", "r");
     fClient = fopen("client.dat", "r");
 
+    int choice = -1;
+
     // Lecture stock.dat
     StockList *stocks = stocks_create(fStock);
 
-    printf("\nList des articles: \n");
-    stocks_display(stocks);
+    /*printf("\nList des articles: \n");
+    stocks_display(stocks);*/
 
     // Lecture client.dat
     ClientsList *clients = clients_create(fClient);
 
-    printf("\nList des clients:\n");
+    /*printf("\nList des clients:\n");
     clients_display(clients);
 
     char input[128];
     setup_user_input();
     user_input("####", input, (ListCallback)autocomplete_client_list, (void *)clients);
     printf("\nuserinput: %s\n", input);
-    restore_user_input();
+    restore_user_input();*/
+
+    // menu
+    printf("1 : Effectuer un achat\n2 : Rendre des bouteilles consignées \n3 : Sortir du programme\n\n");
+
+    while (choice < 0 || choice > 3)
+    {
+        printf("> ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+        case 1: // Effectuer un achat
+            printf("vous avez choisi d'effectuer un achat\n");
+            break;
+        
+        case 2: // Rendrer des bouteilles consignées
+            printf("vous avez choisi de rendre des bouteilles consignées\n");
+            consigned_bottles_operation(stocks);
+
+            break;
+
+        case 3: // Fin du programme 
+            break;
+
+        default:
+            printf("Erreur, recommencez\n");
+        }
+        
+    }
+
+    printf("Fin du programme ...\n");
 
     stocks_destroy(stocks);
     clients_destroy(clients);
