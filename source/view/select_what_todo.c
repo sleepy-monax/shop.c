@@ -1,32 +1,30 @@
 #include "view/views.h"
+#include "utils/input.h"
 
 void select_what_todo(StockList *stocks)
 {
-    int choice = -1;
+    const char *choices[] = {
+        "Effectuer un achat",
+        "Rendre des bouteilles consignées",
+        "Sortir du programme",
+        NULL,
+    };
 
-    printf("1 : Effectuer un achat\n2 : Rendre des bouteilles consignées \n3 : Sortir du programme\n\n");
-
-    while (choice < 0 || choice > 3)
+    switch (user_select(choices))
     {
-        printf("> ");
-        scanf("%d", &choice);
+    case 0:
+        printf("vous avez choisi d'effectuer un achat\n");
+        break;
 
-        switch (choice)
-        {
-        case 1: // Effectuer un achat
-            printf("vous avez choisi d'effectuer un achat\n");
-            break;
+    case 1:
+        printf("vous avez choisi de rendre des bouteilles consignées\n");
+        return_consigned_bottles(stocks);
+        break;
 
-        case 2: // Rendrer des bouteilles consignées
-            printf("vous avez choisi de rendre des bouteilles consignées\n");
-            return_consigned_bottles(stocks);
-            break;
+    case 2:
+        printf("Bye bye :)\n");
 
-        case 3: // Fin du programme
-            break;
-
-        default:
-            printf("Erreur, recommencez\n");
-        }
+    default:
+        break;
     }
 }

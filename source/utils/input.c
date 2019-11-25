@@ -69,6 +69,51 @@ InputValidState user_input_valid(const char *format, const char *input)
     return INPUT_VALID;
 }
 
+int user_select(const char **options)
+{
+    char c;
+    bool stop = false;
+    int selected = 0;
+
+    while (!stop)
+    {
+        printf("\e[1;1H\e[2J");
+
+        for (int i = 0; options[i]; i++)
+        {
+            if (i == selected)
+            {
+                printf("\e[32;1m-> \e[0m%s\n", options[i]);
+            }
+            else
+            {
+                printf("   %s\n", options[i]);
+            }
+        }
+
+        printf("\n[K] up / [J] down / [ENTER] select\n");
+
+        assert(read(STDIN_FILENO, &c, 1) == 1);
+
+        if (c == 'k')
+        {
+            if (selected > 0)
+                selected--;
+        }
+        else if (c == 'j')
+        {
+            if (options[selected + 1] != NULL)
+                selected++;
+        }
+        else if (c == '\n')
+        {
+            stop = true;
+        }
+    }
+
+    return selected;
+}
+
 void user_input(const char *format, char *result, ListCallback list_callback, void *list_callback_args)
 {
     (void)list_callback;
