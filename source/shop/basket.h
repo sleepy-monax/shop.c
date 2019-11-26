@@ -17,5 +17,3 @@ Basket *basket_create(void);
 void basket_destroy(Basket *basket);
 
 void backet_add_item(Basket *this, Item *item, int quantity);
-
-void basket_print_bill(Basket *this);

@@ -69,7 +69,7 @@ InputValidState user_input_valid(const char *format, const char *input)
     return INPUT_VALID;
 }
 
-int user_select(const char *prompt, const char **options)
+int user_select(const char *prompt, const char *options[])
 {
     char c;
     bool stop = false;
