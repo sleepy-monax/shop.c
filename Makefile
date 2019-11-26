@@ -1,13 +1,30 @@
-SOURCES=$(wildcard source/*.c) $(wildcard source/**/*.c)
-INCLUDES=$(wildcard source/*.h) $(wildcard source/**/*.h)
+PROJECT=shop
+SOURCES = $(wildcard source/*.c) $(wildcard source/*/*.c)
+OBJECTS = $(SOURCES:.c=.o)
 
-shop.out: $(SOURCES) $(INCLUDES)
-	gcc -Isource -g -flto -Wall -Werror -Wextra -fsanitize=address -fsanitize=undefined $(SOURCES) -o shop.out
+CC = gcc
+LDFLAGS = -lm
+CFLAGS = -g \
+		 -std=c11 \
+		 -MD \
+		 -Isource \
+		 -Wall \
+		 -Wextra \
+		 -Werror \
+		 -fsanitize=address \
+		 -fsanitize=undefined 
+ 
+$(PROJECT).out: $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-test: shop.out
-	./shop.out
+.PHONY: all clean test
+
+all: $(PROJECT).out
 
 clean:
-	rm ./shop.out
+	rm -f $(OBJECTS) $(SOURCES:.c=.d) $(PROJECT).out
 
-.PHONY: test
+test: $(PROJECT).out
+	./$(PROJECT).out
+
+-include $(SOURCES:.c=.d)
