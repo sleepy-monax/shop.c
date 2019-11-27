@@ -1,4 +1,3 @@
-#include <termios.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <ctype.h>
@@ -8,42 +7,7 @@
 
 #include "utils/string.h"
 #include "utils/input.h"
-
-void setup_terminal_for_user_input(void)
-{
-    struct termios info;
-    int result = 0;
-
-    result = tcgetattr(0, &info);
-
-    if (result == -1)
-    {
-        perror("Failled to setup user input");
-        abort();
-    }
-
-    info.c_lflag &= ~(ECHO | ICANON);
-
-    result = tcsetattr(0, TCSANOW, &info);
-}
-
-void restore_terminal_after_user_input(void)
-{
-    struct termios info;
-    int result = 0;
-
-    result = tcgetattr(0, &info);
-
-    if (result == -1)
-    {
-        perror("Failled to setup user input");
-        abort();
-    }
-
-    info.c_lflag |= (ECHO | ICANON);
-
-    result = tcsetattr(0, TCSAFLUSH, &info);
-}
+#include "utils/terminal.h"
 
 //void user_input_display(const char *format, const char *input)
 //{
@@ -71,6 +35,8 @@ InputValidState user_input_valid(const char *format, const char *input)
 
 int user_select(const char *prompt, const char *options[])
 {
+    terminal_enter_rawmode();
+
     char c;
     bool stop = false;
     int selected = 0;
@@ -113,13 +79,15 @@ int user_select(const char *prompt, const char *options[])
         }
     }
 
+    terminal_exit_rawmode();
+
     return selected;
 }
 
 void user_input(const char *format, char *result, ListCallback list_callback, void *list_callback_args)
 {
-    (void)list_callback;
-    (void)list_callback_args;
+    terminal_enter_rawmode();
+
     char c;
     int index = 0;
 
@@ -172,4 +140,6 @@ void user_input(const char *format, char *result, ListCallback list_callback, vo
         }
 
     } while (c != '\n');
+
+    terminal_exit_rawmode();
 }

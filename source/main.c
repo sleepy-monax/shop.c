@@ -12,11 +12,7 @@ int main(int argc, char const *argv[])
     StockList *stocks = stocks_create(stocks_file);
     ClientsList *clients = clients_create(clients_file);
 
-    setup_terminal_for_user_input();
-
     home_select_what_todo(stocks);
-
-    restore_terminal_after_user_input();
 
     printf("Fin du programme ...\n");
 
