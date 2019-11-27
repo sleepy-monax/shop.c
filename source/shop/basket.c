@@ -14,7 +14,7 @@ void basket_destroy(Basket *basket)
 }
 
 // Ajoute un item dans le panier du client
-void backet_add_item(Basket *this, Item *stockItem, int quantity)
+void basket_add_item(Basket *this, Item *stockItem, int quantity)
 {
     BasketItem *item = malloc(sizeof(BasketItem));
 
@@ -26,6 +26,15 @@ void backet_add_item(Basket *this, Item *stockItem, int quantity)
 
 void basket_print_bill(Basket *this)
 {
-    (void)this;
-    //TODO print the ticket.
+    float totPrice_item;
+    list_foreach(item, this)
+    {
+        BasketItem *item = (BasketItem *)item->item;
+
+        totPrice_item = item->item->price;
+        if (item->item->reduction != 0) totPrice_item -= item->item->reduction * item->item->price;
+        totPrice_item *= item->quantity;
+
+        printf("%4d %-s %d %5.2f\n", item->item->id, item->item->label, item->quantity, totPrice_item);
+    }
 }

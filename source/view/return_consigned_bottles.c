@@ -20,7 +20,7 @@ void autocomplete_stock_list_consigned(const char *user_input, StockList *stocks
     }
 }
 
-void return_consigned_bottles(StockList *stock)
+void cashier_return_consigned_bottles(StockList *stock)
 {
     float totValue = 0.;
     int nb_bottles = 0;

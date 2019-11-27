@@ -34,7 +34,10 @@ void manager_manage_stocks(StockList *stock);
     --------------
     Joly Lucien 
 */
-void cashier_select_what_todo(StockList *stock, ClientsList *clients);
+//void cashier_select_what_todo(StockList *stock, ClientsList *clients);
+
+// while cashier_select_what_todo() isn't made yet
+void cashier_select_what_todo(StockList *stock);
 
 /*
     Les caissier scans les items du clients.
@@ -70,7 +73,11 @@ void cashier_scan_items(Session *session, StockList *stock);
     --------------
     Joly Lucien 
 */
-void cashier_return_consigned_bottles(Session *session, StockList *stock);
+//void cashier_return_consigned_bottles(Session *session, StockList *stock);
+
+
+// while cashier_return_consigned_bottles() isn't made yet
+void cashier_return_consigned_bottles(StockList *stock);
 
 /*
     Le caissier demand le numero de carte du client.

@@ -14,7 +14,7 @@ int main(int argc, char const *argv[])
 
     setup_terminal_for_user_input();
 
-    select_what_todo(stocks);
+    home_select_what_todo(stocks);
 
     restore_terminal_after_user_input();
 

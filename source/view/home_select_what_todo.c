@@ -1,7 +1,7 @@
 #include "view/views.h"
 #include "utils/input.h"
 
-void select_what_todo(StockList *stocks)
+void home_select_what_todo(StockList *stocks)
 {
     const char *choices[] = {
         "Effectuer un achat",
@@ -14,11 +14,12 @@ void select_what_todo(StockList *stocks)
     {
     case 0:
         printf("vous avez choisi d'effectuer un achat\n");
+        cashier_select_what_todo(stocks);
         break;
 
     case 1:
         printf("vous avez choisi de rendre des bouteilles consignées\n");
-        return_consigned_bottles(stocks);
+        cashier_return_consigned_bottles(stocks);
         break;
 
     case 2:
