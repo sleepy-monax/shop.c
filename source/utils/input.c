@@ -62,6 +62,7 @@ bool user_yes_no(const char *prompt)
 int user_select(const char *prompt, const char *options[])
 {
     terminal_enter_rawmode();
+    terminal_enable_alternative_screen_buffer();
 
     char c;
     bool stop = false;
@@ -105,6 +106,7 @@ int user_select(const char *prompt, const char *options[])
         }
     }
 
+    terminal_disable_alternative_screen_buffer();
     terminal_exit_rawmode();
 
     return selected;

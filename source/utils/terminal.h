@@ -17,3 +17,7 @@ void terminal_clear(void);
 void terminal_save_cursor(void);
 
 void terminal_restore_cursor(void);
+
+void terminal_enable_alternative_screen_buffer(void);
+
+void terminal_disable_alternative_screen_buffer(void);

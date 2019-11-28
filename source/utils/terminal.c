@@ -68,3 +68,15 @@ void terminal_save_cursor(void)
 void terminal_restore_cursor(void)
 {
 }
+
+void terminal_enable_alternative_screen_buffer(void)
+{
+    printf("\e[?1049h");
+    fflush(stdout);
+}
+
+void terminal_disable_alternative_screen_buffer(void)
+{
+    printf("\e[?1049l");
+    fflush(stdout);
+}
