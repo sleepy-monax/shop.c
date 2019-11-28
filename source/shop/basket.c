@@ -29,12 +29,13 @@ void basket_print_bill(Basket *this)
     float totPrice_item;
     list_foreach(item, this)
     {
-        BasketItem *item = (BasketItem *)item->item;
+        BasketItem *b = (BasketItem *)item->value;
 
-        totPrice_item = item->item->price;
-        if (item->item->reduction != 0) totPrice_item -= item->item->reduction * item->item->price;
-        totPrice_item *= item->quantity;
+        totPrice_item = b->item->price;
+        if (b->item->reduction != 0)
+            totPrice_item -= b->item->reduction * b->item->price;
+        totPrice_item *= b->quantity;
 
-        printf("%4d %-s %d %5.2f\n", item->item->id, item->item->label, item->quantity, totPrice_item);
+        printf("%4d %-s %d %5.2f\n", b->item->id, b->item->label, b->quantity, totPrice_item);
     }
 }

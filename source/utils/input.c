@@ -119,7 +119,7 @@ void user_input(const char *prompt, const char *format, char *result)
 
     result[0] = '\0';
 
-    printf("\n%s: ", prompt);
+    printf("\n\e[?25l%s: ", prompt);
 
     do
     {
@@ -146,7 +146,7 @@ void user_input(const char *prompt, const char *format, char *result)
         }
     } while (c != '\n');
 
-    printf("\n");
+    printf("\033[?25h\n");
 
     terminal_exit_rawmode();
 }

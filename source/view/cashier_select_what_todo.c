@@ -30,56 +30,45 @@ void autocomplete_stock_list(const char *user_input, StockList *stocks)
 
 void cashier_select_what_todo(StockList *stock)
 {
-    int quantity = -1;
+    Item *item;
+
+    BareCode item_barecode = -1;
+    char item_raw_barecode[5];
+
+    int item_quantity = -1;
+    char item_raw_quantity[5];
+
     float totValue = 0.;
-    BareCode inserted_br;
-    char choice = 'y', input[128];
-    Item *found_item;
     Basket *basket = basket_create();
 
-    while (choice == 'y')
+    do
     {
         stocks_display(stock);
-        user_input("Inserez le codebarre de l'article", "####", input);
+        user_input("Inserez le codebarre de l'article", "####", item_raw_barecode);
 
-        inserted_br = atoi(input);
+        item_barecode = atoi(item_raw_barecode);
+        item = stocks_lookup_item(stock, item_barecode);
 
-        found_item = stocks_lookup_item(stock, inserted_br);
-
-        if (found_item != NULL)
+        if (item != NULL)
         {
-            printf("Entrez la quatite que vous souhaitez acheter : \n> ");
+            user_input("Entrez la quatite que vous souhaitez acheter", "####", item_raw_quantity);
+            item_quantity = atoi(item_raw_quantity);
 
-            while (quantity < -1)
+            if (item_quantity <= 0)
             {
-                scanf("%d", &quantity);
-                if (quantity < -1)
-                    printf("Erreur, recommencez\n> ");
+                printf("Achat annuler!\n");
             }
-            if (quantity == 0)
-                printf("nous avez annule cet achat\n");
-
-            if (quantity > 0)
+            else
             {
-                basket_add_item(basket, found_item, quantity);
+                basket_add_item(basket, item, item_quantity);
 
-                totValue = found_item->price;
-                if (found_item != NULL)
-                    totValue -= found_item->price * found_item->reduction;
-                totValue *= quantity;
+                totValue = item->price;
+                totValue -= item->price * item->reduction;
+                totValue *= item_quantity;
             }
         }
 
-        printf("Voulez-vous continuer a ajouter des articles au panier ? (y/n)\n> ");
-        choice = ' ';
-        while (!(choice == 'y' || choice == 'n'))
-        {
-            scanf(" %c", &choice);
-
-            if (!(choice == 'y' || choice == 'n'))
-                printf("Erreur, recommencez\n> ");
-        }
-    }
+    } while (user_yes_no("Voulez-vous continuer a ajouter des articles au panier ?"));
 
     printf("voici le contenu du panier : \n\n");
     basket_print_bill(basket);

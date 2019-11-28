@@ -74,7 +74,16 @@ void stocks_display(StockList *stocks)
     list_foreach(item, stocks)
     {
         Item *itemInStocks = (Item *)item->value;
-        printf("%04d %s %s\n", itemInStocks->id, itemInStocks->label, item_category_string[itemInStocks->category]);
+        barecode_print(itemInStocks->id);
+
+        printf(" %04d %s %s", itemInStocks->id, itemInStocks->label, item_category_string[itemInStocks->category]);
+
+        if (itemInStocks->reduction != 0)
+        {
+            printf(" \e[103;30m-%d%%\e[0m", itemInStocks->reduction);
+        }
+
+        printf("\n");
     }
 }
 

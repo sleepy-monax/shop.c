@@ -34,8 +34,8 @@ void cashier_return_consigned_bottles(StockList *stock)
         stocks_display_consigned(stock);
 
         user_input("Inserez le codebarre de la bouteille a rendre", "####", bottle_raw_barecode);
-
         bottle_barecode = atoi(bottle_raw_barecode);
+
         bottle = stocks_lookup_item(stock, bottle_barecode);
 
         if (bottle && bottle->isConsigned)
