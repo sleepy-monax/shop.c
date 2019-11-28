@@ -12,7 +12,7 @@ int main(int argc, char const *argv[])
     StockList *stocks = stocks_create(stocks_file);
     ClientsList *clients = clients_create(clients_file);
 
-    home_select_what_todo(stocks);
+    home_select_what_todo(stocks, clients);
 
     printf("Fin du programme ...\n");
 

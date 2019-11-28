@@ -2,27 +2,42 @@
 #include "utils/input.h"
 #include "utils/logger.h"
 
-void home_select_what_todo(StockList *stocks)
+#include <string.h>
+void home_select_what_todo(StockList *stocks, ClientsList *clients)
 {
+
+    char input_manager[20];
+
     const char *choices[] = {
-        "Effectuer un achat",
-        "Rendre des bouteilles consignées",
+        "Interface manager",
+        "Interface client",
         "Sortir du programme",
         NULL,
     };
 
-    switch (user_select("Donc on fait quoi", choices))
+    switch (user_select("Selectionnez une interface", choices))
     {
     case 0:
-        log_info("Vous avez choisi d'effectuer un achat");
-        cashier_select_what_todo(stocks);
+        do
+        {
+            user_input("Inserez votre identifiant manager", ".......", input_manager);
+            if (strcmp(input_manager, "Nicolas") != 0)
+            {
+                if (!(user_yes_no("Erreur, identifiant incorrect, voulez-vous reessayer ? ")))
+                    break;
+            }
+        } while (strcmp(input_manager, "Nicolas") != 0);
+        // manager_select_what_todo(StockList *stock, ClientsList *clients);
         break;
 
     case 1:
-        log_info("Vous avez choisi de rendre des bouteilles consignées");
-        cashier_return_consigned_bottles(stocks);
-        break;
+    {
+        Session *session = session_create();
 
+        log_info("Bonjour et bienvenue chez Colruyt");
+        cashier_select_what_todo(session, stocks, clients);
+        break;
+    }
     case 2:
         log_info("Bye bye :)");
 

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include "utils/logger.h"
 #include "view/views.h"
 #include "utils/input.h"
 #include "utils/string.h"
@@ -28,48 +29,33 @@ void autocomplete_stock_list(const char *user_input, StockList *stocks)
     }
 }
 
-void cashier_select_what_todo(StockList *stock)
+void cashier_select_what_todo(Session *session, StockList *stocks, ClientsList *clients)
 {
-    Item *item;
+    (void)clients;
 
-    BareCode item_barecode = -1;
-    char item_raw_barecode[5];
+    const char *choices[] = {
+        "Effectuer un achat",
+        "Rendre des bouteilles consignées",
+        "Sortir du programme",
+        NULL,
+    };
 
-    int item_quantity = -1;
-    char item_raw_quantity[5];
-
-    float totValue = 0.;
-    Basket *basket = basket_create();
-
-    do
+    switch (user_select("Donc on fait quoi", choices))
     {
-        stocks_display(stock);
-        user_input("Inserez le codebarre de l'article", "####", item_raw_barecode);
+    case 0:
+        log_info("Vous avez choisi d'effectuer un achat");
+        cashier_scan_items(session, stocks);
+        break;
 
-        item_barecode = atoi(item_raw_barecode);
-        item = stocks_lookup_item(stock, item_barecode);
+    case 1:
+        log_info("Vous avez choisi de rendre des bouteilles consignées");
+        cashier_return_consigned_bottles(stocks);
+        break;
 
-        if (item != NULL)
-        {
-            user_input("Entrez la quatite que vous souhaitez acheter", "####", item_raw_quantity);
-            item_quantity = atoi(item_raw_quantity);
+    case 2:
+        log_info("Bye bye :)");
 
-            if (item_quantity <= 0)
-            {
-                printf("Achat annuler!\n");
-            }
-            else
-            {
-                basket_add_item(basket, item, item_quantity);
-
-                totValue = item->price;
-                totValue -= item->price * item->reduction;
-                totValue *= item_quantity;
-            }
-        }
-
-    } while (user_yes_no("Voulez-vous continuer a ajouter des articles au panier ?"));
-
-    printf("voici le contenu du panier : \n\n");
-    basket_print_bill(basket);
+    default:
+        break;
+    }
 }

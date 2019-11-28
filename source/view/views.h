@@ -6,7 +6,7 @@
 
 void user_login();
 
-void home_select_what_todo(StockList *stocks);
+void home_select_what_todo(StockList *stocks, ClientsList *clients);
 
 /* --- Manager -------------------------------------------------------------- */
 
@@ -37,7 +37,7 @@ void manager_manage_stocks(StockList *stock);
 //void cashier_select_what_todo(StockList *stock, ClientsList *clients);
 
 // while cashier_select_what_todo() isn't made yet
-void cashier_select_what_todo(StockList *stock);
+void cashier_select_what_todo(Session *session, StockList *stocks, ClientsList *clients);
 
 /*
     Les caissier scans les items du clients.
@@ -74,7 +74,6 @@ void cashier_scan_items(Session *session, StockList *stock);
     Joly Lucien 
 */
 //void cashier_return_consigned_bottles(Session *session, StockList *stock);
-
 
 // while cashier_return_consigned_bottles() isn't made yet
 void cashier_return_consigned_bottles(StockList *stock);
