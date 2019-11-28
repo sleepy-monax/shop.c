@@ -5,8 +5,8 @@
 
 typedef struct
 {
-    Client *client;
     Basket *basket;
+    Client *client;
 } Session;
 
 Session *session_create(void);
