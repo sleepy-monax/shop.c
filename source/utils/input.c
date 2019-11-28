@@ -144,7 +144,7 @@ void user_input(const char *prompt, const char *format, char *result)
             result[index + 1] = '\0';
             index++;
         }
-    } while (c != '\n');
+    } while (c != '\n' && user_input_valid(format, result));
 
     printf("\033[?25h\n");
 
