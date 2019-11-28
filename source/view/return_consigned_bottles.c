@@ -23,56 +23,33 @@ void autocomplete_stock_list_consigned(const char *user_input, StockList *stocks
 void cashier_return_consigned_bottles(StockList *stock)
 {
     float totValue = 0.;
-    int nb_bottles = 0;
-    BareCode inserted_br;
-    char choice = 'y', input[128];
-    Item *found_item;
+    BareCode bottle_barecode;
+    char bottle_raw_barecode[5];
+    char bottle_raw_count[5];
+    int bottle_count;
+    Item *bottle;
 
-    while (choice == 'y')
+    do
     {
-        printf("Inserez le codebarre de la bouteille a rendre : \n\n");
         stocks_display_consigned(stock);
 
-        user_input("####", input, (ListCallback)autocomplete_stock_list_consigned, (void *)stock);
-        inserted_br = atoi(input);
+        user_input("Inserez le codebarre de la bouteille a rendre", "####", bottle_raw_barecode);
 
-        found_item = stocks_lookup_item(stock, inserted_br);
+        bottle_barecode = atoi(bottle_raw_barecode);
+        bottle = stocks_lookup_item(stock, bottle_barecode);
 
-        if (found_item != NULL && found_item->isConsigned)
+        if (bottle && bottle->isConsigned)
         {
-            printf("Entrez le nombre de bouteilles a rendre :\n> ");
+            user_input("Entrez le nombre de bouteilles a rendre", "####", bottle_raw_count);
+            bottle_count = atoi(bottle_raw_count);
 
-            while (nb_bottles < 1)
-            {
-                scanf("%d", &nb_bottles);
+            totValue += bottle->consignedValue * bottle_count;
 
-                if (nb_bottles < 1)
-                {
-                    printf("Erreur, recommencez\n> ");
-                }
-            }
-
-            totValue += found_item->consignedValue * nb_bottles;
-
-            nb_bottles = 0;
-
-            printf("Vous allez recuperer %5.2f€, voulez-vous continuer ? (y/n) :\n> ", totValue);
-
-            choice = ' ';
-
-            while (!(choice == 'y' || choice == 'n'))
-            {
-                scanf(" %c", &choice);
-
-                if (!(choice == 'y' || choice == 'n'))
-                {
-                    printf("Erreur, recommencez\n> ");
-                }
-            }
+            printf("Vous allez recuperer %5.2f€\n", totValue);
         }
         else
         {
             printf("Erreur, le codebarre entré ne correpond pas a un article consigne\n");
         }
-    }
+    } while (user_yes_no("Voulez-vous continuer ?"));
 }

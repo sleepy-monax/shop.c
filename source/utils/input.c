@@ -33,6 +33,32 @@ InputValidState user_input_valid(const char *format, const char *input)
     return INPUT_VALID;
 }
 
+bool user_yes_no(const char *prompt)
+{
+    terminal_enter_rawmode();
+
+    printf("%s [Oui/Non]", prompt);
+    fflush(stdout);
+
+    char c;
+    assert(read(STDIN_FILENO, &c, 1) == 1);
+
+    terminal_exit_rawmode();
+
+    if (c == 'Y' || c == 'O' || c == 'y' || c == 'o')
+    {
+        printf(" Oui\n");
+
+        return true;
+    }
+    else
+    {
+        printf(" Non\n");
+
+        return false;
+    }
+}
+
 int user_select(const char *prompt, const char *options[])
 {
     terminal_enter_rawmode();
@@ -84,44 +110,24 @@ int user_select(const char *prompt, const char *options[])
     return selected;
 }
 
-void user_input(const char *format, char *result, ListCallback list_callback, void *list_callback_args)
+void user_input(const char *prompt, const char *format, char *result)
 {
     terminal_enter_rawmode();
 
     char c;
     int index = 0;
 
-    printf("\e[1;1H\e[2J");
-    fflush(stdout);
+    result[0] = '\0';
 
-    printf("\e[s");
+    printf("\n%s: ", prompt);
+
     do
     {
-        printf("%s%s\e[0m\n", user_input_valid(format, result) ? "\e[32m" : "\e[31m", result);
-
-        printf("\e[J");
-
-        if (list_callback)
-        {
-            list_callback(result, list_callback_args);
-        }
-
+        printf("\e[s\e[37m%s\e[0m\e[u", format);
+        printf("\e[s%s%s\e[0m\e[u", user_input_valid(format, result) ? "\e[32m" : "\e[31m", result);
         fflush(stdout);
 
-        printf("\e[u");
-        printf("\e[s");
-
-        printf("\e[37m");
-
-        printf("%s", format);
-
-        printf("\e[0m");
-
         assert(read(STDIN_FILENO, &c, 1) == 1);
-
-        printf("\e[u");
-
-        printf("\e[s");
 
         if (c == 127 && index > 0)
         {
@@ -138,8 +144,9 @@ void user_input(const char *format, char *result, ListCallback list_callback, vo
             result[index + 1] = '\0';
             index++;
         }
-
     } while (c != '\n');
+
+    printf("\n");
 
     terminal_exit_rawmode();
 }

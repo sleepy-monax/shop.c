@@ -1,5 +1,6 @@
 #include "view/views.h"
 #include "utils/input.h"
+#include "utils/logger.h"
 
 void home_select_what_todo(StockList *stocks)
 {
@@ -13,17 +14,17 @@ void home_select_what_todo(StockList *stocks)
     switch (user_select("Donc on fait quoi", choices))
     {
     case 0:
-        printf("vous avez choisi d'effectuer un achat\n");
+        log_info("Vous avez choisi d'effectuer un achat");
         cashier_select_what_todo(stocks);
         break;
 
     case 1:
-        printf("vous avez choisi de rendre des bouteilles consignées\n");
+        log_info("Vous avez choisi de rendre des bouteilles consignées");
         cashier_return_consigned_bottles(stocks);
         break;
 
     case 2:
-        printf("Bye bye :)\n");
+        log_info("Bye bye :)");
 
     default:
         break;

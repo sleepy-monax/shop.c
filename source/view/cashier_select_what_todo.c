@@ -21,11 +21,10 @@ void autocomplete_stock_list(const char *user_input, StockList *stocks)
             if (itemInStocks->reduction != 0)
             {
                 printf("%3d %% \n", itemInStocks->reduction);
-            } 
-            else printf("\n");
-             
+            }
+            else
+                printf("\n");
         }
-
     }
 }
 
@@ -40,12 +39,11 @@ void cashier_select_what_todo(StockList *stock)
 
     while (choice == 'y')
     {
-        printf("Inserez le codebarre de l'article  : \n\n");
         stocks_display(stock);
+        user_input("Inserez le codebarre de l'article", "####", input);
 
-        user_input("####", input, (ListCallback)autocomplete_stock_list, (void *)stock);
         inserted_br = atoi(input);
-    
+
         found_item = stocks_lookup_item(stock, inserted_br);
 
         if (found_item != NULL)
@@ -55,17 +53,20 @@ void cashier_select_what_todo(StockList *stock)
             while (quantity < -1)
             {
                 scanf("%d", &quantity);
-                if (quantity < -1) printf("Erreur, recommencez\n> ");
+                if (quantity < -1)
+                    printf("Erreur, recommencez\n> ");
             }
-            if (quantity == 0) printf("nous avez annule cet achat\n");
+            if (quantity == 0)
+                printf("nous avez annule cet achat\n");
 
             if (quantity > 0)
             {
                 basket_add_item(basket, found_item, quantity);
 
                 totValue = found_item->price;
-                if (found_item != NULL) totValue -= found_item->price * found_item->reduction;
-                totValue *=  quantity;
+                if (found_item != NULL)
+                    totValue -= found_item->price * found_item->reduction;
+                totValue *= quantity;
             }
         }
 
@@ -75,11 +76,11 @@ void cashier_select_what_todo(StockList *stock)
         {
             scanf(" %c", &choice);
 
-            if (!(choice == 'y' || choice == 'n')) printf("Erreur, recommencez\n> ");
+            if (!(choice == 'y' || choice == 'n'))
+                printf("Erreur, recommencez\n> ");
         }
     }
 
     printf("voici le contenu du panier : \n\n");
     basket_print_bill(basket);
-    
 }
