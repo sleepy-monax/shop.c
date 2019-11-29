@@ -1,6 +1,8 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include "shop/basket.h"
+#define ITEM_STRING_ENTRY(__x) #__x,
 
 // Creer un nouveau panier.
 Basket *basket_create(void)
@@ -27,15 +29,19 @@ void basket_add_item(Basket *this, Item *stockItem, int quantity)
 void basket_print_bill(Basket *this)
 {
     float totPrice_item;
+
+    printf("Qtt.  Label         Prix\n");
+    printf("------------------------\n");
     list_foreach(item, this)
     {
         BasketItem *b = (BasketItem *)item->value;
 
         totPrice_item = b->item->price;
         if (b->item->reduction != 0)
-            totPrice_item -= b->item->reduction * b->item->price;
+            totPrice_item -= (b->item->reduction / 100) * totPrice_item;
         totPrice_item *= b->quantity;
 
-        printf("%4d %-s %d %5.2f\n", b->item->id, b->item->label, b->quantity, totPrice_item);
+        printf("%d    %-s  %5.2f€\n", b->quantity, b->item->label, b->item->price);
+        // todo : sort per categories
     }
 }

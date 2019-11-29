@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "utils/input.h"
 #include "utils/logger.h"
@@ -22,8 +23,8 @@ static void login_client(Session *session, ClientsList *clients)
 
         if (session->client)
         {
-            log_info("Bonjour, %s %s !", session->client->firstname, session->client->lastname);
-
+            printf("Bonjour, %s %s !", session->client->firstname, session->client->lastname);
+            sleep(2);
             return;
         }
         else

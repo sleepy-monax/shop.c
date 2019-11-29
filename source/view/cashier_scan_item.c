@@ -1,7 +1,18 @@
 #include "view/views.h"
 #include "utils/input.h"
 #include "utils/logger.h"
+
 #include <stdlib.h>
+#include <time.h>
+
+void delay(int number_of_seconds)
+{
+    int milli_seconds = 1000 * number_of_seconds;
+    clock_t start_time = clock();
+
+    while (clock() < start_time + milli_seconds)
+        ;
+}
 
 void cashier_scan_items(Session *session, StockList *stock)
 {
@@ -41,6 +52,12 @@ void cashier_scan_items(Session *session, StockList *stock)
                 totValue = item->price;
                 totValue -= item->price * item->reduction;
                 totValue *= item_quantity;
+
+                if (session->client != NULL)
+                {
+                    int nbPoints = totValue;
+                    session->client->points += nbPoints;
+                }
             }
         }
 
@@ -48,4 +65,5 @@ void cashier_scan_items(Session *session, StockList *stock)
 
     printf("voici le contenu du panier : \n\n");
     basket_print_bill(basket);
+    getchar();
 }

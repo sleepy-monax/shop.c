@@ -1,10 +1,7 @@
 # TODO
 
 ## Clients fidèles
-### Menu avant de passer au choix des articles à acheter
-- s'authentifier en tant que client déjà inscrit chez Colruyt, peut profiter des points extrats qui lui permet d'avoir des ristournes
-- créer un compte, nouvelle entrée dans client.dat, commence les points à 0
-- poursuivre l'achat sans compte, ne peut pas profiter des points extra
+### afficher le contenu du panier en fonction des categories d'item
 
 
 
