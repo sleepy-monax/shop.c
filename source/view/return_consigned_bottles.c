@@ -20,8 +20,11 @@ void autocomplete_stock_list_consigned(const char *user_input, StockList *stocks
     }
 }
 
-void cashier_return_consigned_bottles(StockList *stock)
+void cashier_return_consigned_bottles(Session *session, StockList *stock)
 {
+    //TODO: Add support for session
+    (void)session;
+
     float totValue = 0.;
     BareCode bottle_barecode;
     char bottle_raw_barecode[5];
@@ -51,5 +54,5 @@ void cashier_return_consigned_bottles(StockList *stock)
         {
             printf("Erreur, le codebarre entré ne correpond pas a un article consigne\n");
         }
-    } while (user_yes_no("Voulez-vous continuer ?"));
+    } while (user_yes_no("Voulez-vous continuer ?") == YES);
 }

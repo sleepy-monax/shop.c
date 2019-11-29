@@ -15,6 +15,9 @@ void setup_terminal_for_user_input(void);
 
 void restore_terminal_after_user_input(void);
 
+#define YES 1
+#define NO 0
+
 bool user_yes_no(const char *prompt);
 
 int user_select(const char *prompt, const char **options);

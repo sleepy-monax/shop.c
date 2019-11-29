@@ -73,10 +73,7 @@ void cashier_scan_items(Session *session, StockList *stock);
     --------------
     Joly Lucien 
 */
-//void cashier_return_consigned_bottles(Session *session, StockList *stock);
-
-// while cashier_return_consigned_bottles() isn't made yet
-void cashier_return_consigned_bottles(StockList *stock);
+void cashier_return_consigned_bottles(Session *session, StockList *stock);
 
 /*
     Le caissier demand le numero de carte du client.

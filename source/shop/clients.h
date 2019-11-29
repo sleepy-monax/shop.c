@@ -28,6 +28,8 @@ void clients_display(ClientsList *clients);
 
 void clients_sync(ClientsList *clients, FILE *file);
 
-Client *client_lookup(ClientsList *clients, BareCode id);
+Client *clients_lookup(ClientsList *clients, BareCode id);
 
 void clients_destroy(ClientsList *clients);
+
+int clients_generate_id(ClientsList *clients);

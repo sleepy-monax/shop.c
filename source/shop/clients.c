@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <time.h>
 
 #include "shop/clients.h"
 
@@ -52,6 +53,20 @@ ClientsList *clients_create(FILE *file)
     return this;
 }
 
+int clients_generate_id(ClientsList *clients)
+{
+    int id;
+
+    srand(time(NULL));
+
+    do
+    {
+        id = rand() % 9999;
+    } while (!clients_lookup(clients, id));
+
+    return id;
+}
+
 void clients_display(ClientsList *clients)
 {
     list_foreach(item, clients)
@@ -67,7 +82,7 @@ void clients_sync(ClientsList *clients, FILE *file)
     (void)file;
 }
 
-Client *client_lookup(ClientsList *clients, BareCode id)
+Client *clients_lookup(ClientsList *clients, BareCode id)
 {
     list_foreach(item, clients)
     {

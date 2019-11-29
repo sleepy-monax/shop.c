@@ -24,7 +24,7 @@ static const char *level_colors[] = {
     "\e[35m",
 };
 
-void log_log(int level, const char *file, int line, const char *fmt, ...)
+void log_log(int level, const char *fmt, ...)
 {
     time_t t = time(NULL);
     struct tm *lt = localtime(&t);
@@ -34,8 +34,8 @@ void log_log(int level, const char *file, int line, const char *fmt, ...)
     buf[strftime(buf, sizeof(buf), "%H:%M:%S", lt)] = '\0';
 
     fprintf(
-        stderr, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ",
-        buf, level_colors[level], level_names[level], file, line);
+        stderr, "%s %s%s \e[0m",
+        buf, level_colors[level], level_names[level]);
 
     va_start(args, fmt);
     vfprintf(stderr, fmt, args);

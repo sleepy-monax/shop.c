@@ -121,7 +121,7 @@ void user_input(const char *prompt, const char *format, char *result)
 
     result[0] = '\0';
 
-    printf("\n\e[?25l%s: ", prompt);
+    printf("\e[?25l%s: ", prompt);
 
     do
     {
@@ -146,7 +146,7 @@ void user_input(const char *prompt, const char *format, char *result)
             result[index + 1] = '\0';
             index++;
         }
-    } while (c != '\n' && user_input_valid(format, result));
+    } while (c != '\n' || !user_input_valid(format, result));
 
     printf("\033[?25h\n");
 

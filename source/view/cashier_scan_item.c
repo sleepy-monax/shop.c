@@ -44,7 +44,7 @@ void cashier_scan_items(Session *session, StockList *stock)
             }
         }
 
-    } while (user_yes_no("Voulez-vous continuer a ajouter des articles au panier ?"));
+    } while (user_yes_no("Voulez-vous continuer a ajouter des articles au panier ?") == YES);
 
     printf("voici le contenu du panier : \n\n");
     basket_print_bill(basket);

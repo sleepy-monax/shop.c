@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 #include "utils/logger.h"
 #include "view/views.h"
@@ -32,70 +31,12 @@ void autocomplete_stock_list(const char *user_input, StockList *stocks)
     }
 }
 
-void authentication(ClientsList *clients)
-{
-    BareCode inserted_id;
-    char input_client_id[5], input_client_str[60];
-    Client *client = (Client *)malloc(sizeof(Client));
-
-    const char *choices[] = {
-        "S'authentifier",
-        "Créer un compte client Colruyt",
-        "Continuer sans compte",
-        NULL,
-    };
-
-    switch (user_select("Cher client, vous pouvez profiter des points extra grace au compte client Colruyt", choices))
-    {
-    case 0:
-        do
-        {
-            user_input("Inserez votre ID client ", "####", input_client_id);
-            inserted_id = atoi(input_client_id);
-            client = client_lookup(clients, inserted_id);
-            if (client == NULL)
-            {
-                printf("Erreur, Ce compte n'existe pas");
-                if (!(user_yes_no("Erreur, identifiant incorrect, voulez-vous reessayer ? ")))
-                {
-                    authentication(clients);
-                    break;
-                }
-            }
-        } while (client == NULL);
-        printf("Bonjour, %s %s !\n", client->firstname, client->lastname);
-
-        break;
-
-    case 1:
-        do
-        {
-            user_input("Inserez votre nom ", "......................", input_client_str);
-            strcpy(client->lastname, input_client_str);
-            user_input("Inserez votre prenom ", "......................", input_client_str);
-            strcpy(client->firstname, input_client_str);
-            user_input("Inserez votre email ", "......................", input_client_str);
-            strcpy(client->email, input_client_str);
-
-            printf("Vos informations :\n%s %s\n%s\n\n", client->firstname, client->lastname, client->email);
-
-        } while (!(user_yes_no("Confirmer ?")));
-
-        srand(time(NULL));
-        client->id = rand() % 9999;
-        client->points = 0;
-
-        // TODO : add the client to the dat file
-        break;
-
-    case 2:
-        log_info("");
-    }
-}
-
 void cashier_select_what_todo(Session *session, StockList *stocks, ClientsList *clients)
 {
-    (void)clients;
+    if (session->client == NULL)
+    {
+        cashier_input_card_id(session, clients);
+    }
 
     const char *choices[] = {
         "Effectuer un achat",
@@ -108,13 +49,13 @@ void cashier_select_what_todo(Session *session, StockList *stocks, ClientsList *
     {
     case 0:
         log_info("Vous avez choisi d'effectuer un achat");
-        authentication(clients);
+
         cashier_scan_items(session, stocks);
         break;
 
     case 1:
         log_info("Vous avez choisi de rendre des bouteilles consignées");
-        cashier_return_consigned_bottles(stocks);
+        cashier_return_consigned_bottles(session, stocks);
         break;
 
     case 2:
