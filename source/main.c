@@ -14,10 +14,7 @@ int main(int argc, char const *argv[])
 
     home_select_what_todo(stocks, clients);
 
-    printf("Fin du programme ...\n");
-
     stocks_destroy(stocks);
-
     clients_destroy(clients);
 
     return 0;

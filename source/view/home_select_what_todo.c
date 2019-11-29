@@ -30,7 +30,6 @@ void home_select_what_todo(StockList *stocks, ClientsList *clients)
                 }
             }
         } while (strcmp(input_manager, "Nicolas") != 0);
-        // manager_select_what_todo(StockList *stock, ClientsList *clients);
         break;
 
     case 1:
@@ -39,6 +38,8 @@ void home_select_what_todo(StockList *stocks, ClientsList *clients)
 
         log_info("Bonjour et bienvenue chez Colruyt");
         cashier_select_what_todo(session, stocks, clients);
+
+        session_destroy(session);
         break;
     }
     case 2:

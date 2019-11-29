@@ -23,10 +23,9 @@ void autocomplete_stock_list(const char *user_input, StockList *stocks)
             printf("%04d %s %5.2f€ ", itemInStocks->id, itemInStocks->label, itemInStocks->price);
             if (itemInStocks->reduction != 0)
             {
-                printf("%3d %% \n", itemInStocks->reduction);
+                printf("%3d %%", itemInStocks->reduction);
             }
-            else
-                printf("\n");
+            printf("\n");
         }
     }
 }
@@ -45,23 +44,26 @@ void cashier_select_what_todo(Session *session, StockList *stocks, ClientsList *
         NULL,
     };
 
-    switch (user_select("Veuillez faire un choix", choices))
+    bool exited = false;
+
+    do
     {
-    case 0:
-        log_info("Vous avez choisi d'effectuer un achat");
+        switch (user_select("Veuillez faire un choix", choices))
+        {
+        case 0:
+            log_info("Vous avez choisi d'effectuer un achat");
+            cashier_scan_items(session, stocks);
+            break;
 
-        cashier_scan_items(session, stocks);
-        break;
+        case 1:
+            log_info("Vous avez choisi de rendre des bouteilles consignées");
+            cashier_return_consigned_bottles(session, stocks);
+            break;
 
-    case 1:
-        log_info("Vous avez choisi de rendre des bouteilles consignées");
-        cashier_return_consigned_bottles(session, stocks);
-        break;
-
-    case 2:
-        log_info("Bye bye :)");
-
-    default:
-        break;
-    };
+        case 2:
+            session_print_bill(session);
+            exited = true;
+            break;
+        };
+    } while (!exited);
 }
