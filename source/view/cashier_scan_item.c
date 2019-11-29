@@ -32,7 +32,7 @@ void cashier_scan_items(Session *session, StockList *stock)
 
             if (item_quantity <= 0)
             {
-                printf("Achat annuler!\n");
+                printf("Achat annule!\n");
             }
             else
             {

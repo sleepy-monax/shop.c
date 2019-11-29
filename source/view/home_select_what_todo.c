@@ -24,7 +24,10 @@ void home_select_what_todo(StockList *stocks, ClientsList *clients)
             if (strcmp(input_manager, "Nicolas") != 0)
             {
                 if (!(user_yes_no("Erreur, identifiant incorrect, voulez-vous reessayer ? ")))
+                {
+                    home_select_what_todo(stocks, clients);
                     break;
+                }
             }
         } while (strcmp(input_manager, "Nicolas") != 0);
         // manager_select_what_todo(StockList *stock, ClientsList *clients);
