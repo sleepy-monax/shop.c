@@ -25,6 +25,7 @@ static void login_client(Session *session, ClientsList *clients)
         {
             printf("Bonjour, %s %s !", session->client->firstname, session->client->lastname);
             sleep(2);
+
             return;
         }
         else
@@ -95,9 +96,7 @@ void cashier_input_card_id(Session *session, ClientsList *clients)
 
     case 1:
         if (user_yes_no("Acceptez-vous les condition d'utilisation?") == YES)
-        {
             new_client(session, clients);
-        }
         break;
 
     case 2:

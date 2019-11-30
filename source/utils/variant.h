@@ -1,5 +1,8 @@
 #pragma once
 
+#define VARIANT_STRING_SIZE 128
+#define VARIANT_SERIALIZED_SIZE 256
+
 typedef enum
 {
     VARIANT_INT,
@@ -16,11 +19,13 @@ typedef struct
         float as_float;
     };
 
-    char as_string[128];
+    char as_string[VARIANT_STRING_SIZE];
 } Variant;
 
 #define vint(__value) variant_create_from_int((__value))
+
 #define vfloat(__value) variant_create_from_float((__value))
+
 #define vstring(__value) variant_create_from_string((__value))
 
 Variant variant_create_from_int(int value);
@@ -28,3 +33,7 @@ Variant variant_create_from_int(int value);
 Variant variant_create_from_float(float value);
 
 Variant variant_create_from_string(const char *value);
+
+Variant variant_deserialize(const char *source);
+
+void variant_serialize(Variant value, char *destination);

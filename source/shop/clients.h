@@ -23,15 +23,9 @@ typedef struct
 
 typedef List ClientsList;
 
-ClientsList *clients_create(FILE *file);
-
 void clients_display(ClientsList *clients);
 
-void clients_sync(ClientsList *clients, FILE *file);
-
 Client *clients_lookup(ClientsList *clients, BareCode id);
-
-void clients_destroy(ClientsList *clients);
 
 int clients_generate_id(ClientsList *clients);
 

@@ -1,7 +1,10 @@
 #include <string.h>
 #include <stdio.h>
-#include <assert.h>
+
+#include "utils/assert.h"
+#include "utils/string.h"
 #include "utils/variant.h"
+#include "utils/logger.h"
 
 Variant variant_create_from_int(int value)
 {
@@ -10,7 +13,7 @@ Variant variant_create_from_int(int value)
         .as_int = value,
     };
 
-    snprintf(v.as_string, 128, "%d", value);
+    snprintf(v.as_string, VARIANT_STRING_SIZE, "%d", value);
 
     return v;
 }
@@ -22,7 +25,7 @@ Variant variant_create_from_float(float value)
         .as_float = value,
     };
 
-    snprintf(v.as_string, 128, "%f", value);
+    snprintf(v.as_string, VARIANT_STRING_SIZE, "%f", value);
 
     return v;
 }
@@ -31,9 +34,90 @@ Variant variant_create_from_string(const char *value)
 {
     Variant v = (Variant){.type = VARIANT_STRING};
 
-    assert(strlen(value) < 128);
+    assert(strlen(value) < VARIANT_STRING_SIZE);
 
     strcpy(v.as_string, value);
 
     return v;
+}
+
+Variant variant_deserialize(const char *source)
+{
+    Variant value = vint(-69420);
+
+    if (source[0] == '"')
+    {
+        char buffer[VARIANT_STRING_SIZE] = {0};
+
+        bool escaped = true;
+
+        for (int i = 1; source[i]; i++)
+        {
+            char c = source[i];
+
+            if (c == '\\' && !escaped)
+            {
+                escaped = true;
+            }
+            else if (escaped || (c != '\\' && c != '"'))
+            {
+                strnapd(buffer, c, VARIANT_STRING_SIZE);
+
+                escaped = false;
+            }
+        }
+
+        value = vstring(buffer);
+    }
+    else if (str_is_int(source))
+    {
+        int v;
+        sscanf(source, "%d", &v);
+        value = vint(v);
+    }
+    else if (str_is_float(source))
+    {
+        float v;
+        sscanf(source, "%f", &v);
+        value = vfloat(v);
+    }
+
+    return value;
+}
+
+void variant_serialize(Variant value, char *destination)
+{
+    destination[0] = '\0';
+
+    switch (value.type)
+    {
+    case VARIANT_INT:
+        sprintf(destination, "%d", value.as_int);
+        break;
+
+    case VARIANT_FLOAT:
+        sprintf(destination, "%f", value.as_float);
+        break;
+
+    case VARIANT_STRING:
+        strnapd(destination, '"', VARIANT_SERIALIZED_SIZE);
+
+        for (int i = 0; value.as_string[i]; i++)
+        {
+            char c = value.as_string[i];
+
+            if (c == '"' || c == '\\')
+            {
+                strnapd(destination, '\\', VARIANT_SERIALIZED_SIZE);
+            }
+
+            strnapd(destination, c, VARIANT_SERIALIZED_SIZE);
+        }
+
+        strnapd(destination, '"', VARIANT_SERIALIZED_SIZE);
+        break;
+
+    default:
+        ASSERT_NOT_REACHED();
+    }
 }

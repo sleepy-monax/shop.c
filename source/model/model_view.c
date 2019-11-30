@@ -16,7 +16,7 @@ void model_view(Model model, void *data)
     {
         for (int column = 0; column < model.column_count(); column++)
         {
-            printf("%s ", model.data(data, row, column).as_string);
+            printf("%s  ", model.get_data(data, row, column).as_string);
         }
 
         printf("\n");

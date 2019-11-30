@@ -5,54 +5,6 @@
 
 #include "shop/clients.h"
 
-ClientsList *clients_create(FILE *file)
-{
-    assert(file != NULL);
-
-    ClientsList *this = list_create();
-
-    char title[64];
-
-    fscanf(file, "%s", title);
-    // Scanning the file until EOF
-    while (!feof(file))
-    {
-        assert(strcmp(title, "CLIENT") == 0);
-        Client *client = (Client *)malloc(sizeof(Client));
-        *client = (Client){};
-
-        // Scanning each client
-        fscanf(file, "%4d", &client->id);
-        fscanf(file, "%s", title);
-
-        while (strcmp(title, "CLIENT") != 0 && !feof(file))
-        {
-            if (strcmp(title, "NOM") == 0)
-            {
-                fscanf(file, "%s", client->lastname);
-            }
-            else if (strcmp(title, "PRENOM") == 0)
-            {
-                fscanf(file, "%s", client->firstname);
-            }
-            else if (strcmp(title, "PT_FIDELITE") == 0)
-            {
-                fscanf(file, "%d", &client->points);
-            }
-            else if (strcmp(title, "EMAIL") == 0)
-            {
-                fscanf(file, "%s", client->email);
-            }
-
-            fscanf(file, "%s", title);
-        }
-
-        list_pushback(this, client);
-    }
-
-    return this;
-}
-
 int clients_generate_id(ClientsList *clients)
 {
     int id;
@@ -62,6 +14,8 @@ int clients_generate_id(ClientsList *clients)
     do
     {
         id = rand() % 9999;
+        if (list_count(clients) == 0)
+            return id;
     } while (!clients_lookup(clients, id));
 
     return id;
@@ -74,12 +28,6 @@ void clients_display(ClientsList *clients)
         Client *client = (Client *)item->value;
         printf("%04d %s %s\n", client->id, client->firstname, client->lastname);
     }
-}
-
-void clients_sync(ClientsList *clients, FILE *file)
-{
-    (void)clients;
-    (void)file;
 }
 
 Client *clients_lookup(ClientsList *clients, BareCode id)
@@ -95,9 +43,4 @@ Client *clients_lookup(ClientsList *clients, BareCode id)
     }
 
     return NULL;
-}
-
-void clients_destroy(ClientsList *clients)
-{
-    list_destroy(clients);
 }

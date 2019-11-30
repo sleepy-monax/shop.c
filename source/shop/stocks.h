@@ -39,14 +39,12 @@ typedef struct
 
 typedef List StockList;
 
-StockList *stocks_create(FILE *file);
-
 void stocks_display(StockList *stocks);
 
 void stocks_display_consigned(StockList *stocks);
 
-void stocks_destroy(StockList *this);
-
 Item *stocks_lookup_item(StockList *stocks, BareCode barecode);
 
 Model stocks_model_create(void);
+
+int stocks_generate_id(StockList *stocks);
