@@ -38,9 +38,16 @@ void model_draw_title(const char *title, int width)
 void model_view_draw_header(ModelViewState state, Model model, int column)
 {
     int column_width = state.width / model.column_count();
-    int written = printf("%s ", model.column_name(column));
+    int padding = column_width - strlen(model.column_name(column));
 
-    for (; written < column_width; written++)
+    for (int i = 0; i < padding / 2; i++)
+    {
+        printf(" ");
+    }
+
+    printf("%s", model.column_name(column));
+
+    for (int i = (padding / 2) + strlen(model.column_name(column)); i < column_width; i++)
     {
         printf(" ");
     }
@@ -68,17 +75,31 @@ void model_view_draw_cell(ModelViewState state, Model model, void *data, int row
 
     if ((int)strlen(value.as_string) >= column_width)
     {
-        value.as_string[max(0, column_width - 4)] = '\0';
-        printf("%s", value.as_string);
-        printf("... ");
+        value.as_string[max(0, column_width - 3)] = '\0';
+        printf(" %s", value.as_string);
+        printf("… ");
     }
     else
     {
-        int written = printf("%s ", value.as_string);
+        int padding = column_width - strlen(value.as_string) - 1;
 
-        for (; written < column_width; written++)
+        if (value.type == VARIANT_STRING)
         {
-            printf(" ");
+            printf(" %s", value.as_string);
+
+            for (int i = 0; i < padding; i++)
+            {
+                printf(" ");
+            }
+        }
+        else
+        {
+            for (int i = 0; i < padding; i++)
+            {
+                printf(" ");
+            }
+
+            printf("%s ", value.as_string);
         }
     }
 
@@ -99,6 +120,11 @@ void model_view_display(const char *title, ModelViewState state, Model model, vo
         model_view_draw_header(state, model, i);
     }
 
+    for (int i = 0; i < state.width % model.column_count(); i++)
+    {
+        printf(" ");
+    }
+
     printf("\n");
 
     for (int i = 0; i < state.width; i++)
@@ -115,10 +141,30 @@ void model_view_display(const char *title, ModelViewState state, Model model, vo
             model_view_draw_cell(state, model, data, row, column);
         }
 
+        for (int i = 0; i < state.width % model.column_count(); i++)
+        {
+            printf(" ");
+        }
+
         printf("\n");
     }
 
     terminal_clear();
+}
+
+void model_view_edit(ModelViewState state, Model model, void *data, int row)
+{
+    terminal_set_cursor_position(0, 0);
+    terminal_clear();
+
+    model_draw_title("Editer une valeur", state.width);
+
+    for (int i = 0; i < model.column_count(); i++)
+    {
+        printf("\e[1m%16s\e[0m: %s\n", model.column_name(i), model.get_data(data, row, i).as_string);
+    }
+
+    termianl_read_key();
 }
 
 void model_view(const char *title, Model model, void *data)
@@ -149,6 +195,9 @@ void model_view(const char *title, Model model, void *data)
 
         if (key == 'K')
             state.slected = max(0, state.slected - 10);
+
+        if (key == 'e')
+            model_view_edit(state, model, data, state.slected);
 
     } while (!state.exited);
 

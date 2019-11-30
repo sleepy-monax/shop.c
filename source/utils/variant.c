@@ -25,7 +25,7 @@ Variant variant_create_from_float(float value)
         .as_float = value,
     };
 
-    snprintf(v.as_string, VARIANT_STRING_SIZE, "%f", value);
+    snprintf(v.as_string, VARIANT_STRING_SIZE, "%.2f", value);
 
     return v;
 }

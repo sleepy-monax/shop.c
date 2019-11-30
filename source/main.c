@@ -21,8 +21,6 @@ int main(int argc, char const *argv[])
     model_load(stocks_model_create(), stocks, stocks_file);
     model_load(clients_model_create(), clients, clients_file);
 
-    model_view("Gestion des stocks", stocks_model_create(), stocks);
-
     home_select_what_todo(stocks, clients);
 
     model_save(stocks_model_create(), stocks, stocks_save_file);
