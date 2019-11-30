@@ -12,7 +12,7 @@ typedef enum
     COL_ITEM_LABEL,
     COL_ITEM_PRICE,
     COL_ITEM_CONSIGNED,
-    COL_ITEM_REDUCTION,
+    COL_ITEM_DISCOUNT,
     COL_ITEM_CATEGORY,
 
     __COL_ITEM_COUNT,
@@ -62,8 +62,8 @@ const char *stocks_ModelColumnName(int index)
     case COL_ITEM_CONSIGNED:
         return "CONSIGNED";
 
-    case COL_ITEM_REDUCTION:
-        return "REDUCTION";
+    case COL_ITEM_DISCOUNT:
+        return "DISCOUNT";
 
     case COL_ITEM_CATEGORY:
         return "CATEGORY";
@@ -88,7 +88,7 @@ VarianType stocks_ModelColumnType(int index)
     case COL_ITEM_CONSIGNED:
         return VARIANT_FLOAT;
 
-    case COL_ITEM_REDUCTION:
+    case COL_ITEM_DISCOUNT:
         return VARIANT_INT;
 
     case COL_ITEM_CATEGORY:
@@ -118,8 +118,8 @@ Variant stocks_ModelGetData(StockList *stock, int row, int column)
     case COL_ITEM_CONSIGNED:
         return vfloat(item->consignedValue);
 
-    case COL_ITEM_REDUCTION:
-        return vint(item->reduction);
+    case COL_ITEM_DISCOUNT:
+        return vint(item->discount);
 
     case COL_ITEM_CATEGORY:
         return vint(item->category);
@@ -152,8 +152,8 @@ void stocks_ModelSetData(StockList *stock, int row, int column, Variant value)
         item->consignedValue = value.as_float;
         break;
 
-    case COL_ITEM_REDUCTION:
-        item->reduction = value.as_int;
+    case COL_ITEM_DISCOUNT:
+        item->discount = value.as_int;
         break;
 
     case COL_ITEM_CATEGORY:

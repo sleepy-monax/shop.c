@@ -18,9 +18,9 @@ void stocks_display(StockList *stocks)
 
         printf(" %04d %s %s %5.2f€", itemInStocks->id, itemInStocks->label, item_category_string[itemInStocks->category], itemInStocks->price);
 
-        if (itemInStocks->reduction != 0)
+        if (itemInStocks->discount != 0)
         {
-            printf(" \e[103;30m-%d%%\e[0m", itemInStocks->reduction);
+            printf(" \e[103;30m-%d%%\e[0m", itemInStocks->discount);
         }
 
         printf("\n");

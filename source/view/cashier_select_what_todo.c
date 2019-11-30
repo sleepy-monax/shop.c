@@ -21,9 +21,9 @@ void autocomplete_stock_list(const char *user_input, StockList *stocks)
         if (str_start_with(user_input, item_id_string))
         {
             printf("%04d %s %5.2f€ ", itemInStocks->id, itemInStocks->label, itemInStocks->price);
-            if (itemInStocks->reduction != 0)
+            if (itemInStocks->discount != 0)
             {
-                printf("%3d %%", itemInStocks->reduction);
+                printf("%3d %%", itemInStocks->discount);
             }
             printf("\n");
         }

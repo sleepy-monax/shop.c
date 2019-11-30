@@ -50,7 +50,7 @@ void cashier_scan_items(Session *session, StockList *stock)
                 basket_add_item(basket, item, item_quantity);
 
                 totValue = item->price;
-                totValue -= item->price * item->reduction;
+                totValue -= item->price * item->discount;
                 totValue *= item_quantity;
 
                 if (session->client != NULL)

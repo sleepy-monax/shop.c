@@ -31,7 +31,7 @@ typedef struct
     char label[ITEM_LABEL_SIZE];
 
     float price;
-    int reduction; // in pourcent
+    int discount; // in pourcent
     ItemCategory category;
     bool isConsigned;
     float consignedValue;
