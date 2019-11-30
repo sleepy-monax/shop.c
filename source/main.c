@@ -1,6 +1,8 @@
 #include "utils/input.h"
 #include "view/views.h"
 
+#include "model/model_view.h"
+
 int main(int argc, char const *argv[])
 {
     (void)argc;
@@ -11,6 +13,8 @@ int main(int argc, char const *argv[])
 
     StockList *stocks = stocks_create(stocks_file);
     ClientsList *clients = clients_create(clients_file);
+
+    model_view(clients_model_create(), clients);
 
     home_select_what_todo(stocks, clients);
 

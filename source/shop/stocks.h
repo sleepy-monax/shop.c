@@ -5,6 +5,7 @@
 
 #include "shop/shop.h"
 #include "utils/list.h"
+#include "model/model.h"
 
 #define ITEM_CATEGORY_LIST(__ENTRY) \
     __ENTRY(UNDEFINED)              \
@@ -28,10 +29,12 @@ typedef struct
 {
     BareCode id;
     char label[ITEM_LABEL_SIZE];
-    float price, consignedValue;
+
+    float price;
     int reduction; // in pourcent
     ItemCategory category;
     bool isConsigned;
+    float consignedValue;
 } Item;
 
 typedef List StockList;
@@ -45,3 +48,5 @@ void stocks_display_consigned(StockList *stocks);
 void stocks_destroy(StockList *this);
 
 Item *stocks_lookup_item(StockList *stocks, BareCode barecode);
+
+Model stocks_model_create(void);

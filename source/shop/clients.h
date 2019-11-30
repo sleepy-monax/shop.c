@@ -4,6 +4,7 @@
 
 #include "utils/list.h"
 #include "shop/shop.h"
+#include "model/model.h"
 
 #define CLIENT_FIRST_NAME_SIZE 64
 #define CLIENT_LAST_NAME_SIZE 64
@@ -33,3 +34,5 @@ Client *clients_lookup(ClientsList *clients, BareCode id);
 void clients_destroy(ClientsList *clients);
 
 int clients_generate_id(ClientsList *clients);
+
+Model clients_model_create(void);

@@ -32,6 +32,7 @@ void basket_print_bill(Basket *this)
 
     printf("Qtt.  Label         Prix\n");
     printf("------------------------\n");
+    
     list_foreach(item, this)
     {
         BasketItem *b = (BasketItem *)item->value;
