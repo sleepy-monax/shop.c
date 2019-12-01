@@ -63,3 +63,13 @@ bool str_is_float(const char *str)
 
     return true;
 }
+
+size_t strlen_unicode(const char *s)
+{
+    size_t count = 0;
+    while (*s)
+    {
+        count += (*s++ & 0xC0) != 0x80;
+    }
+    return count;
+}
