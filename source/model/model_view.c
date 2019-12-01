@@ -186,6 +186,7 @@ void model_view_edit(ModelViewState state, Model model, void *data, int row)
 void model_view(const char *title, Model model, void *data)
 {
     ModelViewState state = {0};
+    state.sort_dirty = true;
 
     terminal_enable_alternative_screen_buffer();
     terminal_hide_cursor();
@@ -193,26 +194,31 @@ void model_view(const char *title, Model model, void *data)
 
     do
     {
-        for (int i = 0; i < model.row_count(data); i++)
+        if (state.sort_dirty)
         {
-            state.sorted[i] = i;
-        }
-
-        for (int i = 0; i < model.row_count(data) - 1; i++)
-        {
-            for (int j = i + 1; j < model.row_count(data); j++)
+            for (int i = 0; i < model.row_count(data); i++)
             {
-                int cmp = strcmp(model.get_data(data, state.sorted[i], state.sortby).as_string,
-                                 model.get_data(data, state.sorted[j], state.sortby).as_string);
+                state.sorted[i] = i;
+            }
 
-                if ((cmp > 0 && !state.sort_accending) || (cmp < 0 && state.sort_accending))
+            for (int i = 0; i < model.row_count(data) - 1; i++)
+            {
+                for (int j = i + 1; j < model.row_count(data); j++)
                 {
-                    int tmp = state.sorted[i];
+                    int cmp = strcmp(model.get_data(data, state.sorted[i], state.sortby).as_string,
+                                     model.get_data(data, state.sorted[j], state.sortby).as_string);
 
-                    state.sorted[i] = state.sorted[j];
-                    state.sorted[j] = tmp;
+                    if ((cmp > 0 && !state.sort_accending) || (cmp < 0 && state.sort_accending))
+                    {
+                        int tmp = state.sorted[i];
+
+                        state.sorted[i] = state.sorted[j];
+                        state.sorted[j] = tmp;
+                    }
                 }
             }
+
+            state.sort_dirty = false;
         }
 
         terminal_get_size(&state.width, &state.height);
@@ -236,13 +242,22 @@ void model_view(const char *title, Model model, void *data)
             state.slected -= 10;
 
         if (key == 'e')
+        {
             model_view_edit(state, model, data, state.sorted[state.slected]);
+            state.sort_dirty = true;
+        }
 
         if (key == 'i')
+        {
             model_view_edit(state, model, data, model.row_create(data));
+            state.sort_dirty = true;
+        }
 
         if (key == 'd')
+        {
             model.row_delete(data, state.sorted[state.slected]);
+            state.sort_dirty = true;
+        }
 
         if (key > '0' && key <= '9')
         {
@@ -260,6 +275,8 @@ void model_view(const char *title, Model model, void *data)
                     state.sort_accending = false;
                 }
             }
+
+            state.sort_dirty = true;
         }
 
         state.slected = min(model.row_count(data) - 1, max(0, state.slected));

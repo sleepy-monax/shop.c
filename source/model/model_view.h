@@ -15,6 +15,7 @@ typedef struct
 
     int sortby;
     bool sort_accending;
+    bool sort_dirty;
 
     // FIXME: il y a peux etre moyen de faire mieux ^^
     int sorted[10000];
