@@ -18,3 +18,5 @@ bool str_is_int(const char *str);
 bool str_is_float(const char *str);
 
 size_t strlen_unicode(const char *s);
+
+unsigned long strhash(unsigned char *str);
