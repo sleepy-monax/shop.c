@@ -100,6 +100,12 @@ void model_view_draw_cell(ModelViewState state, Model model, void *data, int row
     }
 }
 
+void model_view_draw_status_bar(ModelViewState state, Model model, void *data)
+{
+    terminal_set_cursor_position(0, state.height);
+    printf("\e[30;47m 👤 Manager | %d éléments | ligne %d \e[0m", model.row_count(data), state.slected + 1);
+}
+
 void model_view_display(const char *title, ModelViewState state, Model model, void *data)
 {
     (void)state;
@@ -157,6 +163,9 @@ void model_view_display(const char *title, ModelViewState state, Model model, vo
     }
 
     terminal_clear();
+    model_view_draw_status_bar(state, model, data);
+
+    fflush(stdout);
 }
 
 void model_view_edit(ModelViewState state, Model model, void *data, int row)

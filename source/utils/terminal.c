@@ -57,7 +57,7 @@ void terminal_exit_rawmode(void)
 
 void terminal_set_cursor_position(int x, int y)
 {
-    printf("\e[%d;%dH", x + 1, y + 1);
+    printf("\e[%d;%dH", y + 1, x + 1);
     fflush(stdout);
 }
 
