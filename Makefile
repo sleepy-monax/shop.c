@@ -22,7 +22,7 @@ $(PROJECT).out: $(OBJECTS)
 all: $(PROJECT).out
 
 clean:
-	rm -f $(OBJECTS) $(SOURCES:.c=.d) $(PROJECT).out
+	rm -f $(OBJECTS) $(SOURCES:.c=.d) $(PROJECT).out $(wildcard data/*.saved)
 
 test: $(PROJECT).out
 	./$(PROJECT).out
