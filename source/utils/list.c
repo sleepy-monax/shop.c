@@ -114,7 +114,7 @@ bool list_peekback(List *this, void **value)
 
 bool list_peekat(List *this, int index, void **value)
 {
-    if (index < this->count)
+    if (this->count >= 1 && index >= 0 && index < this->count)
     {
         ListItem *current = this->head;
 

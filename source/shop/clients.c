@@ -16,7 +16,7 @@ int clients_generate_id(ClientsList *clients)
         id = rand() % 9999;
         if (list_count(clients) == 0)
             return id;
-    } while (!clients_lookup(clients, id));
+    } while (clients_lookup(clients, id));
 
     return id;
 }

@@ -50,11 +50,11 @@ void home_select_what_todo(StockList *stocks, ClientsList *clients)
             break;
         }
         case 2:
-            model_view("Liste des produits", stocks_model_create(), stocks);
+            model_view("🧺 Liste des produits", stocks_model_create(), stocks);
             break;
 
         case 3:
-            model_view("Liste des clients", clients_model_create(), clients);
+            model_view("👥 Liste des clients", clients_model_create(), clients);
             break;
 
         case 4:

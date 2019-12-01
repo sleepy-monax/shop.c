@@ -75,7 +75,7 @@ int stocks_generate_id(StockList *stocks)
         id = rand() % 9999;
         if (list_count(stocks) == 0)
             return id;
-    } while (!stocks_lookup_item(stocks, id));
+    } while (stocks_lookup_item(stocks, id));
 
     return id;
 }
