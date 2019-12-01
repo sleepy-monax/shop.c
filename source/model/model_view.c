@@ -121,6 +121,29 @@ void model_view_draw_status_bar(ModelViewState state, Model model, void *data, c
     printf("\e[0m");
 }
 
+void model_view_scrollbar(ModelViewState state, Model model, void *data)
+{
+    float viewport_height = state.height - 5;
+    float content_height = model.row_count(data);
+
+    float viewable_ratio = viewport_height / content_height;
+    float scroll_bar_area = viewport_height;
+    float thump_pos = (state.scroll / (float)model.row_count(data)) * viewport_height;
+    float thumb_height = scroll_bar_area * viewable_ratio;
+
+    for (int i = 4; i < state.height - 1; i++)
+    {
+        terminal_set_cursor_position(state.width - 1, i);
+        printf(" ");
+    }
+
+    for (int i = 0; i < thumb_height; i++)
+    {
+        terminal_set_cursor_position(state.width - 1, thump_pos + 4 + i);
+        printf("▐");
+    }
+}
+
 void model_view_display(const char *title, ModelViewState state, Model model, void *data)
 {
     (void)state;
@@ -178,6 +201,7 @@ void model_view_display(const char *title, ModelViewState state, Model model, vo
     }
 
     terminal_clear();
+    model_view_scrollbar(state, model, data);
     model_view_draw_status_bar(state, model, data, NULL);
 
     fflush(stdout);
