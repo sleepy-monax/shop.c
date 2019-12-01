@@ -41,6 +41,22 @@ Variant variant_create_from_string(const char *value)
     return v;
 }
 
+int variant_cmp(Variant left, Variant right)
+{
+    if (left.type == VARIANT_INT && right.type == VARIANT_INT)
+    {
+        return left.as_int - right.as_int;
+    }
+    else if (left.type == VARIANT_FLOAT && right.type == VARIANT_FLOAT)
+    {
+        return left.as_float - right.as_float;
+    }
+    else
+    {
+        return strcmp(left.as_string, right.as_string);
+    }
+}
+
 Variant variant_deserialize(const char *source)
 {
     Variant value = vint(-69420);

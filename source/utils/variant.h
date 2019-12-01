@@ -34,6 +34,8 @@ Variant variant_create_from_float(float value);
 
 Variant variant_create_from_string(const char *value);
 
+int variant_cmp(Variant left, Variant right);
+
 Variant variant_deserialize(const char *source);
 
 void variant_serialize(Variant value, char *destination);

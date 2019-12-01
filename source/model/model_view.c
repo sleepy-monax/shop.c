@@ -9,6 +9,8 @@
 
 void model_draw_title(const char *title, int width)
 {
+    terminal_set_cursor_position(0, 0);
+
     int len = strlen_unicode(title);
     int padding = (width - len) / 2;
 
@@ -100,10 +102,23 @@ void model_view_draw_cell(ModelViewState state, Model model, void *data, int row
     }
 }
 
-void model_view_draw_status_bar(ModelViewState state, Model model, void *data)
+void model_view_draw_status_bar(ModelViewState state, Model model, void *data, const char *msg)
 {
-    terminal_set_cursor_position(0, state.height);
-    printf("\e[30;47m 👤 Manager | %d éléments | ligne %d \e[0m", model.row_count(data), state.slected + 1);
+    terminal_set_cursor_position(0, state.height - 1);
+    terminal_clear();
+
+    printf("\e[30;44m 👤 Manager \e[0m");
+
+    if (msg)
+    {
+        printf(" %s ", msg);
+    }
+    else
+    {
+        printf(" 💡 Appuyer sur 'h' pour afficher l'aide - %d éléments - ligne %d ", model.row_count(data), state.slected + 1);
+    }
+
+    printf("\e[0m");
 }
 
 void model_view_display(const char *title, ModelViewState state, Model model, void *data)
@@ -163,7 +178,7 @@ void model_view_display(const char *title, ModelViewState state, Model model, vo
     }
 
     terminal_clear();
-    model_view_draw_status_bar(state, model, data);
+    model_view_draw_status_bar(state, model, data, NULL);
 
     fflush(stdout);
 }
@@ -183,6 +198,18 @@ void model_view_edit(ModelViewState state, Model model, void *data, int row)
     termianl_read_key();
 }
 
+void reverse_array(int a[], int n)
+{
+    int c, t;
+
+    for (c = 0; c < n / 2; c++)
+    {
+        t = a[c]; // Swapping
+        a[c] = a[n - c - 1];
+        a[n - c - 1] = t;
+    }
+}
+
 void model_view(const char *title, Model model, void *data)
 {
     ModelViewState state = {0};
@@ -194,8 +221,15 @@ void model_view(const char *title, Model model, void *data)
 
     do
     {
+        terminal_get_size(&state.width, &state.height);
+
         if (state.sort_dirty)
         {
+            model_draw_title(title, state.width);
+            model_view_draw_status_bar(state, model, data, "Triage...");
+
+            fflush(stdout);
+
             for (int i = 0; i < model.row_count(data); i++)
             {
                 state.sorted[i] = i;
@@ -205,8 +239,8 @@ void model_view(const char *title, Model model, void *data)
             {
                 for (int j = i + 1; j < model.row_count(data); j++)
                 {
-                    int cmp = strcmp(model.get_data(data, state.sorted[i], state.sortby).as_string,
-                                     model.get_data(data, state.sorted[j], state.sortby).as_string);
+                    int cmp = variant_cmp(model.get_data(data, state.sorted[i], state.sortby),
+                                          model.get_data(data, state.sorted[j], state.sortby));
 
                     if ((cmp > 0 && !state.sort_accending) || (cmp < 0 && state.sort_accending))
                     {
@@ -221,7 +255,6 @@ void model_view(const char *title, Model model, void *data)
             state.sort_dirty = false;
         }
 
-        terminal_get_size(&state.width, &state.height);
         model_view_display(title, state, model, data);
 
         int key = termianl_read_key();
@@ -268,15 +301,16 @@ void model_view(const char *title, Model model, void *data)
                 if (state.sortby == new_sort_by)
                 {
                     state.sort_accending = !state.sort_accending;
+                    reverse_array(state.sorted, model.row_count(data));
                 }
                 else
                 {
                     state.sortby = new_sort_by;
                     state.sort_accending = false;
+
+                    state.sort_dirty = true;
                 }
             }
-
-            state.sort_dirty = true;
         }
 
         state.slected = min(model.row_count(data) - 1, max(0, state.slected));
