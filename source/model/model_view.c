@@ -21,11 +21,6 @@ void model_draw_title(const char *title, int width)
 
     printf("%s", title);
 
-    for (int i = 0; i < padding; i++)
-    {
-        printf(" ");
-    }
-
     printf("\n");
 
     for (int i = 0; i < width; i++)
@@ -49,13 +44,13 @@ void model_view_draw_header(ModelViewState state, Model model, int column)
     if (state.sortby == column)
     {
         if (state.sort_accending)
-{
+        {
             printf("\e[1m⌃ %s\e[0m", model.column_name(column));
-    }
+        }
         else
-    {
+        {
             printf("\e[1m⌄ %s\e[0m", model.column_name(column));
-    }
+        }
     }
     else
     {
@@ -133,6 +128,7 @@ void model_view_display(const char *title, ModelViewState state, Model model, vo
 
     printf("\n");
 
+    for (int row = state.scroll; row < min(state.scroll + state.height - 5, model.row_count(data)); row++)
     {
         if (row == state.slected)
         {
@@ -143,7 +139,7 @@ void model_view_display(const char *title, ModelViewState state, Model model, vo
             printf("\e[1m");
         }
         else
-    {
+        {
             printf("\e[0m");
         }
 
@@ -184,11 +180,10 @@ void model_view(const char *title, Model model, void *data)
 
     terminal_enable_alternative_screen_buffer();
     terminal_hide_cursor();
+    terminal_enter_rawmode();
 
     do
     {
-        int old_selected = state.sorted[state.slected];
-
         for (int i = 0; i < model.row_count(data); i++)
         {
             state.sorted[i] = i;
@@ -208,14 +203,6 @@ void model_view(const char *title, Model model, void *data)
                     state.sorted[i] = state.sorted[j];
                     state.sorted[j] = tmp;
                 }
-            }
-        }
-
-        for (int i = 0; i < model.row_count(data); i++)
-        {
-            if (state.sorted[i] == old_selected)
-            {
-                state.slected = i;
             }
         }
 
@@ -267,8 +254,23 @@ void model_view(const char *title, Model model, void *data)
         }
 
         state.slected = min(model.row_count(data) - 1, max(0, state.slected));
+
+        if (state.slected < state.scroll)
+        {
+            state.scroll = state.slected;
+        }
+
+        if (state.slected >= state.scroll + (state.height - 5))
+        {
+            state.scroll = state.slected - (state.height - 5) + 1;
+        }
+
+        state.scroll = max(0, min(state.scroll, model.row_count(data) - 1));
+
+        //state.scroll = max(state.slected, min(state.scroll, model.row_count(data) - 1 - state.height - 5));
     } while (!state.exited);
 
+    terminal_exit_rawmode();
     terminal_show_cursor();
     terminal_disable_alternative_screen_buffer();
 }
