@@ -43,24 +43,47 @@ int clients_ModelColumnCount(void)
     return __COL_CLIENTS_COUNT;
 }
 
-const char *clients_ModelColumnName(int index)
+const char *clients_ModelColumnName(int index, ModelRole role)
 {
-    switch (index)
+    if (role == ROLE_DATA)
     {
-    case COL_CLIENTS_BARECODE:
-        return "BARECODE";
+        switch (index)
+        {
+        case COL_CLIENTS_BARECODE:
+            return "BARECODE";
 
-    case COL_CLIENTS_FIRSTNAME:
-        return "FIRSTNAME";
+        case COL_CLIENTS_FIRSTNAME:
+            return "FIRSTNAME";
 
-    case COL_CLIENTS_LASTNAME:
-        return "LASTNAME";
+        case COL_CLIENTS_LASTNAME:
+            return "LASTNAME";
 
-    case COL_CLIENTS_EMAIL:
-        return "EMAIL";
+        case COL_CLIENTS_EMAIL:
+            return "EMAIL";
 
-    case COL_CLIENTS_POINTS:
-        return "POINTS";
+        case COL_CLIENTS_POINTS:
+            return "POINTS";
+        }
+    }
+    else
+    {
+        switch (index)
+        {
+        case COL_CLIENTS_BARECODE:
+            return "Code";
+
+        case COL_CLIENTS_FIRSTNAME:
+            return "Prénom";
+
+        case COL_CLIENTS_LASTNAME:
+            return "Nom";
+
+        case COL_CLIENTS_EMAIL:
+            return "E-mail";
+
+        case COL_CLIENTS_POINTS:
+            return "Points";
+        }
     }
 
     ASSERT_NOT_REACHED();
@@ -89,8 +112,10 @@ VarianType clients_ModelColumnType(int index)
     ASSERT_NOT_REACHED();
 }
 
-Variant clients_ModelGetData(ClientsList *clients, int row, int column)
+Variant clients_ModelGetData(ClientsList *clients, int row, int column, ModelRole role)
 {
+    (void)role;
+
     Client *client;
     list_peekat(clients, row, (void **)&client);
 
@@ -147,6 +172,13 @@ void clients_ModelSetData(ClientsList *clients, int row, int column, Variant val
     }
 }
 
+ModelAction clients_actions[] = {DEFAULT_MODEL_VIEW_ACTION END_MODEL_VIEW_ACTION};
+
+ModelAction *clients_ModelGetActions(void)
+{
+    return clients_actions;
+}
+
 Model clients_model_create(void)
 {
     return (Model){
@@ -160,5 +192,7 @@ Model clients_model_create(void)
 
         (ModelGetData)clients_ModelGetData,
         (ModelSetData)clients_ModelSetData,
+
+        (ModelGetActions)clients_ModelGetActions,
     };
 }

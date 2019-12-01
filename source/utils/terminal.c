@@ -78,6 +78,7 @@ void terminal_clear(void)
 
 int termianl_read_key(void)
 {
+    fflush(stdout);
     terminal_enter_rawmode();
 
     char c;

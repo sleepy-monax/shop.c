@@ -9,7 +9,7 @@ int model_get_column(Model model, const char *name)
 {
     for (int i = 0; i < model.column_count(); i++)
     {
-        if (strcmp(name, model.column_name(i)) == 0)
+        if (strcmp(name, model.column_name(i, ROLE_DATA)) == 0)
         {
             return i;
         }
@@ -85,7 +85,7 @@ void model_load(Model model, void *data, FILE *source)
             else
             {
                 log_error("Le type de la collone(%s) dans ne corespond pas avec le type collone du model! (%d!=%d)",
-                          model.column_name(column),
+                          model.column_name(column, ROLE_DATA),
                           value.type, model.column_type(column));
                 ASSERT_NOT_REACHED();
             }
@@ -111,9 +111,9 @@ void model_save(Model model, void *data, FILE *destination)
         {
             char serialied_value[VARIANT_SERIALIZED_SIZE];
 
-            variant_serialize(model.get_data(data, row, column), serialied_value);
+            variant_serialize(model.get_data(data, row, column, ROLE_DATA), serialied_value);
 
-            fprintf(destination, "%s %s\n", model.column_name(column), serialied_value);
+            fprintf(destination, "%s %s\n", model.column_name(column, ROLE_DATA), serialied_value);
         }
 
         fprintf(destination, "END\n\n");

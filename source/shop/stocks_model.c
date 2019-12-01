@@ -46,27 +46,53 @@ int stocks_ModelColumnCount(void)
     return __COL_ITEM_COUNT;
 }
 
-const char *stocks_ModelColumnName(int index)
+const char *stocks_ModelColumnName(int index, ModelRole role)
 {
-    switch (index)
+    if (role == ROLE_DATA)
     {
-    case COL_ITEM_BARECODE:
-        return "BARECODE";
+        switch (index)
+        {
+        case COL_ITEM_BARECODE:
+            return "BARECODE";
 
-    case COL_ITEM_LABEL:
-        return "LABEL";
+        case COL_ITEM_LABEL:
+            return "LABEL";
 
-    case COL_ITEM_PRICE:
-        return "PRICE";
+        case COL_ITEM_PRICE:
+            return "PRICE";
 
-    case COL_ITEM_CONSIGNED:
-        return "CONSIGNED";
+        case COL_ITEM_CONSIGNED:
+            return "CONSIGNED";
 
-    case COL_ITEM_DISCOUNT:
-        return "DISCOUNT";
+        case COL_ITEM_DISCOUNT:
+            return "DISCOUNT";
 
-    case COL_ITEM_CATEGORY:
-        return "CATEGORY";
+        case COL_ITEM_CATEGORY:
+            return "CATEGORY";
+        }
+    }
+    else
+    {
+        switch (index)
+        {
+        case COL_ITEM_BARECODE:
+            return "Code";
+
+        case COL_ITEM_LABEL:
+            return "Libellé";
+
+        case COL_ITEM_PRICE:
+            return "Prix";
+
+        case COL_ITEM_CONSIGNED:
+            return "Consigne";
+
+        case COL_ITEM_DISCOUNT:
+            return "Réduction";
+
+        case COL_ITEM_CATEGORY:
+            return "Section";
+        }
     }
 
     ASSERT_NOT_REACHED();
@@ -98,7 +124,10 @@ VarianType stocks_ModelColumnType(int index)
     ASSERT_NOT_REACHED();
 }
 
-Variant stocks_ModelGetData(StockList *stock, int row, int column)
+#define ITEM_STRING_ENTRY(__x) #__x,
+static const char *item_category_string[] = {ITEM_CATEGORY_LIST(ITEM_STRING_ENTRY) NULL};
+
+Variant stocks_ModelGetData(StockList *stock, int row, int column, ModelRole role)
 {
     Item *item;
     list_peekat(stock, row, (void **)&item);
@@ -113,16 +142,65 @@ Variant stocks_ModelGetData(StockList *stock, int row, int column)
         return vstring(item->label);
 
     case COL_ITEM_PRICE:
-        return vfloat(item->price);
+        if (role == ROLE_DATA)
+        {
+            return vfloat(item->price);
+        }
+        else
+        {
+
+            char buffer[16];
+            sprintf(buffer, "%5.2f€", item->price);
+            return vstring(buffer);
+        }
 
     case COL_ITEM_CONSIGNED:
-        return vfloat(item->consignedValue);
+        if (role == ROLE_DATA)
+        {
+            return vfloat(item->consignedValue);
+        }
+        else
+        {
+            if (item->consignedValue == 0)
+            {
+                return vstring("   -  ");
+            }
+            else
+            {
+                char buffer[16];
+                sprintf(buffer, "%5.2f€", item->consignedValue);
+                return vstring(buffer);
+            }
+        }
 
     case COL_ITEM_DISCOUNT:
-        return vint(item->discount);
+        if (role == ROLE_DATA)
+        {
+            return vint(item->discount);
+        }
+        else
+        {
+            if (item->discount != 0)
+            {
+                char buffer[16];
+                sprintf(buffer, "%3d%%", -item->discount);
+                return vstring(buffer);
+            }
+
+            return vstring("");
+        }
 
     case COL_ITEM_CATEGORY:
-        return vint(item->category);
+    {
+        if (role == ROLE_DATA)
+        {
+            return vint(item->category);
+        }
+        else
+        {
+            return vstring(item_category_string[item->category]);
+        }
+    }
     }
 
     ASSERT_NOT_REACHED();
@@ -165,6 +243,13 @@ void stocks_ModelSetData(StockList *stock, int row, int column, Variant value)
     }
 }
 
+ModelAction stocks_actions[] = {DEFAULT_MODEL_VIEW_ACTION END_MODEL_VIEW_ACTION};
+
+ModelAction *stocks_ModelGetActions(void)
+{
+    return stocks_actions;
+}
+
 Model stocks_model_create(void)
 {
     return (Model){
@@ -178,5 +263,6 @@ Model stocks_model_create(void)
 
         (ModelGetData)stocks_ModelGetData,
         (ModelSetData)stocks_ModelSetData,
+        (ModelGetActions)stocks_ModelGetActions,
     };
 }

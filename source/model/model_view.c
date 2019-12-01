@@ -7,7 +7,7 @@
 #include "utils/terminal.h"
 #include "utils/math.h"
 
-void model_draw_title(const char *title, int width)
+void model_view_draw_title(const char *title, int width)
 {
     terminal_set_cursor_position(0, 0);
 
@@ -36,7 +36,7 @@ void model_draw_title(const char *title, int width)
 void model_view_draw_header(ModelViewState state, Model model, int column)
 {
     int column_width = state.width / model.column_count();
-    int padding = column_width - strlen_unicode(model.column_name(column)) - 2;
+    int padding = column_width - strlen_unicode(model.column_name(column, ROLE_DISPLAY)) - 2;
 
     for (int i = 0; i < padding / 2; i++)
     {
@@ -47,19 +47,19 @@ void model_view_draw_header(ModelViewState state, Model model, int column)
     {
         if (state.sort_accending)
         {
-            printf("\e[1m⌃ %s\e[0m", model.column_name(column));
+            printf("\e[1m⌃ %s\e[0m", model.column_name(column, ROLE_DISPLAY));
         }
         else
         {
-            printf("\e[1m⌄ %s\e[0m", model.column_name(column));
+            printf("\e[1m⌄ %s\e[0m", model.column_name(column, ROLE_DISPLAY));
         }
     }
     else
     {
-        printf("  %s", model.column_name(column));
+        printf("  %s", model.column_name(column, ROLE_DISPLAY));
     }
 
-    for (int i = (padding / 2) + strlen_unicode(model.column_name(column)) + 2; i < column_width; i++)
+    for (int i = (padding / 2) + strlen_unicode(model.column_name(column, ROLE_DISPLAY)) + 2; i < column_width; i++)
     {
         printf(" ");
     }
@@ -69,7 +69,7 @@ void model_view_draw_cell(ModelViewState state, Model model, void *data, int row
 {
     int column_width = state.width / model.column_count();
 
-    Variant value = model.get_data(data, row, column);
+    Variant value = model.get_data(data, row, column, ROLE_DISPLAY);
 
     if ((int)strlen_unicode(value.as_string) >= column_width)
     {
@@ -127,7 +127,7 @@ void model_view_display(const char *title, ModelViewState state, Model model, vo
 
     terminal_set_cursor_position(0, 0);
 
-    model_draw_title(title, state.width);
+    model_view_draw_title(title, state.width);
 
     printf("\n");
     for (int i = 0; i < model.column_count(); i++)
@@ -188,11 +188,11 @@ void model_view_edit(ModelViewState state, Model model, void *data, int row)
     terminal_set_cursor_position(0, 0);
     terminal_clear();
 
-    model_draw_title("Editer une valeur", state.width);
+    model_view_draw_title("Éditer une valeur", state.width);
 
     for (int i = 0; i < model.column_count(); i++)
     {
-        printf("\e[1m%16s\e[0m: %s\n", model.column_name(i), model.get_data(data, row, i).as_string);
+        printf("\e[1m%16s\e[0m: %s\n", model.column_name(i, ROLE_DISPLAY), model.get_data(data, row, i, ROLE_DISPLAY).as_string);
     }
 
     termianl_read_key();
@@ -225,7 +225,7 @@ void model_view(const char *title, Model model, void *data)
 
         if (state.sort_dirty)
         {
-            model_draw_title(title, state.width);
+            model_view_draw_title(title, state.width);
             model_view_draw_status_bar(state, model, data, "Triage...");
 
             fflush(stdout);
@@ -239,8 +239,8 @@ void model_view(const char *title, Model model, void *data)
             {
                 for (int j = i + 1; j < model.row_count(data); j++)
                 {
-                    int cmp = variant_cmp(model.get_data(data, state.sorted[i], state.sortby),
-                                          model.get_data(data, state.sorted[j], state.sortby));
+                    int cmp = variant_cmp(model.get_data(data, state.sorted[i], state.sortby, ROLE_DATA),
+                                          model.get_data(data, state.sorted[j], state.sortby, ROLE_DATA));
 
                     if ((cmp > 0 && !state.sort_accending) || (cmp < 0 && state.sort_accending))
                     {
@@ -257,44 +257,21 @@ void model_view(const char *title, Model model, void *data)
 
         model_view_display(title, state, model, data);
 
-        int key = termianl_read_key();
+        int codepoint = termianl_read_key();
 
-        if (key == 'q')
-            state.exited = true;
-
-        if (key == 'j')
-            state.slected++;
-
-        if (key == 'k')
-            state.slected--;
-
-        if (key == 'J')
-            state.slected += 10;
-
-        if (key == 'K')
-            state.slected -= 10;
-
-        if (key == 'e')
+        for (int i = 0; model.get_actions()[i].key_codepoint != 0; i++)
         {
-            model_view_edit(state, model, data, state.sorted[state.slected]);
-            state.sort_dirty = true;
+            ModelAction action = model.get_actions()[i];
+
+            if (action.key_codepoint == codepoint)
+            {
+                action.callback(codepoint, &state, model, data, state.sorted[state.slected]);
+            }
         }
 
-        if (key == 'i')
+        if (codepoint > '0' && codepoint <= '9')
         {
-            model_view_edit(state, model, data, model.row_create(data));
-            state.sort_dirty = true;
-        }
-
-        if (key == 'd')
-        {
-            model.row_delete(data, state.sorted[state.slected]);
-            state.sort_dirty = true;
-        }
-
-        if (key > '0' && key <= '9')
-        {
-            int new_sort_by = key - '0' - 1;
+            int new_sort_by = codepoint - '0' - 1;
 
             if (new_sort_by < model.column_count())
             {
@@ -327,7 +304,6 @@ void model_view(const char *title, Model model, void *data)
 
         state.scroll = max(0, min(state.scroll, model.row_count(data) - 1));
 
-        //state.scroll = max(state.slected, min(state.scroll, model.row_count(data) - 1 - state.height - 5));
     } while (!state.exited);
 
     terminal_exit_rawmode();

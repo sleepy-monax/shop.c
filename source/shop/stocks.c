@@ -7,7 +7,7 @@
 #include "shop/stocks.h"
 
 #define ITEM_STRING_ENTRY(__x) #__x,
-const char *item_category_string[] = {ITEM_CATEGORY_LIST(ITEM_STRING_ENTRY) NULL};
+static const char *item_category_string[] = {ITEM_CATEGORY_LIST(ITEM_STRING_ENTRY) NULL};
 
 void stocks_display(StockList *stocks)
 {
