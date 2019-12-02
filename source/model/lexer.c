@@ -149,6 +149,7 @@ bool lexer_read_keyword_or_key(Lexer *lex, Token *tok)
 bool lexer_read_eof(Lexer *lex, Token *tok)
 {
     int c = lexer_peek_char(lex);
+
     if (c == EOF)
     {
         tok->type = TOKEN_EOF;
