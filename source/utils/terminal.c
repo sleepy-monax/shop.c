@@ -58,7 +58,6 @@ void terminal_exit_rawmode(void)
 void terminal_set_cursor_position(int x, int y)
 {
     printf("\e[%d;%dH", y + 1, x + 1);
-    fflush(stdout);
 }
 
 void terminal_get_size(int *width, int *height)
@@ -73,7 +72,6 @@ void terminal_get_size(int *width, int *height)
 void terminal_clear(void)
 {
     printf("\e[J");
-    fflush(stdout);
 }
 
 int termianl_read_key(void)
@@ -100,13 +98,11 @@ void terminal_restore_cursor(void)
 void terminal_enable_alternative_screen_buffer(void)
 {
     printf("\e[?1049h");
-    fflush(stdout);
 }
 
 void terminal_disable_alternative_screen_buffer(void)
 {
     printf("\e[?1049l");
-    fflush(stdout);
 }
 
 void terminal_hide_cursor(void)

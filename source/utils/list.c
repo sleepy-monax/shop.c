@@ -112,18 +112,42 @@ bool list_peekback(List *this, void **value)
     }
 }
 
+static void list_peekat_from_head(List *this, int index, void **value)
+{
+    ListItem *current = this->head;
+
+    for (int i = 0; i < index; i++)
+    {
+        current = current->next;
+    }
+
+    *value = current->value;
+}
+
+static void list_peekat_from_back(List *this, int index, void **value)
+{
+    ListItem *current = this->tail;
+
+    for (int i = 0; i < (this->count - index - 1); i++)
+    {
+        current = current->prev;
+    }
+
+    *value = current->value;
+}
+
 bool list_peekat(List *this, int index, void **value)
 {
     if (this->count >= 1 && index >= 0 && index < this->count)
     {
-        ListItem *current = this->head;
-
-        for (int i = 0; i < index; i++)
+        if (index < this->count / 2)
         {
-            current = current->next;
+            list_peekat_from_head(this, index, value);
         }
-
-        *value = current->value;
+        else
+        {
+            list_peekat_from_back(this, index, value);
+        }
 
         return true;
     }

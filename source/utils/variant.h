@@ -1,7 +1,7 @@
 #pragma once
 
-#define VARIANT_STRING_SIZE 128
-#define VARIANT_SERIALIZED_SIZE 256
+#define VARIANT_STRING_SIZE 64
+#define VARIANT_SERIALIZED_SIZE 128
 
 typedef enum
 {

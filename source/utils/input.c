@@ -35,15 +35,9 @@ InputValidState user_input_valid(const char *format, const char *input)
 
 bool user_yes_no(const char *prompt)
 {
-    terminal_enter_rawmode();
-
     printf("%s [Oui/Non]", prompt);
-    fflush(stdout);
 
-    char c;
-    assert(read(STDIN_FILENO, &c, 1) == 1);
-
-    terminal_exit_rawmode();
+    char c = termianl_read_key();
 
     if (c == 'Y' || c == 'O' || c == 'y' || c == 'o')
     {
@@ -61,7 +55,6 @@ bool user_yes_no(const char *prompt)
 
 int user_select(const char *prompt, const char *options[])
 {
-    terminal_enter_rawmode();
     terminal_enable_alternative_screen_buffer();
 
     char c;
@@ -88,7 +81,7 @@ int user_select(const char *prompt, const char *options[])
 
         printf("\n[K] up / [J] down / [ENTER] select\n");
 
-        assert(read(STDIN_FILENO, &c, 1) == 1);
+        c = termianl_read_key();
 
         if (c == 'k')
         {
@@ -107,7 +100,6 @@ int user_select(const char *prompt, const char *options[])
     }
 
     terminal_disable_alternative_screen_buffer();
-    terminal_exit_rawmode();
 
     return selected;
 }
@@ -127,9 +119,8 @@ void user_input(const char *prompt, const char *format, char *result)
     {
         printf("\e[s\e[37m%s\e[0m\e[u", format);
         printf("\e[s%s%s\e[0m\e[u", user_input_valid(format, result) ? "\e[32m" : "\e[31m", result);
-        fflush(stdout);
 
-        assert(read(STDIN_FILENO, &c, 1) == 1);
+        c = termianl_read_key();
 
         if (c == 127 && index > 0)
         {

@@ -203,8 +203,6 @@ void model_view_display(const char *title, ModelViewState state, Model model, vo
     terminal_clear();
     model_view_scrollbar(state, model, data);
     model_view_draw_status_bar(state, model, data, NULL);
-
-    fflush(stdout);
 }
 
 void model_view_edit(ModelViewState state, Model model, void *data, int row)
@@ -228,7 +226,7 @@ void reverse_array(int a[], int n)
 
     for (c = 0; c < n / 2; c++)
     {
-        t = a[c]; // Swapping
+        t = a[c];
         a[c] = a[n - c - 1];
         a[n - c - 1] = t;
     }
@@ -249,11 +247,6 @@ void model_view(const char *title, Model model, void *data)
 
         if (state.sort_dirty)
         {
-            model_view_draw_title(title, state.width);
-            model_view_draw_status_bar(state, model, data, "Triage...");
-
-            fflush(stdout);
-
             for (int i = 0; i < model.row_count(data); i++)
             {
                 state.sorted[i] = i;
@@ -261,17 +254,21 @@ void model_view(const char *title, Model model, void *data)
 
             for (int i = 0; i < model.row_count(data) - 1; i++)
             {
+                Variant idata = model.get_data(data, state.sorted[i], state.sortby, ROLE_DATA);
+
                 for (int j = i + 1; j < model.row_count(data); j++)
                 {
-                    int cmp = variant_cmp(model.get_data(data, state.sorted[i], state.sortby, ROLE_DATA),
-                                          model.get_data(data, state.sorted[j], state.sortby, ROLE_DATA));
+                    Variant jdata = model.get_data(data, state.sorted[j], state.sortby, ROLE_DATA);
+
+                    int cmp = variant_cmp(idata, jdata);
 
                     if ((cmp > 0 && !state.sort_accending) || (cmp < 0 && state.sort_accending))
                     {
                         int tmp = state.sorted[i];
-
                         state.sorted[i] = state.sorted[j];
                         state.sorted[j] = tmp;
+
+                        idata = jdata;
                     }
                 }
             }
