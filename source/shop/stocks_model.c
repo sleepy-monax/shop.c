@@ -10,10 +10,10 @@ typedef enum
 {
     COL_ITEM_BARECODE,
     COL_ITEM_LABEL,
-    COL_ITEM_CATEGORY,
     COL_ITEM_PRICE,
-    COL_ITEM_DISCOUNT,
     COL_ITEM_CONSIGNED,
+    COL_ITEM_DISCOUNT,
+    COL_ITEM_CATEGORY,
 
     __COL_ITEM_COUNT,
 } StockModelColumn;
@@ -228,6 +228,8 @@ void stocks_ModelSetData(StockList *stock, int row, int column, Variant value)
 
     case COL_ITEM_CONSIGNED:
         item->consignedValue = value.as_float;
+        if (item->consignedValue > 0)
+            item->isConsigned = true;
         break;
 
     case COL_ITEM_DISCOUNT:

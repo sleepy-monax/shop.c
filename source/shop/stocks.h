@@ -11,6 +11,7 @@
     __ENTRY(UNDEFINED)              \
     __ENTRY(OTHER)                  \
     __ENTRY(ALCOHOL)                \
+    __ENTRY(DRINK)                  \
     __ENTRY(FRESH_PRODUCT)          \
     __ENTRY(COMPUTER)               \
     __ENTRY(ELECTRONIC)             \
