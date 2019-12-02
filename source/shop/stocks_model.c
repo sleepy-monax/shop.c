@@ -228,6 +228,8 @@ void stocks_ModelSetData(StockList *stock, int row, int column, Variant value)
 
     case COL_ITEM_CONSIGNED:
         item->consignedValue = value.as_float;
+        if (item->consignedValue > 0)
+            item->isConsigned = true;
         break;
 
     case COL_ITEM_DISCOUNT:
