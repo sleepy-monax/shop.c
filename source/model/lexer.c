@@ -3,6 +3,7 @@
 
 #include "utils/string.h"
 #include "utils/logger.h"
+#include "utils/assert.h"
 #include "model/lexer.h"
 
 static const char *type_name[] = {
@@ -24,35 +25,47 @@ const char *token_type_string_type(TokenType type)
     return type_name[type];
 }
 
-int lexer_peek_char(FILE *source)
+int lexer_peek_char(Lexer *lex)
 {
     int c;
 
-    c = fgetc(source);
-    ungetc(c, source);
+    c = fgetc(lex->source);
+    ungetc(c, lex->source);
 
     return c;
 }
 
-int lexer_next_char(FILE *source)
+int lexer_next_char(Lexer *lex)
 {
-    return fgetc(source);
+    int c = fgetc(lex->source);
+
+    if (c == '\n')
+    {
+        lex->ln++;
+        lex->col = 0;
+    }
+    else
+    {
+        lex->col++;
+    }
+
+    return c;
 }
 
-void lexer_eat_white_space(FILE *source)
+void lexer_eat_white_space(Lexer *lex)
 {
-    int c = lexer_peek_char(source);
+    int c = lexer_peek_char(lex);
 
     while (is_white_space(c))
     {
-        lexer_next_char(source);
-        c = lexer_peek_char(source);
+        lexer_next_char(lex);
+        c = lexer_peek_char(lex);
     }
 }
 
-bool lexer_read_string(FILE *source, Token *tok)
+bool lexer_read_string(Lexer *lex, Token *tok)
 {
-    int c = lexer_peek_char(source);
+    int c = lexer_peek_char(lex);
 
     if (c != '"')
     {
@@ -69,22 +82,22 @@ bool lexer_read_string(FILE *source, Token *tok)
         }
         else
         {
-            strnapd(tok->literal, lexer_next_char(source), VARIANT_SERIALIZED_SIZE);
+            strnapd(tok->literal, lexer_next_char(lex), VARIANT_SERIALIZED_SIZE);
             escaped = false;
         }
 
-        c = lexer_peek_char(source);
+        c = lexer_peek_char(lex);
     }
 
-    strnapd(tok->literal, lexer_next_char(source), VARIANT_SERIALIZED_SIZE);
+    strnapd(tok->literal, lexer_next_char(lex), VARIANT_SERIALIZED_SIZE);
     tok->type = TOKEN_VALUE;
 
     return true;
 }
 
-bool lexer_read_numeric(FILE *source, Token *tok)
+bool lexer_read_numeric(Lexer *lex, Token *tok)
 {
-    int c = lexer_peek_char(source);
+    int c = lexer_peek_char(lex);
 
     if (!is_numeric(c))
     {
@@ -93,8 +106,8 @@ bool lexer_read_numeric(FILE *source, Token *tok)
 
     while (is_numeric(c))
     {
-        strnapd(tok->literal, lexer_next_char(source), VARIANT_SERIALIZED_SIZE);
-        c = lexer_peek_char(source);
+        strnapd(tok->literal, lexer_next_char(lex), VARIANT_SERIALIZED_SIZE);
+        c = lexer_peek_char(lex);
     }
 
     tok->type = TOKEN_VALUE;
@@ -102,9 +115,9 @@ bool lexer_read_numeric(FILE *source, Token *tok)
     return true;
 }
 
-bool lexer_read_keyword_or_key(FILE *source, Token *tok)
+bool lexer_read_keyword_or_key(Lexer *lex, Token *tok)
 {
-    int c = lexer_peek_char(source);
+    int c = lexer_peek_char(lex);
 
     if (!is_letter(c))
     {
@@ -113,8 +126,8 @@ bool lexer_read_keyword_or_key(FILE *source, Token *tok)
 
     while (is_letter(c))
     {
-        strnapd(tok->literal, lexer_next_char(source), VARIANT_SERIALIZED_SIZE);
-        c = lexer_peek_char(source);
+        strnapd(tok->literal, lexer_next_char(lex), VARIANT_SERIALIZED_SIZE);
+        c = lexer_peek_char(lex);
     }
 
     if (strcmp(tok->literal, "BEGIN") == 0)
@@ -133,9 +146,9 @@ bool lexer_read_keyword_or_key(FILE *source, Token *tok)
     return true;
 }
 
-bool lexer_read_eof(FILE *source, Token *tok)
+bool lexer_read_eof(Lexer *lex, Token *tok)
 {
-    int c = lexer_peek_char(source);
+    int c = lexer_peek_char(lex);
     if (c == EOF)
     {
         tok->type = TOKEN_EOF;
@@ -145,21 +158,24 @@ bool lexer_read_eof(FILE *source, Token *tok)
     return false;
 }
 
-Token lexer_next_token(FILE *source)
+Token lexer_next_token(Lexer *lex)
 {
-    lexer_eat_white_space(source);
+    lexer_eat_white_space(lex);
 
     Token tok = (Token){
+        lex->ln,
+        lex->col,
         TOKEN_INVALID,
         "",
     };
 
-    if (!(lexer_read_string(source, &tok) ||
-          lexer_read_numeric(source, &tok) ||
-          lexer_read_keyword_or_key(source, &tok) ||
-          lexer_read_eof(source, &tok)))
+    if (!(lexer_read_string(lex, &tok) ||
+          lexer_read_numeric(lex, &tok) ||
+          lexer_read_keyword_or_key(lex, &tok) ||
+          lexer_read_eof(lex, &tok)))
     {
-        log_error("Invalid token '%c'", lexer_peek_char(source));
+        log_error("Lexer: ln%d, col%d: Unexpected codepoint %d '%c'", lex->ln, lex->col, lexer_peek_char(lex), lexer_peek_char(lex));
+        lexer_next_char(lex);
     }
 
     return tok;

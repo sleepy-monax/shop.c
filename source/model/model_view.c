@@ -123,24 +123,27 @@ void model_view_draw_status_bar(ModelViewState state, Model model, void *data, c
 
 void model_view_scrollbar(ModelViewState state, Model model, void *data)
 {
-    float viewport_height = state.height - 5;
-    float content_height = model.row_count(data);
-
-    float viewable_ratio = viewport_height / content_height;
-    float scroll_bar_area = viewport_height;
-    float thump_pos = (state.scroll / (float)model.row_count(data)) * viewport_height;
-    float thumb_height = scroll_bar_area * viewable_ratio;
-
-    for (int i = 4; i < state.height - 1; i++)
+    if (model.row_count(data) > state.height - 5)
     {
-        terminal_set_cursor_position(state.width - 1, i);
-        printf(" ");
-    }
+        float viewport_height = state.height - 5;
+        float content_height = model.row_count(data);
 
-    for (int i = 0; i < thumb_height; i++)
-    {
-        terminal_set_cursor_position(state.width - 1, thump_pos + 4 + i);
-        printf("▐");
+        float viewable_ratio = viewport_height / content_height;
+        float scroll_bar_area = viewport_height;
+        float thump_pos = (state.scroll / (float)model.row_count(data)) * viewport_height;
+        float thumb_height = scroll_bar_area * viewable_ratio;
+
+        for (int i = 4; i < state.height - 1; i++)
+        {
+            terminal_set_cursor_position(state.width - 1, i);
+            printf(" ");
+        }
+
+        for (int i = 0; i < thumb_height; i++)
+        {
+            terminal_set_cursor_position(state.width - 1, thump_pos + 4 + i);
+            printf("▐");
+        }
     }
 }
 

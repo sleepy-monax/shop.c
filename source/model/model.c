@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdbool.h>
 
 #include "utils/logger.h"
 #include "utils/assert.h"
@@ -25,13 +26,21 @@ typedef enum
     MODEL_LOAD_VALUE,
 } ModelLoadState;
 
-void model_load_expect(Token *tok, TokenType expected)
+bool model_load_expect(Token *tok, TokenType expected)
 {
     if (tok->type != expected)
     {
-        log_error("Expected token %s got token %s '%s'", token_type_string_type(expected), token_type_string(tok), tok->literal);
-        ASSERT_NOT_REACHED();
+        log_error("Parser: ln%d, col%d: Expected token %s got token %s '%s'",
+                  tok->ln,
+                  tok->col,
+                  token_type_string_type(expected),
+                  token_type_string(tok),
+                  tok->literal);
+
+        return false;
     }
+
+    return true;
 }
 
 void model_load(Model model, void *data, FILE *source)
@@ -40,14 +49,20 @@ void model_load(Model model, void *data, FILE *source)
     int row = -1;
     int column = -1;
 
-    Token tok = lexer_next_token(source);
-    while (tok.type != TOKEN_EOF && tok.type != TOKEN_INVALID)
+    Lexer lex = {};
+    lex.ln = 1;
+    lex.source = source;
+
+    Token tok = lexer_next_token(&lex);
+    do
     {
         if (state == MODEL_LOAD_BEGIN)
         {
-            model_load_expect(&tok, TOKEN_BEGIN);
-            row = model.row_create(data);
-            state = MODEL_LOAD_KEY;
+            if (model_load_expect(&tok, TOKEN_BEGIN))
+            {
+                row = model.row_create(data);
+                state = MODEL_LOAD_KEY;
+            }
         }
         else if (state == MODEL_LOAD_KEY)
         {
@@ -58,7 +73,6 @@ void model_load(Model model, void *data, FILE *source)
                 if (column == -1)
                 {
                     log_error("Le modele ne contient pas la colonne %s!", tok.literal);
-                    ASSERT_NOT_REACHED();
                 }
 
                 state = MODEL_LOAD_VALUE;
@@ -74,31 +88,31 @@ void model_load(Model model, void *data, FILE *source)
         }
         else if (state == MODEL_LOAD_VALUE)
         {
-            model_load_expect(&tok, TOKEN_VALUE);
-
-            Variant value = variant_deserialize(tok.literal);
-
-            if (value.type == model.column_type(column))
+            if (model_load_expect(&tok, TOKEN_VALUE))
             {
-                model.set_data(data, row, column, value);
-            }
-            else
-            {
-                log_error("Le type de la collone(%s) dans ne corespond pas avec le type collone du model! (%d!=%d)",
-                          model.column_name(column, ROLE_DATA),
-                          value.type, model.column_type(column));
-                ASSERT_NOT_REACHED();
-            }
+                Variant value = variant_deserialize(tok.literal);
 
-            state = MODEL_LOAD_KEY;
+                if (value.type == model.column_type(column))
+                {
+                    model.set_data(data, row, column, value);
+                }
+                else
+                {
+                    log_error("Le type de la collone(%s) dans ne corespond pas avec le type collone du model! (%d!=%d)",
+                              model.column_name(column, ROLE_DATA),
+                              value.type, model.column_type(column));
+                }
+
+                state = MODEL_LOAD_KEY;
+            }
         }
         else
         {
             ASSERT_NOT_REACHED();
         }
 
-        tok = lexer_next_token(source);
-    }
+        tok = lexer_next_token(&lex);
+    } while (tok.type != TOKEN_EOF);
 }
 
 void model_save(Model model, void *data, FILE *destination)

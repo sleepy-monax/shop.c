@@ -10,49 +10,19 @@
 void terminal_enter_rawmode(void)
 {
     struct termios info;
-    int result = 0;
 
-    result = tcgetattr(0, &info);
-
-    if (result == -1)
-    {
-        perror("Failled to setup user input");
-        abort();
-    }
-
+    tcgetattr(0, &info);
     info.c_lflag &= ~(ECHO | ICANON);
-
-    result = tcsetattr(0, TCSANOW, &info);
-
-    if (result == -1)
-    {
-        perror("Failled to setup user input");
-        abort();
-    }
+    tcsetattr(0, TCSANOW, &info);
 }
 
 void terminal_exit_rawmode(void)
 {
     struct termios info;
-    int result = 0;
 
-    result = tcgetattr(0, &info);
-
-    if (result == -1)
-    {
-        perror("Failled to setup user input");
-        abort();
-    }
-
+    tcgetattr(0, &info);
     info.c_lflag |= (ECHO | ICANON);
-
-    result = tcsetattr(0, TCSAFLUSH, &info);
-
-    if (result == -1)
-    {
-        perror("Failled to setup user input");
-        abort();
-    }
+    tcsetattr(0, TCSAFLUSH, &info);
 }
 
 void terminal_set_cursor_position(int x, int y)
