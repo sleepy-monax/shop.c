@@ -153,6 +153,7 @@ bool lexer_read_eof(Lexer *lex, Token *tok)
     if (c == EOF)
     {
         tok->type = TOKEN_EOF;
+
         return true;
     }
 
@@ -166,6 +167,7 @@ Token lexer_next_token(Lexer *lex)
     Token tok = (Token){
         lex->ln,
         lex->col,
+
         TOKEN_INVALID,
         "",
     };

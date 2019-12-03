@@ -11,7 +11,7 @@ void model_view_draw_title(const char *title, int width)
 {
     terminal_set_cursor_position(0, 0);
 
-    int len = strlen_unicode(title);
+    int len = utf8len(title);
     int padding = (width - len) / 2;
 
     printf("\e[1m");
@@ -36,7 +36,7 @@ void model_view_draw_title(const char *title, int width)
 void model_view_draw_header(ModelViewState state, Model model, int column)
 {
     int column_width = state.width / model.column_count();
-    int padding = column_width - strlen_unicode(model.column_name(column, ROLE_DISPLAY)) - 2;
+    int padding = column_width - utf8len(model.column_name(column, ROLE_DISPLAY)) - 2;
 
     for (int i = 0; i < padding / 2; i++)
     {
@@ -59,7 +59,7 @@ void model_view_draw_header(ModelViewState state, Model model, int column)
         printf("  %s", model.column_name(column, ROLE_DISPLAY));
     }
 
-    for (int i = (padding / 2) + strlen_unicode(model.column_name(column, ROLE_DISPLAY)) + 2; i < column_width; i++)
+    for (int i = (padding / 2) + utf8len(model.column_name(column, ROLE_DISPLAY)) + 2; i < column_width; i++)
     {
         printf(" ");
     }
@@ -71,15 +71,15 @@ void model_view_draw_cell(ModelViewState state, Model model, void *data, int row
 
     Variant value = model.get_data(data, row, column, ROLE_DISPLAY);
 
-    if ((int)strlen_unicode(value.as_string) >= column_width)
+    if ((int)utf8len(value.as_string) >= column_width)
     {
-        value.as_string[max(0, column_width - 3)] = '\0';
+        value.as_string[max(0, column_width - 2)] = '\0';
         printf(" %s", value.as_string);
-        printf("… ");
+        printf("…");
     }
     else
     {
-        int padding = column_width - strlen_unicode(value.as_string) - 1;
+        int padding = column_width - utf8len(value.as_string) - 1;
 
         if (value.type == VARIANT_STRING)
         {
@@ -150,6 +150,9 @@ void model_view_scrollbar(ModelViewState state, Model model, void *data)
 void model_view_display(const char *title, ModelViewState state, Model model, void *data)
 {
     (void)state;
+    terminal_enter_rawmode();
+
+    state.width--;
 
     terminal_set_cursor_position(0, 0);
 
@@ -200,12 +203,14 @@ void model_view_display(const char *title, ModelViewState state, Model model, vo
             printf(" ");
         }
 
-        printf("\e[0m");
+        printf("\n\e[0m");
     }
 
-    terminal_clear();
+    state.width++;
     model_view_scrollbar(state, model, data);
     model_view_draw_status_bar(state, model, data, NULL);
+    terminal_exit_rawmode();
+    terminal_clear();
 }
 
 void model_view_edit(ModelViewState state, Model model, void *data, int row)

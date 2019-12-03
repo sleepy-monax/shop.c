@@ -17,6 +17,7 @@ typedef struct list
 {
     // These fields bellow should not be accessed directly.
     int count;
+
     ListItem *head;
     ListItem *tail;
 } List;
@@ -30,7 +31,7 @@ typedef bool (*ListComparator)(void *left, void *right);
 List *list_create(void);
 
 // Free the memory used by the list
-void list_destroy(List *l);
+void list_destroy(List *this);
 
 // Create a copy of the list.
 List *list_clone(List *this);
