@@ -15,9 +15,31 @@ Style style_regular(Style style)
     return style;
 }
 
+Style style_bold(Style style)
+{
+    style.bold = true;
+    style.underline = false;
+
+    return style;
+}
+
 Style style_centered(Style style)
 {
     style.align = TEXT_CENTER;
+
+    return style;
+}
+
+Style style_with_background(Style style, Color background)
+{
+    style.background = background;
+
+    return style;
+}
+
+Style style_with_foreground(Style style, Color foreground)
+{
+    style.foreground = foreground;
 
     return style;
 }

@@ -14,6 +14,14 @@ typedef enum
     COLOR_MAGENTA,
     COLOR_CYAN,
     COLOR_WHITE,
+    COLOR_BRIGHT_BLACK = 60,
+    COLOR_BRIGHT_RED,
+    COLOR_BRIGHT_GREEN,
+    COLOR_BRIGHT_ORANGE,
+    COLOR_BRIGHT_BLUE,
+    COLOR_BRIGHT_MAGENTA,
+    COLOR_BRIGHT_CYAN,
+    COLOR_BRIGHT_WHITE,
 } Color;
 
 typedef enum
@@ -51,6 +59,9 @@ typedef struct
 #define DEFAULT_STYLE \
     (Style) { false, false, COLOR_WHITE, COLOR_BLACK, TEXT_LEFT }
 
+#define ALTERNATIVE_STYLE \
+    (Style) { false, false, COLOR_WHITE, COLOR_BRIGHT_BLACK, TEXT_LEFT }
+
 #define BLUE_STYLE \
     (Style) { false, false, COLOR_BLUE, COLOR_BLACK, TEXT_LEFT }
 
@@ -64,6 +75,12 @@ typedef struct
     (Style) { false, false, COLOR_BLACK, COLOR_WHITE, TEXT_LEFT }
 
 Style style_regular(Style style);
+
+Style style_bold(Style style);
+
+Style style_with_background(Style style, Color background);
+
+Style style_with_foreground(Style style, Color foreground);
 
 Style style_centered(Style style);
 

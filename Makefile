@@ -24,6 +24,9 @@ all: $(PROJECT).out
 clean:
 	rm -f $(OBJECTS) $(SOURCES:.c=.d) $(PROJECT).out $(wildcard data/*.saved)
 
+demo: $(PROJECT).out
+	lxterminal -e ./$(PROJECT).out
+
 test: $(PROJECT).out
 	./$(PROJECT).out
 

@@ -141,7 +141,7 @@ Style stocks_ModelColumnStyle(int index)
         return style_centered(DEFAULT_STYLE);
 
     case COL_ITEM_DISCOUNT:
-        return style_centered(DEFAULT_STYLE);
+        return style_centered(BLUE_STYLE);
 
     case COL_ITEM_CATEGORY:
         return style_centered(DEFAULT_STYLE);
@@ -168,10 +168,7 @@ Variant stocks_ModelGetData(StockList *stock, int row, int column, ModelRole rol
         }
         else
         {
-
-            char buffer[16];
-            sprintf(buffer, "%04d", item->id);
-            return vstring(buffer);
+            return vstringf("%04d", item->id);
         }
 
     case COL_ITEM_LABEL:
@@ -184,10 +181,7 @@ Variant stocks_ModelGetData(StockList *stock, int row, int column, ModelRole rol
         }
         else
         {
-
-            char buffer[16];
-            sprintf(buffer, "%5.2f€", item->price);
-            return vstring(buffer);
+            return vstringf("%5.2f€", item->price);
         }
 
     case COL_ITEM_CONSIGNED:
@@ -203,9 +197,7 @@ Variant stocks_ModelGetData(StockList *stock, int row, int column, ModelRole rol
             }
             else
             {
-                char buffer[16];
-                sprintf(buffer, "%5.2f€", item->consignedValue);
-                return vstring(buffer);
+                return vstringf("%5.2f€", item->consignedValue);
             }
         }
 
@@ -218,9 +210,7 @@ Variant stocks_ModelGetData(StockList *stock, int row, int column, ModelRole rol
         {
             if (item->discount != 0)
             {
-                char buffer[16];
-                sprintf(buffer, "%3d%%", -item->discount);
-                return vstring(buffer);
+                return vstringf("%3d%%", -item->discount);
             }
 
             return vstring("");

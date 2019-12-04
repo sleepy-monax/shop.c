@@ -1,7 +1,22 @@
-#include "model/model_view.h"
+#include "model/view.h"
 #include "utils/terminal.h"
 #include "utils/renderer.h"
 #include "utils/math.h"
+
+void model_view_title(Surface *surface, const char *title)
+{
+    surface_text(surface, title, 0, 1, surface_width(surface), style_bold(style_centered(BLUE_STYLE)));
+    surface_text(surface, "MANAGER", 2, 2, 16, style_inverted(style_centered(BLUE_STYLE)));
+    surface_text(surface, "VAN BOSSUYT Nicolas", 20, 2, 36, DEFAULT_STYLE);
+    surface_plot_line(surface, u'▔', 0, 3, surface_width(surface), 3, BLUE_STYLE);
+
+    surface_push_clip(surface, (Region){
+                                   0,
+                                   4,
+                                   surface_width(surface),
+                                   surface_height(surface) - 4,
+                               });
+}
 
 void model_view_scrollbar(Surface *surface, ModelViewState *state, Model model, void *data)
 {
@@ -25,6 +40,8 @@ void model_view_scrollbar(Surface *surface, ModelViewState *state, Model model, 
             surface_plot(surface, u'▐', surface_width(surface) - 1, thump_pos + i, BLUE_STYLE);
         }
     }
+
+    surface_push_clip(surface, (Region){0, 0, surface_width(surface) - 1, surface_height(surface)});
 }
 
 void model_view_headerbar(Surface *surface, ModelViewState *state, Model model)
@@ -46,12 +63,13 @@ void model_view_headerbar(Surface *surface, ModelViewState *state, Model model)
     }
 
     surface_plot_line(surface, u'-', 0, 1, surface_width(surface), 1, DEFAULT_STYLE);
+    surface_push_clip(surface, (Region){0, 2, surface_width(surface), surface_height(surface) - 2});
 }
 
 void model_view_status_bar(Surface *surface, ModelViewState *state, Model model, void *data)
 {
     char buffer[128];
-    snprintf(buffer, 128, " [?] Appuyer sur 'h' pour afficher l'aide - %d éléments - ligne %d ", model.row_count(data), state->slected + 1);
+    snprintf(buffer, 128, " %d éléments - ligne %d - [?] Appuyer sur 'h' pour afficher l'aide", model.row_count(data), state->slected + 1);
     surface_text(surface, buffer, 0, 0, surface_width(surface), DEFAULT_STYLE);
 }
 
@@ -74,15 +92,11 @@ void model_view_update_scroll(Surface *surface, ModelViewState *state, Model mod
 
 void model_view_list(Surface *surface, ModelViewState *state, Model model, void *data)
 {
-    model_view_headerbar(surface, state, model);
-
-    surface_push_clip(surface, (Region){0, 2, surface_width(surface), surface_height(surface) - 2});
-
-    model_view_update_scroll(surface, state, model, data);
-
     model_view_scrollbar(surface, state, model, data);
 
-    surface_push_clip(surface, (Region){0, 0, surface_width(surface) - 1, surface_height(surface)});
+    model_view_headerbar(surface, state, model);
+
+    model_view_update_scroll(surface, state, model, data);
 
     int column_width = surface_width(surface) / model.column_count();
 
@@ -98,7 +112,7 @@ void model_view_list(Surface *surface, ModelViewState *state, Model model, void 
             }
             else
             {
-                surface_text(surface, value.as_string, column * column_width, row - state->scroll, column_width, model.column_style(column));
+                surface_text(surface, value.as_string, column * column_width, row - state->scroll, column_width, (row % 2) ? style_with_background(model.column_style(column), COLOR_BRIGHT_BLACK) : model.column_style(column));
             }
         }
     }
@@ -130,6 +144,8 @@ void model_view(const char *title, Model model, void *data)
 
     do
     {
+        surface_update(surface);
+
         if (state.sort_dirty)
         {
             for (int i = 0; i < model.row_count(data); i++)
@@ -163,23 +179,12 @@ void model_view(const char *title, Model model, void *data)
 
         terminal_enter_rawmode();
 
-        surface_text(surface, title, 0, 0, surface_width(surface), style_centered(BOLD_STYLE));
-        surface_text(surface, "MANAGER", 0, 0, 16, style_centered(INVERTED_STYLE));
-
-        surface_plot_line(surface, u'▔', 0, 1, surface_width(surface), 1, DEFAULT_STYLE);
+        model_view_title(surface, title);
         {
-            surface_push_clip(surface, (Region){
-                                           0,
-                                           2,
-                                           surface_width(surface),
-                                           surface_height(surface) - 3,
-                                       });
-
             surface_clear(surface, DEFAULT_STYLE);
             model_view_list(surface, &state, model, data);
-
-            surface_pop_clip(surface);
         }
+        surface_pop_clip(surface);
 
         surface_push_clip(surface, (Region){
                                        0,
@@ -193,7 +198,6 @@ void model_view(const char *title, Model model, void *data)
         surface_pop_clip(surface);
 
         surface_render(surface);
-        surface_update(surface);
 
         terminal_exit_rawmode();
 

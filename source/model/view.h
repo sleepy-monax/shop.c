@@ -20,4 +20,6 @@ typedef struct ModelViewState
     int sorted[10000];
 } ModelViewState;
 
+void model_view_title(Surface *surface, const char *title);
+
 void model_view(const char *title, Model model, void *data);

@@ -1,12 +1,13 @@
 #include <string.h>
 #include <stdio.h>
+#include <stdarg.h>
 
 #include "utils/assert.h"
 #include "utils/string.h"
 #include "utils/variant.h"
 #include "utils/logger.h"
 
-Variant variant_create_from_int(int value)
+Variant vint(int value)
 {
     Variant v = (Variant){
         .type = VARIANT_INT,
@@ -18,7 +19,7 @@ Variant variant_create_from_int(int value)
     return v;
 }
 
-Variant variant_create_from_float(float value)
+Variant vfloat(float value)
 {
     Variant v = (Variant){
         .type = VARIANT_FLOAT,
@@ -30,13 +31,25 @@ Variant variant_create_from_float(float value)
     return v;
 }
 
-Variant variant_create_from_string(const char *value)
+Variant vstring(const char *value)
 {
     Variant v = (Variant){.type = VARIANT_STRING};
 
     assert(strlen(value) < VARIANT_STRING_SIZE);
 
-    strcpy(v.as_string, value);
+    strncpy(v.as_string, value, VARIANT_STRING_SIZE);
+
+    return v;
+}
+
+Variant vstringf(const char *fmt, ...)
+{
+    Variant v = (Variant){.type = VARIANT_STRING};
+
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(v.as_string, VARIANT_STRING_SIZE, fmt, args);
+    va_end(args);
 
     return v;
 }

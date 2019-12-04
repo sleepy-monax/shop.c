@@ -146,17 +146,9 @@ Variant clients_ModelGetData(ClientsList *clients, int row, int column, ModelRol
     {
     case COL_CLIENTS_BARECODE:
         if (role == ROLE_DATA)
-        {
             return vint(client->id);
-        }
         else
-        {
-
-            char buffer[16];
-            sprintf(buffer, "%04d", client->id);
-            return vstring(buffer);
-        }
-
+            return vstringf("%04d", client->id);
     case COL_CLIENTS_FIRSTNAME:
         return vstring(client->firstname);
 
@@ -167,7 +159,14 @@ Variant clients_ModelGetData(ClientsList *clients, int row, int column, ModelRol
         return vstring(client->email);
 
     case COL_CLIENTS_POINTS:
-        return vint(client->points);
+        if (role == ROLE_DATA)
+        {
+            return vint(client->points);
+        }
+        else
+        {
+            return vstringf("%4d", client->points);
+        }
     }
 
     ASSERT_NOT_REACHED();

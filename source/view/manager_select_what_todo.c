@@ -7,7 +7,7 @@
 #include "utils/input.h"
 #include "utils/string.h"
 #include "shop/clients.h"
-#include "model/model_view.h"
+#include "model/view.h"
 
 void manager_select_what_todo(StockList *stock, ClientsList *clients)
 {

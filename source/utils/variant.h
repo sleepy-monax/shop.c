@@ -22,17 +22,13 @@ typedef struct
     char as_string[VARIANT_STRING_SIZE];
 } Variant;
 
-#define vint(__value) variant_create_from_int((__value))
+Variant vint(int value);
 
-#define vfloat(__value) variant_create_from_float((__value))
+Variant vfloat(float value);
 
-#define vstring(__value) variant_create_from_string((__value))
+Variant vstring(const char *value);
 
-Variant variant_create_from_int(int value);
-
-Variant variant_create_from_float(float value);
-
-Variant variant_create_from_string(const char *value);
+Variant vstringf(const char *fmt, ...);
 
 int variant_cmp(Variant left, Variant right);
 
