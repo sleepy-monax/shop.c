@@ -44,11 +44,17 @@ void cashier_select_what_todo(Session *session, StockList *stocks, ClientsList *
         NULL,
     };
 
+    char greeting[200];
+    if (session->client != NULL)
+        sprintf(greeting, "Bonjour %s %s, veuillez faire un choix", session->client->firstname, session->client->lastname);
+    else
+        sprintf(greeting, "Bonjour veuillez faire un choix");
+
     bool exited = false;
 
     do
     {
-        switch (user_select("Veuillez faire un choix", choices))
+        switch (user_select(greeting, choices))
         {
         case 0:
             log_info("Vous avez choisi d'effectuer un achat");

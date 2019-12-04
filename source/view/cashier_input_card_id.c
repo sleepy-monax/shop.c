@@ -21,14 +21,7 @@ static void login_client(Session *session, ClientsList *clients)
 
         log_info("Connection avec " EXTRA "#%04d...", extra_barecode);
 
-        if (session->client)
-        {
-            printf("Bonjour, %s %s !", session->client->firstname, session->client->lastname);
-            sleep(2);
-
-            return;
-        }
-        else
+        if (session->client == NULL)
         {
             log_error("Ce compte n'existe pas");
 
