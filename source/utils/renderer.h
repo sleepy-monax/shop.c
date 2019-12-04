@@ -51,6 +51,9 @@ typedef struct
 #define DEFAULT_STYLE \
     (Style) { false, false, COLOR_WHITE, COLOR_BLACK, TEXT_LEFT }
 
+#define BLUE_STYLE \
+    (Style) { false, false, COLOR_BLUE, COLOR_BLACK, TEXT_LEFT }
+
 #define BOLD_STYLE \
     (Style) { true, false, COLOR_WHITE, COLOR_BLACK, TEXT_LEFT }
 
@@ -61,6 +64,10 @@ typedef struct
     (Style) { false, false, COLOR_BLACK, COLOR_WHITE, TEXT_LEFT }
 
 Style style_regular(Style style);
+
+Style style_centered(Style style);
+
+Style style_inverted(Style style);
 
 typedef struct
 {
@@ -102,7 +109,7 @@ void surface_clear(Surface *this, Style style);
 
 void surface_plot(Surface *this, Codepoint codepoint, int x, int y, Style style);
 
-void surface_fill(Surface *this, Codepoint Codepoint, Region region, Style style);
+void surface_fill(Surface *this, Codepoint codepoint, Region region, Style style);
 
 void surface_text(Surface *this, const char *text, int x, int y, int width, Style style);
 

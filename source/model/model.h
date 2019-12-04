@@ -1,7 +1,9 @@
 #pragma once
 
 #include <stdio.h>
+
 #include "utils/variant.h"
+#include "utils/renderer.h"
 #include "model/model_action.h"
 
 typedef enum
@@ -17,6 +19,7 @@ typedef void (*ModelRowDelete)(void *data, int index);
 typedef int (*ModelColumnCount)(void);
 typedef const char *(*ModelColumnName)(int index, ModelRole role);
 typedef VarianType (*ModelColumnType)(int index);
+typedef Style (*ModelColumnStyle)(int index);
 
 typedef Variant (*ModelGetData)(void *data, int row, int column, ModelRole role);
 typedef void (*ModelSetData)(void *data, int row, int column, Variant value);
@@ -32,6 +35,7 @@ typedef struct Model
     ModelColumnCount column_count;
     ModelColumnName column_name;
     ModelColumnType column_type;
+    ModelColumnStyle column_style;
 
     ModelGetData get_data;
     ModelSetData set_data;

@@ -1,6 +1,6 @@
 #pragma once
 
-int termianl_read_key(void);
+int terminal_read_key(void);
 
 void terminal_enter_rawmode(void);
 

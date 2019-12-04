@@ -1,7 +1,3 @@
-#include "utils/assert.h"
-#include "model/lexer.h"
-#include "model/model_view.h"
-#include "utils/input.h"
 #include "view/views.h"
 
 int main(int argc, char const *argv[])

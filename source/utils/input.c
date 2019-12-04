@@ -37,7 +37,7 @@ bool user_yes_no(const char *prompt)
 {
     printf("%s [Oui/Non]", prompt);
 
-    char c = termianl_read_key();
+    char c = terminal_read_key();
 
     if (c == 'Y' || c == 'O' || c == 'y' || c == 'o')
     {
@@ -81,7 +81,7 @@ int user_select(const char *prompt, const char *options[])
 
         printf("\n[K] up / [J] down / [ENTER] select\n");
 
-        c = termianl_read_key();
+        c = terminal_read_key();
 
         if (c == 'k')
         {
@@ -120,7 +120,7 @@ void user_input(const char *prompt, const char *format, char *result)
         printf("\e[s\e[37m%s\e[0m\e[u", format);
         printf("\e[s%s%s\e[0m\e[u", user_input_valid(format, result) ? "\e[32m" : "\e[31m", result);
 
-        c = termianl_read_key();
+        c = terminal_read_key();
 
         if (c == 127 && index > 0)
         {

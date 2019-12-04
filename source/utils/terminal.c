@@ -44,7 +44,7 @@ void terminal_clear(void)
     printf("\e[J");
 }
 
-int termianl_read_key(void)
+int terminal_read_key(void)
 {
     fflush(stdout);
     terminal_enter_rawmode();

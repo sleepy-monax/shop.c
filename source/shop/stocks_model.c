@@ -124,6 +124,32 @@ VarianType stocks_ModelColumnType(int index)
     ASSERT_NOT_REACHED();
 }
 
+Style stocks_ModelColumnStyle(int index)
+{
+    switch (index)
+    {
+    case COL_ITEM_BARECODE:
+        return style_centered(DEFAULT_STYLE);
+
+    case COL_ITEM_LABEL:
+        return style_centered(DEFAULT_STYLE);
+
+    case COL_ITEM_PRICE:
+        return DEFAULT_STYLE;
+
+    case COL_ITEM_CONSIGNED:
+        return DEFAULT_STYLE;
+
+    case COL_ITEM_DISCOUNT:
+        return DEFAULT_STYLE;
+
+    case COL_ITEM_CATEGORY:
+        return style_centered(DEFAULT_STYLE);
+    }
+
+    ASSERT_NOT_REACHED();
+}
+
 #define ITEM_STRING_ENTRY(__x) #__x,
 static const char *item_category_string[] = {ITEM_CATEGORY_LIST(ITEM_STRING_ENTRY) NULL};
 
@@ -136,7 +162,17 @@ Variant stocks_ModelGetData(StockList *stock, int row, int column, ModelRole rol
     switch (column)
     {
     case COL_ITEM_BARECODE:
-        return vint(item->id);
+        if (role == ROLE_DATA)
+        {
+            return vint(item->id);
+        }
+        else
+        {
+
+            char buffer[16];
+            sprintf(buffer, "%04d", item->id);
+            return vstring(buffer);
+        }
 
     case COL_ITEM_LABEL:
         return vstring(item->label);
@@ -262,6 +298,7 @@ Model stocks_model_create(void)
         (ModelColumnCount)stocks_ModelColumnCount,
         (ModelColumnName)stocks_ModelColumnName,
         (ModelColumnType)stocks_ModelColumnType,
+        (ModelColumnStyle)stocks_ModelColumnStyle,
 
         (ModelGetData)stocks_ModelGetData,
         (ModelSetData)stocks_ModelSetData,

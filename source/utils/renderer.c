@@ -15,6 +15,22 @@ Style style_regular(Style style)
     return style;
 }
 
+Style style_centered(Style style)
+{
+    style.align = TEXT_CENTER;
+
+    return style;
+}
+
+Style style_inverted(Style style)
+{
+    Color tmp = style.foreground;
+    style.foreground = style.background;
+    style.background = tmp;
+
+    return style;
+}
+
 Surface *surface_create(void)
 {
     Surface *this = malloc(sizeof(Surface));
@@ -118,6 +134,9 @@ Region surface_region(Surface *this)
 
 void surface_push_clip(Surface *this, Region clip)
 {
+    clip.x += surface_clip(this).x;
+    clip.y += surface_clip(this).y;
+
     this->clipstack[this->clipstack_top] = clip;
     this->clipstack_top++;
 }
@@ -203,9 +222,9 @@ void surface_text(Surface *this, const char *text, int x, int y, int width, Styl
 
     if (style.align == TEXT_LEFT || style.align == TEXT_CENTER)
     {
-        for (int i = 0; i < padding; i++)
+        for (int i = offset; i < width; i++)
         {
-            surface_plot(this, ' ', offset + x + i, y, style_regular(style));
+            surface_plot(this, ' ', x + i, y, style_regular(style));
         }
     }
 }

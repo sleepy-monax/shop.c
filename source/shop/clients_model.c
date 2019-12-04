@@ -112,6 +112,29 @@ VarianType clients_ModelColumnType(int index)
     ASSERT_NOT_REACHED();
 }
 
+Style clients_ModelColumnStyle(int index)
+{
+    switch (index)
+    {
+    case COL_CLIENTS_BARECODE:
+        return style_centered(DEFAULT_STYLE);
+
+    case COL_CLIENTS_FIRSTNAME:
+        return style_centered(DEFAULT_STYLE);
+
+    case COL_CLIENTS_LASTNAME:
+        return style_centered(DEFAULT_STYLE);
+
+    case COL_CLIENTS_EMAIL:
+        return DEFAULT_STYLE;
+
+    case COL_CLIENTS_POINTS:
+        return style_centered(DEFAULT_STYLE);
+    }
+
+    ASSERT_NOT_REACHED();
+}
+
 Variant clients_ModelGetData(ClientsList *clients, int row, int column, ModelRole role)
 {
     (void)role;
@@ -122,7 +145,17 @@ Variant clients_ModelGetData(ClientsList *clients, int row, int column, ModelRol
     switch (column)
     {
     case COL_CLIENTS_BARECODE:
-        return vint(client->id);
+        if (role == ROLE_DATA)
+        {
+            return vint(client->id);
+        }
+        else
+        {
+
+            char buffer[16];
+            sprintf(buffer, "%04d", client->id);
+            return vstring(buffer);
+        }
 
     case COL_CLIENTS_FIRSTNAME:
         return vstring(client->firstname);
@@ -189,6 +222,7 @@ Model clients_model_create(void)
         (ModelColumnCount)clients_ModelColumnCount,
         (ModelColumnName)clients_ModelColumnName,
         (ModelColumnType)clients_ModelColumnType,
+        (ModelColumnStyle)clients_ModelColumnStyle,
 
         (ModelGetData)clients_ModelGetData,
         (ModelSetData)clients_ModelSetData,

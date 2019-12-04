@@ -1,258 +1,135 @@
-#include <stdio.h>
-#include <string.h>
-
-#include "utils/string.h"
-#include "utils/assert.h"
 #include "model/model_view.h"
 #include "utils/terminal.h"
+#include "utils/renderer.h"
 #include "utils/math.h"
 
-void model_view_draw_title(const char *title, int width)
+void model_view_scrollbar(Surface *surface, ModelViewState *state, Model model, void *data)
 {
-    terminal_set_cursor_position(0, 0);
-
-    int len = utf8len(title);
-    int padding = (width - len) / 2;
-
-    printf("\e[1m");
-
-    for (int i = 0; i < padding; i++)
+    if (model.row_count(data) > surface_height(surface))
     {
-        printf(" ");
-    }
-
-    printf("%s", title);
-
-    printf("\n");
-
-    for (int i = 0; i < width; i++)
-    {
-        printf("▔");
-    }
-
-    printf("\e[0m");
-}
-
-void model_view_draw_header(ModelViewState state, Model model, int column)
-{
-    int column_width = state.width / model.column_count();
-    int padding = column_width - utf8len(model.column_name(column, ROLE_DISPLAY)) - 2;
-
-    for (int i = 0; i < padding / 2; i++)
-    {
-        printf(" ");
-    }
-
-    if (state.sortby == column)
-    {
-        if (state.sort_accending)
-        {
-            printf("\e[1m⌃ %s\e[0m", model.column_name(column, ROLE_DISPLAY));
-        }
-        else
-        {
-            printf("\e[1m⌄ %s\e[0m", model.column_name(column, ROLE_DISPLAY));
-        }
-    }
-    else
-    {
-        printf("  %s", model.column_name(column, ROLE_DISPLAY));
-    }
-
-    for (int i = (padding / 2) + utf8len(model.column_name(column, ROLE_DISPLAY)) + 2; i < column_width; i++)
-    {
-        printf(" ");
-    }
-}
-
-void model_view_draw_cell(ModelViewState state, Model model, void *data, int row, int column)
-{
-    int column_width = state.width / model.column_count();
-
-    Variant value = model.get_data(data, row, column, ROLE_DISPLAY);
-
-    if ((int)utf8len(value.as_string) >= column_width)
-    {
-        value.as_string[max(0, column_width - 2)] = '\0';
-        printf(" %s", value.as_string);
-        printf("…");
-    }
-    else
-    {
-        int padding = column_width - utf8len(value.as_string) - 1;
-
-        if (value.type == VARIANT_STRING)
-        {
-            printf(" %s", value.as_string);
-
-            for (int i = 0; i < padding; i++)
-            {
-                printf(" ");
-            }
-        }
-        else
-        {
-            for (int i = 0; i < padding; i++)
-            {
-                printf(" ");
-            }
-
-            printf("%s ", value.as_string);
-        }
-    }
-}
-
-void model_view_draw_status_bar(ModelViewState state, Model model, void *data, const char *msg)
-{
-    terminal_set_cursor_position(0, state.height - 1);
-    terminal_clear();
-
-    printf("\e[30;44m 👤 Manager \e[0m");
-
-    if (msg)
-    {
-        printf(" %s ", msg);
-    }
-    else
-    {
-        printf(" 💡 Appuyer sur 'h' pour afficher l'aide - %d éléments - ligne %d ", model.row_count(data), state.slected + 1);
-    }
-
-    printf("\e[0m");
-}
-
-void model_view_scrollbar(ModelViewState state, Model model, void *data)
-{
-    if (model.row_count(data) > state.height - 5)
-    {
-        float viewport_height = state.height - 5;
+        float viewport_height = surface_height(surface);
         float content_height = model.row_count(data);
 
         float viewable_ratio = viewport_height / content_height;
         float scroll_bar_area = viewport_height;
-        float thump_pos = (state.scroll / (float)model.row_count(data)) * viewport_height;
+        float thump_pos = (state->scroll / (float)model.row_count(data)) * viewport_height;
         float thumb_height = scroll_bar_area * viewable_ratio;
 
-        for (int i = 4; i < state.height - 1; i++)
+        for (int i = 0; i < surface_height(surface); i++)
         {
-            terminal_set_cursor_position(state.width - 1, i);
-            printf(" ");
+            surface_plot(surface, ' ', surface_width(surface) - 1, i, DEFAULT_STYLE);
         }
 
         for (int i = 0; i < thumb_height; i++)
         {
-            terminal_set_cursor_position(state.width - 1, thump_pos + 4 + i);
-            printf("▐");
+            surface_plot(surface, u'▐', surface_width(surface) - 1, thump_pos + i, BLUE_STYLE);
         }
     }
 }
 
-void model_view_display(const char *title, ModelViewState state, Model model, void *data)
+void model_view_headerbar(Surface *surface, ModelViewState *state, Model model)
 {
-    (void)state;
-    terminal_enter_rawmode();
+    int column_width = surface_width(surface) / model.column_count();
 
-    state.width--;
-
-    terminal_set_cursor_position(0, 0);
-
-    model_view_draw_title(title, state.width);
-
-    printf("\n");
-    for (int i = 0; i < model.column_count(); i++)
+    for (int column = 0; column < model.column_count(); column++)
     {
-        model_view_draw_header(state, model, i);
-    }
-
-    for (int i = 0; i < state.width % model.column_count(); i++)
-    {
-        printf(" ");
-    }
-
-    printf("\n");
-
-    for (int i = 0; i < state.width; i++)
-    {
-        printf("-");
-    }
-
-    printf("\n");
-
-    for (int row = state.scroll; row < min(state.scroll + state.height - 5, model.row_count(data)); row++)
-    {
-        if (row == state.slected)
+        if (state->sortby == column)
         {
-            printf("\e[30;47m");
-        }
-        else if (row % 2)
-        {
-            printf("\e[1m");
+            surface_text(surface, model.column_name(column, ROLE_DISPLAY), column * column_width, 0, column_width, style_centered(BOLD_STYLE));
+
+            surface_plot(surface, state->sort_accending ? u'⌄' : u'⌃', column * column_width + 1, 0, DEFAULT_STYLE);
         }
         else
         {
-            printf("\e[0m");
+            surface_text(surface, model.column_name(column, ROLE_DISPLAY), column * column_width, 0, column_width, style_centered(DEFAULT_STYLE));
         }
+    }
 
+    surface_plot_line(surface, u'-', 0, 1, surface_width(surface), 1, DEFAULT_STYLE);
+}
+
+void model_view_status_bar(Surface *surface, ModelViewState *state, Model model, void *data)
+{
+    char buffer[128];
+    snprintf(buffer, 128, " [?] Appuyer sur 'h' pour afficher l'aide - %d éléments - ligne %d ", model.row_count(data), state->slected + 1);
+    surface_text(surface, buffer, 0, 0, surface_width(surface), DEFAULT_STYLE);
+}
+
+void model_view_update_scroll(Surface *surface, ModelViewState *state, Model model, void *data)
+{
+    state->slected = min(model.row_count(data) - 1, max(0, state->slected));
+
+    if (state->slected < state->scroll)
+    {
+        state->scroll = state->slected;
+    }
+
+    if (state->slected >= state->scroll + surface_height(surface))
+    {
+        state->scroll = state->slected - surface_height(surface) + 1;
+    }
+
+    state->scroll = max(0, min(state->scroll, model.row_count(data) - 1));
+}
+
+void model_view_list(Surface *surface, ModelViewState *state, Model model, void *data)
+{
+    model_view_headerbar(surface, state, model);
+
+    surface_push_clip(surface, (Region){0, 2, surface_width(surface), surface_height(surface) - 2});
+
+    model_view_update_scroll(surface, state, model, data);
+
+    model_view_scrollbar(surface, state, model, data);
+
+    surface_push_clip(surface, (Region){0, 0, surface_width(surface) - 1, surface_height(surface)});
+
+    int column_width = surface_width(surface) / model.column_count();
+
+    for (int row = state->scroll; row < min(state->scroll + surface_height(surface), model.row_count(data)); row++)
+    {
         for (int column = 0; column < model.column_count(); column++)
         {
-            model_view_draw_cell(state, model, data, state.sorted[row], column);
-        }
+            Variant value = model.get_data(data, state->sorted[row], column, ROLE_DISPLAY);
 
-        for (int i = 0; i < state.width % model.column_count(); i++)
-        {
-            printf(" ");
+            if (row == state->slected)
+            {
+                surface_text(surface, value.as_string, column * column_width, row - state->scroll, column_width, style_inverted(model.column_style(column)));
+            }
+            else
+            {
+                surface_text(surface, value.as_string, column * column_width, row - state->scroll, column_width, model.column_style(column));
+            }
         }
-
-        printf("\n\e[0m");
     }
 
-    state.width++;
-    model_view_scrollbar(state, model, data);
-    model_view_draw_status_bar(state, model, data, NULL);
-    terminal_exit_rawmode();
-    terminal_clear();
+    surface_pop_clip(surface);
+
+    surface_pop_clip(surface);
 }
 
-void model_view_edit(ModelViewState state, Model model, void *data, int row)
+static void reverse_array(int array[], int size)
 {
-    terminal_set_cursor_position(0, 0);
-    terminal_clear();
-
-    model_view_draw_title("Éditer une valeur", state.width);
-
-    for (int i = 0; i < model.column_count(); i++)
+    for (int i = 0; i < size / 2; i++)
     {
-        printf("\e[1m%16s\e[0m: %s\n", model.column_name(i, ROLE_DISPLAY), model.get_data(data, row, i, ROLE_DISPLAY).as_string);
-    }
-
-    termianl_read_key();
-}
-
-void reverse_array(int a[], int n)
-{
-    int c, t;
-
-    for (c = 0; c < n / 2; c++)
-    {
-        t = a[c];
-        a[c] = a[n - c - 1];
-        a[n - c - 1] = t;
+        int tmp = array[i];
+        array[i] = array[size - i - 1];
+        array[size - i - 1] = tmp;
     }
 }
 
 void model_view(const char *title, Model model, void *data)
 {
+    (void)title;
     ModelViewState state = {0};
     state.sort_dirty = true;
 
     terminal_enable_alternative_screen_buffer();
-    terminal_hide_cursor();
-    terminal_enter_rawmode();
+
+    Surface *surface = surface_create();
 
     do
     {
-        terminal_get_size(&state.width, &state.height);
-
         if (state.sort_dirty)
         {
             for (int i = 0; i < model.row_count(data); i++)
@@ -284,9 +161,43 @@ void model_view(const char *title, Model model, void *data)
             state.sort_dirty = false;
         }
 
-        model_view_display(title, state, model, data);
+        terminal_enter_rawmode();
 
-        int codepoint = termianl_read_key();
+        surface_text(surface, title, 0, 0, surface_width(surface), style_centered(BOLD_STYLE));
+        surface_text(surface, "MANAGER", 0, 0, 16, style_centered(INVERTED_STYLE));
+
+        surface_plot_line(surface, u'▔', 0, 1, surface_width(surface), 1, DEFAULT_STYLE);
+        {
+            surface_push_clip(surface, (Region){
+                                           0,
+                                           2,
+                                           surface_width(surface),
+                                           surface_height(surface) - 3,
+                                       });
+
+            surface_clear(surface, DEFAULT_STYLE);
+            model_view_list(surface, &state, model, data);
+
+            surface_pop_clip(surface);
+        }
+
+        surface_push_clip(surface, (Region){
+                                       0,
+                                       surface_height(surface) - 1,
+                                       surface_width(surface),
+                                       1,
+                                   });
+
+        model_view_status_bar(surface, &state, model, data);
+
+        surface_pop_clip(surface);
+
+        surface_render(surface);
+        surface_update(surface);
+
+        terminal_exit_rawmode();
+
+        int codepoint = terminal_read_key();
 
         for (int i = 0; model.get_actions()[i].key_codepoint != 0; i++)
         {
@@ -294,7 +205,7 @@ void model_view(const char *title, Model model, void *data)
 
             if (action.key_codepoint == codepoint)
             {
-                action.callback(codepoint, &state, model, data, state.sorted[state.slected]);
+                action.callback(surface, &state, model, data, state.sorted[state.slected]);
             }
         }
 
@@ -319,23 +230,9 @@ void model_view(const char *title, Model model, void *data)
             }
         }
 
-        state.slected = min(model.row_count(data) - 1, max(0, state.slected));
-
-        if (state.slected < state.scroll)
-        {
-            state.scroll = state.slected;
-        }
-
-        if (state.slected >= state.scroll + (state.height - 5))
-        {
-            state.scroll = state.slected - (state.height - 5) + 1;
-        }
-
-        state.scroll = max(0, min(state.scroll, model.row_count(data) - 1));
-
     } while (!state.exited);
 
-    terminal_exit_rawmode();
-    terminal_show_cursor();
+    surface_destroy(surface);
+
     terminal_disable_alternative_screen_buffer();
 }

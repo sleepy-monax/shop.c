@@ -26,4 +26,4 @@ uint32_t strhash(unsigned char *str);
 
 int strutf8(uint8_t *out, Codepoint utf);
 
-int utf8str(uint8_t *in, Codepoint *out);
+int utf8str(const uint8_t *in, Codepoint *out);
