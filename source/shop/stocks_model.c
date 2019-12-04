@@ -132,16 +132,16 @@ Style stocks_ModelColumnStyle(int index)
         return style_centered(DEFAULT_STYLE);
 
     case COL_ITEM_LABEL:
-        return style_centered(DEFAULT_STYLE);
+        return DEFAULT_STYLE;
 
     case COL_ITEM_PRICE:
-        return DEFAULT_STYLE;
+        return style_centered(DEFAULT_STYLE);
 
     case COL_ITEM_CONSIGNED:
-        return DEFAULT_STYLE;
+        return style_centered(DEFAULT_STYLE);
 
     case COL_ITEM_DISCOUNT:
-        return DEFAULT_STYLE;
+        return style_centered(DEFAULT_STYLE);
 
     case COL_ITEM_CATEGORY:
         return style_centered(DEFAULT_STYLE);
