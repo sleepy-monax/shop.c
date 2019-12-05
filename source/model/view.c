@@ -70,7 +70,9 @@ void model_view_status_bar(Surface *surface, ModelViewState *state, Model model,
 {
     char buffer[128];
     snprintf(buffer, 128, " %d éléments - ligne %d - [?] Appuyer sur 'h' pour afficher l'aide", model.row_count(data), state->slected + 1);
-    surface_text(surface, buffer, 0, 0, surface_width(surface), DEFAULT_STYLE);
+    surface_text(surface, buffer, 0, surface_height(surface) - 1, surface_width(surface), DEFAULT_STYLE);
+
+    surface_push_clip(surface, (Region){0, 0, surface_width(surface), surface_height(surface) - 1});
 }
 
 void model_view_update_scroll(Surface *surface, ModelViewState *state, Model model, void *data)
@@ -180,21 +182,14 @@ void model_view(const char *title, Model model, void *data)
         terminal_enter_rawmode();
 
         model_view_title(surface, title);
+        model_view_status_bar(surface, &state, model, data);
+
         {
             surface_clear(surface, DEFAULT_STYLE);
             model_view_list(surface, &state, model, data);
         }
+
         surface_pop_clip(surface);
-
-        surface_push_clip(surface, (Region){
-                                       0,
-                                       surface_height(surface) - 1,
-                                       surface_width(surface),
-                                       1,
-                                   });
-
-        model_view_status_bar(surface, &state, model, data);
-
         surface_pop_clip(surface);
 
         surface_render(surface);

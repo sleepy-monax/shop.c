@@ -40,6 +40,7 @@ void list_clear(List *this)
 
         free(current->value);
         free(current);
+
         current = next;
     }
 
@@ -89,11 +90,13 @@ bool list_peek(List *this, void **value)
     if (this->head != NULL)
     {
         *value = this->head->value;
+
         return true;
     }
     else
     {
         *value = NULL;
+
         return false;
     }
 }
@@ -203,7 +206,9 @@ bool list_pop(List *this, void **value)
     }
 
     if (value != NULL)
-        *(value) = item->value;
+    {
+        *value = item->value;
+    }
 
     free(item);
 
@@ -256,7 +261,9 @@ bool list_popback(List *this, void **value)
     }
 
     if (value != NULL)
-        *(value) = item->value;
+    {
+        *value = item->value;
+    }
 
     free(item);
 

@@ -156,8 +156,7 @@ static const char *item_category_string[] = {ITEM_CATEGORY_LIST(ITEM_STRING_ENTR
 Variant stocks_ModelGetData(StockList *stock, int row, int column, ModelRole role)
 {
     Item *item;
-    list_peekat(stock, row, (void **)&item);
-    assert(item);
+    assert(list_peekat(stock, row, (void **)&item));
 
     switch (column)
     {

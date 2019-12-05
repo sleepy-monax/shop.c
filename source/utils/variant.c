@@ -7,14 +7,14 @@
 #include "utils/variant.h"
 #include "utils/logger.h"
 
-Variant vint(int value)
+Variant vint(long int value)
 {
     Variant v = (Variant){
         .type = VARIANT_INT,
         .as_int = value,
     };
 
-    snprintf(v.as_string, VARIANT_STRING_SIZE, "%d", value);
+    snprintf(v.as_string, VARIANT_STRING_SIZE, "%ld", value);
 
     return v;
 }
@@ -100,8 +100,8 @@ Variant variant_deserialize(const char *source)
     }
     else if (str_is_int(source))
     {
-        int v;
-        sscanf(source, "%d", &v);
+        long int v;
+        sscanf(source, "%ld", &v);
         value = vint(v);
     }
     else if (str_is_float(source))
@@ -121,7 +121,7 @@ void variant_serialize(Variant value, char *destination)
     switch (value.type)
     {
     case VARIANT_INT:
-        sprintf(destination, "%d", value.as_int);
+        sprintf(destination, "%ld", value.as_int);
         break;
 
     case VARIANT_FLOAT:

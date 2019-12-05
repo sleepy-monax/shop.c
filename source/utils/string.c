@@ -74,7 +74,7 @@ size_t utf8len(const char *s)
     return count;
 }
 
-uint32_t strhash(unsigned char *str)
+uint32_t strhash(const unsigned char *str)
 {
     unsigned long hash = 5381;
     int c;

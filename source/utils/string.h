@@ -22,7 +22,7 @@ bool str_is_float(const char *str);
 
 size_t utf8len(const char *s);
 
-uint32_t strhash(unsigned char *str);
+uint32_t strhash(const uint8_t *str);
 
 int strutf8(uint8_t *out, Codepoint utf);
 

@@ -1,41 +1,47 @@
 #include "view/views.h"
 
+void *load_data(Model model, void *data, const char *path)
+{
+    char path_with_sufix[256];
+    snprintf(path_with_sufix, 256, "%s.saved", path);
+
+    FILE *fdat = fopen(path_with_sufix, "r");
+    if (!fdat)
+    {
+        fdat = fopen(path, "r");
+    }
+
+    model_load(model, data, fdat);
+    fclose(fdat);
+
+    return data;
+}
+
+void save_data(Model model, void *data, const char *path)
+{
+    char path_with_sufix[256];
+    snprintf(path_with_sufix, 256, "%s.saved", path);
+
+    FILE *stocks_save_file = fopen(path_with_sufix, "w");
+    model_save(model, data, stocks_save_file);
+    list_destroy(data);
+    fclose(stocks_save_file);
+}
+
 int main(int argc, char const *argv[])
 {
     (void)argc;
     (void)argv;
 
-    FILE *stocks_file = fopen("data/stock.dat.saved", "r");
-    if (!stocks_file)
-    {
-        stocks_file = fopen("data/stock.dat", "r");
-    }
+    UsersList *users = load_data(users_model_create(), list_create(), "data/user.dat");
+    ClientsList *clients = load_data(clients_model_create(), list_create(), "data/client.dat");
+    StockList *stocks = load_data(stocks_model_create(), list_create(), "data/stock.dat");
 
-    StockList *stocks = list_create();
-    model_load(stocks_model_create(), stocks, stocks_file);
-    fclose(stocks_file);
+    user_login(users, stocks, clients);
 
-    FILE *clients_file = fopen("data/client.dat.saved", "r");
-    if (!clients_file)
-    {
-        clients_file = fopen("data/client.dat", "r");
-    }
-
-    ClientsList *clients = list_create();
-    model_load(clients_model_create(), clients, clients_file);
-    fclose(clients_file);
-
-    home_select_what_todo(stocks, clients);
-
-    FILE *stocks_save_file = fopen("data/stock.dat.saved", "w");
-    model_save(stocks_model_create(), stocks, stocks_save_file);
-    list_destroy(stocks);
-    fclose(stocks_save_file);
-
-    FILE *clients_save_file = fopen("data/client.dat.saved", "w");
-    model_save(clients_model_create(), clients, clients_save_file);
-    list_destroy(clients);
-    fclose(clients_save_file);
+    save_data(clients_model_create(), clients, "data/client.dat");
+    save_data(stocks_model_create(), stocks, "data/stock.dat");
+    save_data(users_model_create(), users, "data/user.dat");
 
     return 0;
 }

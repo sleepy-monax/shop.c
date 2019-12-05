@@ -2,7 +2,10 @@
 
 #include "shop/stocks.h"
 #include "shop/clients.h"
+#include "shop/users.h"
 #include "shop/session.h"
+
+void user_login(UsersList *users, StockList *stocks, ClientsList *clients);
 
 void home_select_what_todo(StockList *stocks, ClientsList *clients);
 

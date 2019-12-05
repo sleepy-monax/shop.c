@@ -1,9 +1,10 @@
+#include <string.h>
+
 #include "view/views.h"
 #include "utils/input.h"
 #include "utils/logger.h"
 #include "model/view.h"
 
-#include <string.h>
 void home_select_what_todo(StockList *stock, ClientsList *clients)
 {
 
