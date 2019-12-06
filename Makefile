@@ -12,8 +12,8 @@ CFLAGS = -g \
 		 -Wextra \
 		 -Werror \
 		 -fsanitize=address \
-		 -fsanitize=undefined 
- 
+		 -fsanitize=undefined
+
 $(PROJECT).out: $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 

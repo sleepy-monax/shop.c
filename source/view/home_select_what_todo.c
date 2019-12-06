@@ -7,9 +7,6 @@
 
 void home_select_what_todo(StockList *stock, ClientsList *clients)
 {
-
-    char input_manager[20];
-
     const char *choices[] = {
         "Interface manager",
         "Interface client",
@@ -19,24 +16,9 @@ void home_select_what_todo(StockList *stock, ClientsList *clients)
 
     do
     {
-        /* code */
-
         switch (user_select("Selectionnez une interface", choices))
         {
         case 0:
-            do
-            {
-                user_input("Inserez votre identifiant manager", ".......", input_manager);
-                if (strcmp(input_manager, "Nicolas") != 0)
-                {
-                    if (user_yes_no("Erreur, identifiant incorrect, voulez-vous reessayer ? ") == YES)
-                    {
-                        home_select_what_todo(stock, clients);
-                        break;
-                    }
-                }
-            } while (strcmp(input_manager, "Nicolas") != 0);
-
             manager_select_what_todo(stock, clients);
             break;
 

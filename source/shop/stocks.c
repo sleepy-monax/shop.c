@@ -39,15 +39,11 @@ void stocks_display_consigned(StockList *stocks)
     }
 }
 
-// Destruit la liste des stockes.
 void stocks_destroy(StockList *this)
 {
     list_destroy(this);
 }
 
-// Cherche un item dans les stocks
-//
-// Notes: return NULL si l'objet ne peux pas etre trouver
 Item *stocks_lookup_item(StockList *stocks, BareCode barecode)
 {
     list_foreach(item, stocks)
