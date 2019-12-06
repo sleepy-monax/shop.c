@@ -3,14 +3,14 @@
 #include "view/views.h"
 #include "utils/input.h"
 #include "utils/logger.h"
-#include "model/view.h"
 
-void home_select_what_todo(StockList *stock, ClientsList *clients)
+void home_select_what_todo(User *user, StockList *stock, ClientsList *clients)
 {
     const char *choices[] = {
         "Interface manager",
-        "Interface client",
+        "Interface client\n",
         "Sortir du programme",
+
         NULL,
     };
 
@@ -19,7 +19,7 @@ void home_select_what_todo(StockList *stock, ClientsList *clients)
         switch (user_select("Selectionnez une interface", choices))
         {
         case 0:
-            manager_select_what_todo(stock, clients);
+            manager_select_what_todo(user, stock, clients);
             break;
 
         case 1:

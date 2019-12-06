@@ -3,12 +3,46 @@
 #include "utils/renderer.h"
 #include "utils/math.h"
 
-void model_view_title(Surface *surface, const char *title)
+void model_view_title(User *user, Surface *surface, const char *title)
 {
-    surface_text(surface, title, 0, 1, surface_width(surface), style_bold(style_centered(BLUE_STYLE)));
-    surface_text(surface, "MANAGER", 2, 2, 16, style_inverted(style_centered(BLUE_STYLE)));
-    surface_text(surface, "VAN BOSSUYT Nicolas", 20, 2, 36, DEFAULT_STYLE);
-    surface_plot_line(surface, u'▔', 0, 3, surface_width(surface), 3, BLUE_STYLE);
+    if (user)
+    {
+        switch (user->access)
+        {
+        case USER_ADMIN:
+            surface_text(surface, title, 0, 1, surface_width(surface), style_bold(style_centered(RED_STYLE)));
+            surface_text(surface, "ADMIN", 2, 2, 16, style_inverted(style_centered(RED_STYLE)));
+            surface_plot_line(surface, u'▔', 0, 3, surface_width(surface), 3, RED_STYLE);
+
+            break;
+
+        case USER_MANAGER:
+            surface_text(surface, title, 0, 1, surface_width(surface), style_bold(style_centered(BLUE_STYLE)));
+            surface_text(surface, "MANAGER", 2, 2, 16, style_inverted(style_centered(BLUE_STYLE)));
+            surface_plot_line(surface, u'▔', 0, 3, surface_width(surface), 3, BLUE_STYLE);
+
+            break;
+
+        case USER_CASHIER:
+            surface_text(surface, title, 0, 1, surface_width(surface), style_bold(style_centered(WHITE_STYLE)));
+            surface_text(surface, "CAISSIER", 2, 2, 16, style_inverted(style_centered(WHITE_STYLE)));
+            surface_plot_line(surface, u'▔', 0, 3, surface_width(surface), 3, WHITE_STYLE);
+
+            break;
+
+        default:
+            break;
+        }
+
+        char buffer[128];
+        snprintf(buffer, 128, "%s %s", user->lastname, user->firstname);
+        surface_text(surface, buffer, 20, 2, 36, DEFAULT_STYLE);
+    }
+    else
+    {
+        surface_text(surface, title, 0, 1, surface_width(surface), style_bold(style_centered(WHITE_STYLE)));
+        surface_plot_line(surface, u'▔', 0, 3, surface_width(surface), 3, WHITE_STYLE);
+    }
 
     surface_push_clip(surface, (Region){
                                    0,
@@ -106,7 +140,7 @@ void model_view_list(Surface *surface, ModelViewState *state, Model model, void 
     {
         for (int column = 0; column < model.column_count(); column++)
         {
-            Variant value = model.get_data(data, state->sorted[row], column, ROLE_DISPLAY);
+            Variant value = model.get_data(data, state->sorted[row], column, ROLE_DATA);
 
             if (row == state->slected)
             {
@@ -134,7 +168,7 @@ static void reverse_array(int array[], int size)
     }
 }
 
-void model_view(const char *title, Model model, void *data)
+void model_view(User *user, const char *title, Model model, void *data)
 {
     (void)title;
     ModelViewState state = {0};
@@ -181,7 +215,7 @@ void model_view(const char *title, Model model, void *data)
 
         terminal_enter_rawmode();
 
-        model_view_title(surface, title);
+        model_view_title(user, surface, title);
         model_view_status_bar(surface, &state, model, data);
 
         {

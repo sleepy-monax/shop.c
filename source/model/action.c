@@ -24,7 +24,7 @@ void help_ModelActionCallback(
 
     surface_clear(surface, DEFAULT_STYLE);
 
-    model_view_title(surface, "Rubrique d'aide");
+    model_view_title(NULL,  surface, "Rubrique d'aide");
 
     for (int i = 0; model.get_actions()[i].key_codepoint != 0; i++)
     {

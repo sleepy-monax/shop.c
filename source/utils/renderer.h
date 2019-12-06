@@ -62,8 +62,14 @@ typedef struct
 #define ALTERNATIVE_STYLE \
     (Style) { false, false, COLOR_WHITE, COLOR_BRIGHT_BLACK, TEXT_LEFT }
 
+#define RED_STYLE \
+    (Style) { false, false, COLOR_RED, COLOR_BLACK, TEXT_LEFT }
+
 #define BLUE_STYLE \
     (Style) { false, false, COLOR_BLUE, COLOR_BLACK, TEXT_LEFT }
+
+#define WHITE_STYLE \
+    (Style) { false, false, COLOR_WHITE, COLOR_BLACK, TEXT_LEFT }
 
 #define BOLD_STYLE \
     (Style) { true, false, COLOR_WHITE, COLOR_BLACK, TEXT_LEFT }

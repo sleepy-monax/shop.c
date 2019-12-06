@@ -9,7 +9,7 @@
 #include "shop/clients.h"
 #include "model/view.h"
 
-void manager_select_what_todo(StockList *stock, ClientsList *clients)
+void manager_select_what_todo(User *user, StockList *stock, ClientsList *clients)
 {
     const char *choices[] = {
         "Liste des produits",
@@ -25,11 +25,11 @@ void manager_select_what_todo(StockList *stock, ClientsList *clients)
         switch (user_select("Selectionnez une interface", choices))
         {
         case 0:
-            model_view("Liste des produits", stocks_model_create(), stock);
+            model_view(user, "Liste des produits", stocks_model_create(), stock);
             break;
 
         case 1:
-            model_view("Liste des clients", clients_model_create(), clients);
+            model_view(user, "Liste des clients", clients_model_create(), clients);
             break;
 
         case 2:

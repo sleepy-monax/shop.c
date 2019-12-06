@@ -7,11 +7,11 @@
 
 void user_login(UsersList *users, StockList *stocks, ClientsList *clients);
 
-void home_select_what_todo(StockList *stocks, ClientsList *clients);
+void home_select_what_todo(User *user, StockList *stocks, ClientsList *clients);
 
 /* --- Manager -------------------------------------------------------------- */
 
-void manager_select_what_todo(StockList *stock, ClientsList *clients);
+void manager_select_what_todo(User *user, StockList *stock, ClientsList *clients);
 
 void mamager_manage_clients(ClientsList *clients);
 

@@ -16,7 +16,7 @@ void user_login(UsersList *users, StockList *stocks, ClientsList *clients)
 
         if (user != NULL && hash == user->password)
         {
-            home_select_what_todo(stocks, clients);
+            home_select_what_todo(user, stocks, clients);
             return;
         }
         else

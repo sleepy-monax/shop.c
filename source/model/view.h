@@ -1,6 +1,7 @@
 #pragma once
 
 #include "model/model.h"
+#include "shop/users.h"
 
 typedef struct ModelViewState
 {
@@ -20,6 +21,6 @@ typedef struct ModelViewState
     int sorted[10000];
 } ModelViewState;
 
-void model_view_title(Surface *surface, const char *title);
+void model_view_title(User *user, Surface *surface, const char *title);
 
-void model_view(const char *title, Model model, void *data);
+void model_view(User *user, const char *title, Model model, void *data);
