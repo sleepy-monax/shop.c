@@ -33,6 +33,14 @@ int main(int argc, char const *argv[])
     (void)argc;
     (void)argv;
 
+    printf("\t   __________  __    ____  __  ____  ________\n");
+    printf("\t  / ____/ __ \\/ /   / __ \\/ / / /\\ \\/ /_  __/\n");
+    printf("\t / /   / / / / /   / /_/ / / / /  \\  / / /   \n");
+    printf("\t/ /___/ /_/ / /___/ _, _/ /_/ /   / / / /    \n");
+    printf("\t\\____/\\____/_____/_/ |_|\\____/   /_/ /_/     \n");
+
+    printf("\n\n");
+
     UsersList *users = load_data(users_model_create(), list_create(), "data/user.dat");
     ClientsList *clients = load_data(clients_model_create(), list_create(), "data/client.dat");
     StockList *stocks = load_data(stocks_model_create(), list_create(), "data/stock.dat");
