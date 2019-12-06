@@ -140,7 +140,7 @@ void model_view_list(Surface *surface, ModelViewState *state, Model model, void 
     {
         for (int column = 0; column < model.column_count(); column++)
         {
-            Variant value = model.get_data(data, state->sorted[row], column, ROLE_DATA);
+            Variant value = model.get_data(data, state->sorted[row], column, ROLE_DISPLAY);
 
             if (row == state->slected)
             {
