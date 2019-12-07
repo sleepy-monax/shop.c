@@ -94,7 +94,7 @@ const char *users_ModelColumnName(int index, ModelRole role)
             return "Nom";
 
         case COL_USERS_PASSWORD:
-            return "Hask";
+            return "Hash";
 
         case COL_USERS_ACCESS:
             return "Accès";
