@@ -23,4 +23,6 @@ typedef struct ModelViewState
 
 void model_view_title(User *user, Surface *surface, const char *title);
 
+void model_view_status_bar(Surface *surface, ModelViewState *state, Model model, void *data);
+
 void model_view(User *user, const char *title, Model model, void *data);

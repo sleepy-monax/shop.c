@@ -180,6 +180,7 @@ void model_view(User *user, const char *title, Model model, void *data)
 
     do
     {
+        surface_clear(surface, DEFAULT_STYLE);
         surface_update(surface);
 
         if (state.sort_dirty)

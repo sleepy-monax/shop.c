@@ -1,5 +1,6 @@
 #include "model/view.h"
 #include "utils/terminal.h"
+#include "utils/math.h"
 
 void quit_ModelActionCallback(
     Surface *surface,
@@ -24,7 +25,7 @@ void help_ModelActionCallback(
 
     surface_clear(surface, DEFAULT_STYLE);
 
-    model_view_title(NULL,  surface, "Rubrique d'aide");
+    model_view_title(NULL, surface, "Rubrique d'aide");
 
     for (int i = 0; model.get_actions()[i].key_codepoint != 0; i++)
     {
@@ -122,7 +123,51 @@ void edit_ModelActionCallback(
 {
     (void)surface, (void)state, (void)model, (void)data, (void)row;
 
-    //model_view_edit(*state, model, data, row);
+    bool exited = false;
+    int selected = 0;
+
+    do
+    {
+        surface_clear(surface, DEFAULT_STYLE);
+        model_view_title(NULL, surface, "Editer le model");
+        model_view_status_bar(surface, state, model, data);
+
+        for (int i = 0; i < model.column_count(); i++)
+        {
+            char buffer[256];
+
+            snprintf(buffer, 256, "%16s: %-16s", model.column_name(i, ROLE_DATA), model.get_data(data, row, i, ROLE_DATA).as_string);
+
+            if (i == selected)
+            {
+                surface_text(surface, buffer, 2, i, surface_width(surface), INVERTED_STYLE);
+            }
+            else
+            {
+                surface_text(surface, buffer, 2, i, surface_width(surface), DEFAULT_STYLE);
+            }
+        }
+
+        surface_pop_clip(surface);
+        surface_pop_clip(surface);
+        surface_render(surface);
+
+        int key = terminal_read_key();
+
+        if (key == 'j')
+        {
+            selected = min(selected + 1, model.column_count() - 1);
+        }
+        else if (key == 'k')
+        {
+            selected = max(selected - 1, 0);
+        }
+        else if (key == 'q')
+        {
+            exited = true;
+        }
+    } while (!exited);
+
     state->sort_dirty = true;
 }
 
