@@ -39,6 +39,8 @@ int users_ModelRowCreate(UsersList *users)
 {
     User *new_user = malloc(sizeof(User));
 
+    *new_user = (User){0};
+
     list_pushback(users, new_user);
 
     return list_count(users) - 1;

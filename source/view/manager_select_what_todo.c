@@ -2,18 +2,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "utils/logger.h"
-#include "view/views.h"
-#include "utils/input.h"
-#include "utils/string.h"
-#include "shop/clients.h"
 #include "model/view.h"
+#include "utils/input.h"
+#include "utils/logger.h"
+#include "utils/string.h"
+#include "view/views.h"
 
-void manager_select_what_todo(User *user, StockList *stock, ClientsList *clients)
+#include "shop/clients.h"
+#include "shop/stocks.h"
+#include "shop/users.h"
+
+void manager_select_what_todo(User *user, UsersList *users, StockList *stock, ClientsList *clients)
 {
     const char *choices[] = {
         "Liste des produits",
         "Liste des clients",
+        "Liste des employers",
         "Retour au menu principal",
         NULL,
     };
@@ -33,6 +37,10 @@ void manager_select_what_todo(User *user, StockList *stock, ClientsList *clients
             break;
 
         case 2:
+            model_view(user, "Liste des employers", users_model_create(), users);
+            break;
+
+        case 3:
             exited = true;
             break;
 

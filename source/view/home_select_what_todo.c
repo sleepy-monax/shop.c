@@ -4,7 +4,7 @@
 #include "utils/input.h"
 #include "utils/logger.h"
 
-void home_select_what_todo(User *user, StockList *stock, ClientsList *clients)
+void home_select_what_todo(User *user, UsersList *users, StockList *stock, ClientsList *clients)
 {
     const char *choices[] = {
         "Interface manager",
@@ -19,7 +19,7 @@ void home_select_what_todo(User *user, StockList *stock, ClientsList *clients)
         switch (user_select("Selectionnez une interface", choices))
         {
         case 0:
-            manager_select_what_todo(user, stock, clients);
+            manager_select_what_todo(user, users, stock, clients);
             break;
 
         case 1:

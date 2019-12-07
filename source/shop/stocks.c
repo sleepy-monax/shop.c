@@ -29,7 +29,7 @@ void stocks_display(StockList *stocks)
         Item *itemInStocks = (Item *)item->value;
         barecode_print(itemInStocks->id);
 
-        printf(" %04d %s %s %5.2f€", itemInStocks->id, itemInStocks->label, item_category_string[itemInStocks->category], itemInStocks->price);
+        printf(" %04d %16s %16s %5.2f€", itemInStocks->id, itemInStocks->label, item_category_string[itemInStocks->category], itemInStocks->price);
 
         if (itemInStocks->discount != 0)
         {
