@@ -23,8 +23,6 @@ typedef struct
 
 typedef List ClientsList;
 
-void clients_display(ClientsList *clients);
-
 Client *clients_lookup(ClientsList *clients, BareCode id);
 
 int clients_generate_id(ClientsList *clients);
