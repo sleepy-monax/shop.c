@@ -8,6 +8,8 @@
 #include "utils/string.h"
 #include "utils/input.h"
 #include "utils/terminal.h"
+#include "utils/renderer.h"
+#include "model/view.h"
 
 //void user_input_display(const char *format, const char *input)
 //{
@@ -57,31 +59,36 @@ int user_select(const char *prompt, const char *options[])
 {
     terminal_enable_alternative_screen_buffer();
 
-    char c;
+    Surface *surface = surface_create();
+
     bool stop = false;
     int selected = 0;
 
     while (!stop)
     {
-        printf("\e[1;1H\e[2J");
-
-        printf("%s:\n\n", prompt);
+        surface_clear(surface, DEFAULT_STYLE);
+        model_view_title(NULL, surface, prompt);
 
         for (int i = 0; options[i]; i++)
         {
             if (i == selected)
             {
-                printf("\e[32;1m-> \e[0m%s\n", options[i]);
+                surface_text(surface, vstringf("> %s <", options[i]).as_string, 0, i, surface_width(surface), style_centered(style_bold(DEFAULT_STYLE)));
             }
             else
             {
-                printf("   %s\n", options[i]);
+                surface_text(surface, options[i], 0, i, surface_width(surface), style_centered(DEFAULT_STYLE));
             }
         }
 
-        printf("\n[K] up / [J] down / [ENTER] select\n");
+        surface_text(surface, " [K] up / [J] down / [ENTER] select", 0, surface_height(surface) - 1, surface_width(surface), style_inverted(DEFAULT_STYLE));
 
-        c = terminal_read_key();
+        surface_pop_clip(surface);
+
+        surface_render(surface);
+        surface_update(surface);
+
+        char c = terminal_read_key();
 
         if (c == 'k')
         {
@@ -98,6 +105,8 @@ int user_select(const char *prompt, const char *options[])
             stop = true;
         }
     }
+
+    surface_destroy(surface);
 
     terminal_disable_alternative_screen_buffer();
 
