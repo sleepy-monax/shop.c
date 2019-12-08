@@ -38,6 +38,8 @@ bool list_peekback(List *this, void **value);
 
 bool list_peekat(List *this, int index, void **value);
 
+int list_indexof(List *this, void *value);
+
 void list_push(List *this, void *value);
 
 void list_pushback(List *this, void *value);

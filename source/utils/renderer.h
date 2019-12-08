@@ -59,6 +59,15 @@ typedef struct
 #define DEFAULT_STYLE \
     (Style) { false, false, COLOR_WHITE, COLOR_BLACK, TEXT_LEFT }
 
+#define DISABLED_DEFAULT_STYLE \
+    (Style) { false, false, COLOR_RED, COLOR_BLACK, TEXT_LEFT }
+
+#define INVERTED_STYLE \
+    (Style) { false, false, COLOR_BLACK, COLOR_WHITE, TEXT_LEFT }
+
+#define DISABLED_INVERTED_STYLE \
+    (Style) { false, false, COLOR_BLACK, COLOR_RED, TEXT_LEFT }
+
 #define ALTERNATIVE_STYLE \
     (Style) { false, false, COLOR_WHITE, COLOR_BRIGHT_BLACK, TEXT_LEFT }
 
@@ -76,9 +85,6 @@ typedef struct
 
 #define UNDERLINE_STYLE \
     (Style) { false, true, COLOR_WHITE, COLOR_BLACK, TEXT_LEFT }
-
-#define INVERTED_STYLE \
-    (Style) { false, false, COLOR_BLACK, COLOR_WHITE, TEXT_LEFT }
 
 Style style_regular(Style style);
 

@@ -3,25 +3,27 @@
 #include "utils/math.h"
 
 void quit_ModelActionCallback(
+    User *user,
     Surface *surface,
     ModelViewState *state,
     Model model,
     void *data,
     int row)
 {
-    (void)surface, (void)model, (void)data, (void)row;
+    (void)user, (void)surface, (void)model, (void)data, (void)row;
 
     state->exited = true;
 }
 
 void help_ModelActionCallback(
+    User *user,
     Surface *surface,
     ModelViewState *state,
     Model model,
     void *data,
     int row)
 {
-    (void)surface, (void)state, (void)model, (void)data, (void)row;
+    (void)user, (void)surface, (void)state, (void)model, (void)data, (void)row;
 
     surface_clear(surface, DEFAULT_STYLE);
 
@@ -44,77 +46,84 @@ void help_ModelActionCallback(
 }
 
 void scroll_up_ModelActionCallback(
+    User *user,
     Surface *surface,
     ModelViewState *state,
     Model model,
     void *data,
     int row)
 {
-    (void)surface, (void)model, (void)data, (void)row;
+    (void)user, (void)surface, (void)model, (void)data, (void)row;
 
     state->slected--;
 }
 
 void scroll_down_ModelActionCallback(
+    User *user,
     Surface *surface,
     ModelViewState *state,
     Model model, void *data,
     int row)
 {
-    (void)surface, (void)state, (void)model, (void)data, (void)row;
+    (void)user, (void)surface, (void)state, (void)model, (void)data, (void)row;
 
     state->slected++;
 }
 
 void page_up_ModelActionCallback(
+    User *user,
     Surface *surface,
     ModelViewState *state,
     Model model,
     void *data,
     int row)
 {
-    (void)surface, (void)state, (void)model, (void)data, (void)row;
+    (void)user, (void)surface, (void)state, (void)model, (void)data, (void)row;
 
     state->slected -= 10;
 }
 
 void page_down_ModelActionCallback(
+    User *user,
     Surface *surface,
     ModelViewState *state,
     Model model,
     void *data,
     int row)
 {
-    (void)surface, (void)state, (void)model, (void)data, (void)row;
+    (void)user, (void)surface, (void)state, (void)model, (void)data, (void)row;
 
     state->slected += 10;
 }
 
 void home_ModelActionCallback(
+    User *user,
     Surface *surface,
     ModelViewState *state,
     Model model,
     void *data,
     int row)
 {
-    (void)surface, (void)state, (void)model, (void)data, (void)row;
+    (void)user, (void)surface, (void)state, (void)model, (void)data, (void)row;
 
     state->slected = 0;
 }
 
 void end_ModelActionCallback(
+    User *user,
     Surface *surface,
     ModelViewState *state,
     Model model,
     void *data,
     int row)
 {
-    (void)surface, (void)state, (void)model, (void)data, (void)row;
+    (void)user, (void)surface, (void)state, (void)model, (void)data, (void)row;
 
     state->slected = model.row_count(data);
 }
 
 void edit_ModelActionCallback(
+    User *user,
     Surface *surface,
     ModelViewState *state,
     Model model,
@@ -136,15 +145,29 @@ void edit_ModelActionCallback(
         {
             char buffer[256];
 
-            snprintf(buffer, 256, "%16s: %-16s", model.column_name(i, ROLE_DATA), model.get_data(data, row, i, ROLE_DATA).as_string);
+            snprintf(buffer, 256, "%16s: %-16s", model.column_name(i, ROLE_DATA), model_get_data_with_access(model, data, row, i, user, ROLE_DATA).as_string);
 
-            if (i == selected)
+            if (user->access <= model.write_access(data, row, i, user))
             {
-                surface_text(surface, buffer, 2, i, surface_width(surface), INVERTED_STYLE);
+                if (i == selected)
+                {
+                    surface_text(surface, buffer, 2, i, surface_width(surface), INVERTED_STYLE);
+                }
+                else
+                {
+                    surface_text(surface, buffer, 2, i, surface_width(surface), DEFAULT_STYLE);
+                }
             }
             else
             {
-                surface_text(surface, buffer, 2, i, surface_width(surface), DEFAULT_STYLE);
+                if (i == selected)
+                {
+                    surface_text(surface, buffer, 2, i, surface_width(surface), DISABLED_INVERTED_STYLE);
+                }
+                else
+                {
+                    surface_text(surface, buffer, 2, i, surface_width(surface), DISABLED_DEFAULT_STYLE);
+                }
             }
         }
 
@@ -172,27 +195,29 @@ void edit_ModelActionCallback(
 }
 
 void create_ModelActionCallback(
+    User *user,
     Surface *surface,
     ModelViewState *state,
     Model model,
     void *data,
     int row)
 {
-    (void)surface, (void)state, (void)model, (void)data, (void)row;
+    (void)user, (void)surface, (void)state, (void)model, (void)data, (void)row;
 
     int new_row = model.row_create(data);
-    edit_ModelActionCallback(surface, state, model, data, new_row);
+    edit_ModelActionCallback(user, surface, state, model, data, new_row);
     state->sort_dirty = true;
 }
 
 void delete_ModelActionCallback(
+    User *user,
     Surface *surface,
     ModelViewState *state,
     Model model,
     void *data,
     int row)
 {
-    (void)surface, (void)state, (void)model, (void)data, (void)row;
+    (void)user, (void)surface, (void)state, (void)model, (void)data, (void)row;
 
     model.row_delete(data, state->sorted[state->slected]);
     state->sort_dirty = true;

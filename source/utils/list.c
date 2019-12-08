@@ -160,6 +160,23 @@ bool list_peekat(List *this, int index, void **value)
     }
 }
 
+int list_indexof(List *this, void *value)
+{
+    int index = 0;
+
+    list_foreach(item, this)
+    {
+        if (item->value == value)
+        {
+            return index;
+        }
+
+        index++;
+    }
+
+    return -1;
+}
+
 void list_push(List *this, void *value)
 {
     ListItem *item = malloc(sizeof(ListItem));

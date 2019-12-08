@@ -49,7 +49,7 @@ void model_load(Model model, void *data, FILE *source)
     int row = -1;
     int column = -1;
 
-    Lexer lex = {};
+    Lexer lex = {0};
     lex.ln = 1;
     lex.source = source;
 
@@ -72,7 +72,7 @@ void model_load(Model model, void *data, FILE *source)
 
                 if (column == -1)
                 {
-                    log_error("Le modele ne contient pas la colonne %s!", tok.literal);
+                    log_error("Loader: ln%d, col%d: Le modele ne contient pas la colonne %s!", tok.ln, tok.col, tok.literal);
                 }
 
                 state = MODEL_LOAD_VALUE;
@@ -98,9 +98,12 @@ void model_load(Model model, void *data, FILE *source)
                 }
                 else
                 {
-                    log_error("Le type de la collone(%s) dans ne corespond pas avec le type collone du model! (%d!=%d)",
+                    log_error("Loader: ln%d, col%d: Le type de la colonne(%s) dans ne corespond pas avec le type colonne du model! (%d!=%d)",
+                              tok.ln,
+                              tok.col,
                               model.column_name(column, ROLE_DATA),
-                              value.type, model.column_type(column));
+                              value.type,
+                              model.column_type(column));
                 }
 
                 state = MODEL_LOAD_KEY;
@@ -131,5 +134,25 @@ void model_save(Model model, void *data, FILE *destination)
         }
 
         fprintf(destination, "END\n\n");
+    }
+}
+
+Variant model_get_data_with_access(Model model, void *data, int row, int column, User *user, ModelRole role)
+{
+    if (user->access <= model.read_access(data, row, column, user))
+    {
+        return model.get_data(data, row, column, role);
+    }
+    else
+    {
+        return vstring("####");
+    }
+}
+
+void model_set_data_with_access(Model model, void *data, int row, int column, Variant value, User *user)
+{
+    if (user->access <= model.read_access(data, row, column, user))
+    {
+        return model.set_data(data, row, column, value);
     }
 }

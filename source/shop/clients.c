@@ -27,6 +27,7 @@ int clients_generate_id(ClientsList *clients)
         id = rand() % 9999;
         if (list_count(clients) == 0)
             return id;
+
     } while (clients_lookup(clients, id));
 
     return id;
@@ -45,6 +46,36 @@ Client *clients_lookup(ClientsList *clients, BareCode id)
     }
 
     return NULL;
+}
+
+ModelAccess clients_ModelReadAccess(ClientsList *clients, int row, int column, User *user)
+{
+    (void)clients;
+    (void)row;
+    (void)column;
+    (void)user;
+
+    return ACCESS_ALL;
+}
+
+ModelAccess clients_ModelWriteAccess(ClientsList *clients, int row, int column, User *user)
+{
+    (void)clients;
+    (void)row;
+    (void)user;
+
+    if (column == COL_CLIENTS_BARECODE)
+    {
+        return ACCESS_ADMIN;
+    }
+    else if (column == COL_CLIENTS_POINTS)
+    {
+        return ACCESS_MANAGER;
+    }
+    else
+    {
+        return ACCESS_ALL;
+    }
 }
 
 int clients_ModelRowCount(ClientsList *clients)
@@ -197,7 +228,7 @@ Variant clients_ModelGetData(ClientsList *clients, int row, int column, ModelRol
         }
         else
         {
-            return vstringf("%4d", client->points);
+            return vstringf("%4dpts", client->points);
         }
     }
 
@@ -246,6 +277,9 @@ ModelAction *clients_ModelGetActions(void)
 Model clients_model_create(void)
 {
     return (Model){
+        (ModelReadAccess)clients_ModelReadAccess,
+        (ModelWriteAccess)clients_ModelWriteAccess,
+
         (ModelRowCount)clients_ModelRowCount,
         (ModelRowCreate)clients_ModelRowCreate,
         (ModelRowDelete)clients_ModelRowDelete,

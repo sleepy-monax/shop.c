@@ -9,21 +9,21 @@ void model_view_title(User *user, Surface *surface, const char *title)
     {
         switch (user->access)
         {
-        case USER_ADMIN:
+        case ACCESS_ADMIN:
             surface_text(surface, title, 0, 1, surface_width(surface), style_bold(style_centered(RED_STYLE)));
             surface_text(surface, "ADMIN", 2, 2, 16, style_inverted(style_centered(RED_STYLE)));
             surface_plot_line(surface, u'▔', 0, 3, surface_width(surface), 3, RED_STYLE);
 
             break;
 
-        case USER_MANAGER:
+        case ACCESS_MANAGER:
             surface_text(surface, title, 0, 1, surface_width(surface), style_bold(style_centered(BLUE_STYLE)));
             surface_text(surface, "MANAGER", 2, 2, 16, style_inverted(style_centered(BLUE_STYLE)));
             surface_plot_line(surface, u'▔', 0, 3, surface_width(surface), 3, BLUE_STYLE);
 
             break;
 
-        case USER_CASHIER:
+        case ACCESS_CASHIER:
             surface_text(surface, title, 0, 1, surface_width(surface), style_bold(style_centered(WHITE_STYLE)));
             surface_text(surface, "CAISSIER", 2, 2, 16, style_inverted(style_centered(WHITE_STYLE)));
             surface_plot_line(surface, u'▔', 0, 3, surface_width(surface), 3, WHITE_STYLE);
@@ -126,7 +126,7 @@ void model_view_update_scroll(Surface *surface, ModelViewState *state, Model mod
     state->scroll = max(0, min(state->scroll, model.row_count(data) - 1));
 }
 
-void model_view_list(Surface *surface, ModelViewState *state, Model model, void *data)
+void model_view_list(User *user, Surface *surface, ModelViewState *state, Model model, void *data)
 {
     model_view_scrollbar(surface, state, model, data);
 
@@ -140,7 +140,7 @@ void model_view_list(Surface *surface, ModelViewState *state, Model model, void 
     {
         for (int column = 0; column < model.column_count(); column++)
         {
-            Variant value = model.get_data(data, state->sorted[row], column, ROLE_DISPLAY);
+            Variant value = model_get_data_with_access(model, data, state->sorted[row], column, user, ROLE_DISPLAY);
 
             if (row == state->slected)
             {
@@ -219,10 +219,7 @@ void model_view(User *user, const char *title, Model model, void *data)
         model_view_title(user, surface, title);
         model_view_status_bar(surface, &state, model, data);
 
-        {
-            surface_clear(surface, DEFAULT_STYLE);
-            model_view_list(surface, &state, model, data);
-        }
+        model_view_list(user, surface, &state, model, data);
 
         surface_pop_clip(surface);
         surface_pop_clip(surface);
@@ -239,7 +236,7 @@ void model_view(User *user, const char *title, Model model, void *data)
 
             if (action.key_codepoint == codepoint)
             {
-                action.callback(surface, &state, model, data, state.sorted[state.slected]);
+                action.callback(user, surface, &state, model, data, state.sorted[state.slected]);
             }
         }
 

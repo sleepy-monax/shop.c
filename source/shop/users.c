@@ -30,6 +30,81 @@ User *users_lookup(UsersList *users, const char *login)
     return NULL;
 }
 
+ModelAccess users_ModelReadAccess(UsersList *users, int row, int column, User *user)
+{
+    if (list_indexof(users, user) == row)
+    {
+        return user->access;
+    }
+    else
+    {
+        switch (column)
+        {
+        case COL_USERS_LOGIN:
+            return ACCESS_ADMIN;
+
+        case COL_USERS_FIRSTNAME:
+            return ACCESS_ALL;
+
+        case COL_USERS_LASTNAME:
+            return ACCESS_ALL;
+
+        case COL_USERS_PASSWORD:
+            return ACCESS_ADMIN;
+
+        case COL_USERS_ACCESS:
+            return ACCESS_ALL;
+        }
+
+        ASSERT_NOT_REACHED();
+    }
+}
+
+ModelAccess users_ModelWriteAccess(UsersList *users, int row, int column, User *user)
+{
+
+    switch (column)
+    {
+    case COL_USERS_LOGIN:
+        return ACCESS_ADMIN;
+
+    case COL_USERS_FIRSTNAME:
+        if (list_indexof(users, user) == row)
+        {
+            return ACCESS_ALL;
+        }
+        else
+        {
+            return ACCESS_MANAGER;
+        }
+
+    case COL_USERS_LASTNAME:
+        if (list_indexof(users, user) == row)
+        {
+            return ACCESS_ALL;
+        }
+        else
+        {
+            return ACCESS_MANAGER;
+        }
+
+    case COL_USERS_PASSWORD:
+        if (list_indexof(users, user) == row)
+        {
+            return ACCESS_ALL;
+        }
+        else
+        {
+            return ACCESS_MANAGER;
+        }
+
+    case COL_USERS_ACCESS:
+        return ACCESS_ADMIN;
+    }
+
+    ASSERT_NOT_REACHED();
+}
+
 int users_ModelRowCount(UsersList *users)
 {
     return list_count(users);
@@ -141,10 +216,10 @@ Style users_ModelColumnStyle(int index)
         return style_centered(DEFAULT_STYLE);
 
     case COL_USERS_PASSWORD:
-        return DEFAULT_STYLE;
+        return style_centered(DEFAULT_STYLE);
 
     case COL_USERS_ACCESS:
-        return DEFAULT_STYLE;
+        return style_centered(DEFAULT_STYLE);
     }
 
     ASSERT_NOT_REACHED();
@@ -172,7 +247,27 @@ Variant users_ModelGetData(UsersList *users, int row, int column, ModelRole role
         return vint(user->password);
 
     case COL_USERS_ACCESS:
-        return vint(user->access);
+        if (role == ROLE_DISPLAY)
+        {
+            switch (user->access)
+            {
+            case ACCESS_ADMIN:
+                return vstring("Administrateur");
+
+            case ACCESS_MANAGER:
+                return vstring("Manager");
+
+            case ACCESS_CASHIER:
+                return vstring("Caissier");
+
+            default:
+                ASSERT_NOT_REACHED();
+            }
+        }
+        else
+        {
+            return vint(user->access);
+        }
     }
 
     ASSERT_NOT_REACHED();
@@ -221,6 +316,9 @@ ModelAction *users_ModelGetActions(void)
 Model users_model_create(void)
 {
     return (Model){
+        (ModelReadAccess)users_ModelReadAccess,
+        (ModelWriteAccess)users_ModelWriteAccess,
+
         (ModelRowCount)users_ModelRowCount,
         (ModelRowCreate)users_ModelRowCreate,
         (ModelRowDelete)users_ModelRowDelete,

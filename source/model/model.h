@@ -5,12 +5,16 @@
 #include "utils/variant.h"
 #include "utils/renderer.h"
 #include "model/action.h"
+#include "model/user.h"
 
 typedef enum
 {
     ROLE_DATA,
     ROLE_DISPLAY
 } ModelRole;
+
+typedef ModelAccess (*ModelReadAccess)(void *data, int row, int column, User *user);
+typedef ModelAccess (*ModelWriteAccess)(void *data, int row, int column, User *user);
 
 typedef int (*ModelRowCount)(void *data);
 typedef int (*ModelRowCreate)(void *data);
@@ -28,6 +32,9 @@ typedef ModelAction *(*ModelGetActions)(void);
 
 typedef struct Model
 {
+    ModelReadAccess read_access;
+    ModelWriteAccess write_access;
+
     ModelRowCount row_count;
     ModelRowCreate row_create;
     ModelRowDelete row_delete;
@@ -48,3 +55,7 @@ int model_get_column(Model model, const char *name);
 void model_load(Model model, void *data, FILE *source);
 
 void model_save(Model model, void *data, FILE *destination);
+
+Variant model_get_data_with_access(Model model, void *data, int row, int column, User *user, ModelRole role);
+
+void model_set_data_with_access(Model model, void *data, int row, int column, Variant value, User *user);

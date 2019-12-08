@@ -85,6 +85,32 @@ int stocks_generate_id(StockList *stocks)
     return id;
 }
 
+ModelAccess stocks_ModelReadAccess(StockList *stocks, int row, int column, User *user)
+{
+    (void)stocks;
+    (void)row;
+    (void)column;
+    (void)user;
+
+    return ACCESS_ALL;
+}
+
+ModelAccess stocks_ModelWriteAccess(StockList *stocks, int row, int column, User *user)
+{
+    (void)stocks;
+    (void)row;
+    (void)user;
+
+    if (column == COL_ITEM_BARECODE)
+    {
+        return ACCESS_ADMIN;
+    }
+    else
+    {
+        return ACCESS_MANAGER;
+    }
+}
+
 int stocks_ModelRowCount(StockList *stock)
 {
     return list_count(stock);
@@ -344,6 +370,9 @@ ModelAction *stocks_ModelGetActions(void)
 Model stocks_model_create(void)
 {
     return (Model){
+        (ModelReadAccess)stocks_ModelReadAccess,
+        (ModelWriteAccess)stocks_ModelWriteAccess,
+
         (ModelRowCount)stocks_ModelRowCount,
         (ModelRowCreate)stocks_ModelRowCreate,
         (ModelRowDelete)stocks_ModelRowDelete,

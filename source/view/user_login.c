@@ -6,7 +6,7 @@ void user_login(UsersList *users, StockList *stocks, ClientsList *clients)
     do
     {
         char user_login[17];
-        user_input("Login", "................", user_login);
+        user_input("Login", "****************", user_login);
 
         char user_password[17];
         user_input("Password", "****************", user_password);
