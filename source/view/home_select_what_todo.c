@@ -16,7 +16,7 @@ void home_select_what_todo(User *user, UsersList *users, StockList *stock, Clien
 
     do
     {
-        switch (user_select("Selectionnez une interface", choices))
+        switch (user_select(user, "Selectionnez une interface", choices))
         {
         case 0:
             manager_select_what_todo(user, users, stock, clients);

@@ -13,11 +13,8 @@ static void login_client(Session *session, ClientsList *clients)
 
     do
     {
-        terminal_enable_alternative_screen_buffer();
         extra_barecode = barecode_input("Inserez votre code " EXTRA);
-
         session->client = clients_lookup(clients, extra_barecode);
-        terminal_disable_alternative_screen_buffer();
 
         log_info("Connection avec " EXTRA "#%04d...", extra_barecode);
 
@@ -81,7 +78,7 @@ void cashier_input_card_id(Session *session, ClientsList *clients)
         NULL,
     };
 
-    switch (user_select(prompt, choices))
+    switch (user_select(NULL, prompt, choices))
     {
     case 0:
         login_client(session, clients);

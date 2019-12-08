@@ -2,6 +2,8 @@
 
 #include <stdbool.h>
 
+#include "model/user.h"
+
 typedef enum
 {
     INPUT_INVALID,
@@ -20,6 +22,6 @@ void restore_terminal_after_user_input(void);
 
 bool user_yes_no(const char *prompt);
 
-int user_select(const char *prompt, const char **options);
+int user_select(User *user, const char *prompt, const char *options[]);
 
 void user_input(const char *prompt, const char *format, char *result);

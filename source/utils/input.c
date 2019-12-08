@@ -55,7 +55,7 @@ bool user_yes_no(const char *prompt)
     }
 }
 
-int user_select(const char *prompt, const char *options[])
+int user_select(User *user, const char *prompt, const char *options[])
 {
     terminal_enable_alternative_screen_buffer();
 
@@ -67,7 +67,7 @@ int user_select(const char *prompt, const char *options[])
     while (!stop)
     {
         surface_clear(surface, DEFAULT_STYLE);
-        model_view_title(NULL, surface, prompt);
+        model_view_title(user, surface, prompt);
 
         for (int i = 0; options[i]; i++)
         {

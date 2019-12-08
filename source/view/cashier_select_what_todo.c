@@ -54,7 +54,7 @@ void cashier_select_what_todo(Session *session, StockList *stocks, ClientsList *
 
     do
     {
-        switch (user_select(greeting, choices))
+        switch (user_select(NULL, greeting, choices))
         {
         case 0:
             log_info("Vous avez choisi d'effectuer un achat");
