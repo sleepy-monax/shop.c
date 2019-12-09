@@ -69,7 +69,7 @@ static void new_client(Session *session, ClientsList *clients)
 
 void cashier_input_card_id(Session *session, ClientsList *clients)
 {
-    const char *prompt = "Cher client, vous pouvez profiter des points extra grace au compte " EXTRA " Colruyt";
+    const char *prompt = "Cher client, vous pouvez profiter des points extra grace au compte EXTRA Colruyt";
 
     const char *choices[] = {
         "S'authentifier",
