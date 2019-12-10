@@ -26,7 +26,6 @@ void cashier_scan_items(Session *session, StockList *stock)
     char item_raw_quantity[5];
 
     float totValue = 0.;
-    Basket *basket = basket_create();
 
     do
     {
@@ -47,7 +46,7 @@ void cashier_scan_items(Session *session, StockList *stock)
             }
             else
             {
-                basket_add_item(basket, item, item_quantity);
+                basket_add_item(session->basket, item, item_quantity);
 
                 totValue = item->price;
                 totValue -= item->price * item->discount;
@@ -63,7 +62,6 @@ void cashier_scan_items(Session *session, StockList *stock)
 
     } while (user_yes_no("Voulez-vous continuer a ajouter des articles au panier ?") == YES);
 
-    printf("voici le contenu du panier : \n\n");
-    basket_print_bill(basket);
+    session_print_bill(session);
     getchar();
 }

@@ -67,7 +67,6 @@ void cashier_select_what_todo(Session *session, StockList *stocks, ClientsList *
             break;
 
         case 2:
-            session_print_bill(session);
             exited = true;
             break;
         };
