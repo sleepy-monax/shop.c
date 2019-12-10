@@ -9,7 +9,7 @@ void home_select_what_todo(User *user, UsersList *users, StockList *stock, Clien
     const char *choices[] = {
         "Interface manager",
         "Interface client",
-        "Sortir du programme",
+        " Sortir du programme",
 
         NULL,
     };

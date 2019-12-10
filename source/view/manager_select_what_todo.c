@@ -18,7 +18,7 @@ void manager_select_what_todo(User *user, UsersList *users, StockList *stock, Cl
         "Liste des produits",
         "Liste des clients",
         "Liste des employers",
-        "Retour au menu principal",
+        " Retour",
         NULL,
     };
 

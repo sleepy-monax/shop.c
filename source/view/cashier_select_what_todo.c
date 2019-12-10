@@ -40,7 +40,7 @@ void cashier_select_what_todo(Session *session, StockList *stocks, ClientsList *
     const char *choices[] = {
         "Effectuer un achat",
         "Rendre des bouteilles consignées",
-        "Sortir du programme",
+        " Retour",
         NULL,
     };
 

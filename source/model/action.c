@@ -1,6 +1,11 @@
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+
 #include "model/view.h"
 #include "utils/terminal.h"
 #include "utils/math.h"
+#include "utils/assert.h"
 
 void quit_ModelActionCallback(
     User *user,
@@ -135,6 +140,10 @@ void edit_ModelActionCallback(
     bool exited = false;
     int selected = 0;
 
+    bool editing = false;
+    char edited_value[VARIANT_STRING_SIZE];
+    int edited_offset;
+
     do
     {
         surface_clear(surface, DEFAULT_STYLE);
@@ -143,30 +152,48 @@ void edit_ModelActionCallback(
 
         for (int i = 0; i < model.column_count(); i++)
         {
-            char buffer[256];
 
-            snprintf(buffer, 256, "%16s: %-16s", model.column_name(i, ROLE_DATA), model_get_data_with_access(model, data, row, i, user, ROLE_DATA).as_string);
-
-            if (user->access <= model.write_access(data, row, i, user))
+            if (editing)
             {
                 if (i == selected)
                 {
-                    surface_text(surface, buffer, 2, i, surface_width(surface), INVERTED_STYLE);
+                    char buffer[256];
+                    snprintf(buffer, 256, "%16s: %s▂", model.column_name(i, ROLE_DATA), edited_value);
+                    surface_text(surface, buffer, 0, i, surface_width(surface), DEFAULT_STYLE);
                 }
                 else
                 {
-                    surface_text(surface, buffer, 2, i, surface_width(surface), DEFAULT_STYLE);
+                    char buffer[256];
+                    snprintf(buffer, 256, "%16s: %s", model.column_name(i, ROLE_DATA), model_get_data_with_access(model, data, row, i, user, ROLE_DATA).as_string);
+                    surface_text(surface, buffer, 0, i, surface_width(surface), DISABLED_DEFAULT_STYLE);
                 }
             }
             else
             {
-                if (i == selected)
+                char buffer[256];
+                snprintf(buffer, 256, "%16s: %-16s", model.column_name(i, ROLE_DATA), model_get_data_with_access(model, data, row, i, user, ROLE_DATA).as_string);
+
+                if (user->access <= model.write_access(data, row, i, user))
                 {
-                    surface_text(surface, buffer, 2, i, surface_width(surface), DISABLED_INVERTED_STYLE);
+                    if (i == selected)
+                    {
+                        surface_text(surface, buffer, 0, i, surface_width(surface), INVERTED_STYLE);
+                    }
+                    else
+                    {
+                        surface_text(surface, buffer, 0, i, surface_width(surface), DEFAULT_STYLE);
+                    }
                 }
                 else
                 {
-                    surface_text(surface, buffer, 2, i, surface_width(surface), DISABLED_DEFAULT_STYLE);
+                    if (i == selected)
+                    {
+                        surface_text(surface, buffer, 0, i, surface_width(surface), DISABLED_INVERTED_STYLE);
+                    }
+                    else
+                    {
+                        surface_text(surface, buffer, 0, i, surface_width(surface), DISABLED_DEFAULT_STYLE);
+                    }
                 }
             }
         }
@@ -174,20 +201,101 @@ void edit_ModelActionCallback(
         surface_pop_clip(surface);
         surface_pop_clip(surface);
         surface_render(surface);
+        surface_update(surface);
 
         int key = terminal_read_key();
 
-        if (key == 'j')
+        if (editing)
         {
-            selected = min(selected + 1, model.column_count() - 1);
+            if (key == '\n')
+            {
+                editing = false;
+                if (model.column_type(selected) == VARIANT_INT)
+                {
+                    model.set_data(data, row, selected, vint(atoi(edited_value)));
+                }
+                else if (model.column_type(selected) == VARIANT_FLOAT)
+                {
+                    float value;
+                    sscanf(edited_value, "%f", &value);
+                    model.set_data(data, row, selected, vfloat(value));
+                }
+                else
+                {
+                    model.set_data(data, row, selected, vstring(edited_value));
+                }
+            }
+            else if (key == 127)
+            {
+                if (edited_offset > 0)
+                {
+                    edited_offset--;
+                    edited_value[edited_offset] = '\0';
+                }
+            }
+            else if (iscntrl(key))
+            {
+                // do nothing with it
+            }
+            else if (edited_offset < VARIANT_STRING_SIZE - 1)
+            {
+                switch (model.column_type(selected))
+                {
+                case VARIANT_INT:
+                    if (key >= '0' && key <= '9')
+                    {
+                        edited_value[edited_offset] = key;
+                        edited_value[edited_offset + 1] = '\0';
+
+                        edited_offset++;
+                    }
+                    break;
+
+                case VARIANT_FLOAT:
+                    if ((key >= '0' && key <= '9') || key == '.')
+                    {
+                        edited_value[edited_offset] = key;
+                        edited_value[edited_offset + 1] = '\0';
+
+                        edited_offset++;
+                    }
+                    break;
+
+                case VARIANT_STRING:
+                    edited_value[edited_offset] = key;
+                    edited_value[edited_offset + 1] = '\0';
+
+                    edited_offset++;
+                    break;
+
+                default:
+                    ASSERT_NOT_REACHED();
+                }
+            }
         }
-        else if (key == 'k')
+        else
         {
-            selected = max(selected - 1, 0);
-        }
-        else if (key == 'q')
-        {
-            exited = true;
+            if (key == 'j')
+            {
+                selected = min(selected + 1, model.column_count() - 1);
+            }
+            else if (key == 'k')
+            {
+                selected = max(selected - 1, 0);
+            }
+            else if (key == 'e')
+            {
+                if (user->access <= model.write_access(data, row, selected, user))
+                {
+                    editing = true;
+                    strcpy(edited_value, model.get_data(data, row, selected, ROLE_DATA).as_string);
+                    edited_offset = strlen(edited_value);
+                }
+            }
+            else if (key == 'q')
+            {
+                exited = true;
+            }
         }
     } while (!exited);
 
