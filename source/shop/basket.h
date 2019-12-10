@@ -1,7 +1,7 @@
 #pragma once
 
 #include "shop/stocks.h"
-#include "shop/shop.h"
+#include "shop/barecode.h"
 #include "utils/list.h"
 
 typedef struct

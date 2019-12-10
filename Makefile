@@ -22,12 +22,15 @@ $(PROJECT).out: $(OBJECTS)
 all: $(PROJECT).out
 
 clean:
-	rm -f $(OBJECTS) $(SOURCES:.c=.d) $(PROJECT).out $(wildcard data/*.saved)
+	rm -f $(OBJECTS) $(SOURCES:.c=.d) $(PROJECT).out REPPORT.pdf $(wildcard data/*.saved)
 
 demo: $(PROJECT).out
 	lxterminal -e ./$(PROJECT).out
 
 test: $(PROJECT).out
 	./$(PROJECT).out
+
+REPPORT.pdf: REPPORT.pandoc.md
+	pandoc --toc REPPORT.pandoc.md -o REPPORT.pdf
 
 -include $(SOURCES:.c=.d)

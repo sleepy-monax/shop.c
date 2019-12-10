@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "shop/shop.h"
+#include "shop/barecode.h"
 #include "utils/list.h"
 #include "model/model.h"
 

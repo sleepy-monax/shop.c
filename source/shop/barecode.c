@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "shop/shop.h"
+#include "shop/barecode.h"
 #include "utils/input.h"
 
 const char *barecode_char[] = {

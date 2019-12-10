@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "utils/list.h"
-#include "shop/shop.h"
+#include "shop/barecode.h"
 #include "model/model.h"
 
 #define CLIENT_FIRST_NAME_SIZE 64

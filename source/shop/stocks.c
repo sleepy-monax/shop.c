@@ -2,8 +2,8 @@
 #include <string.h>
 #include <time.h>
 
-#include "shop/stocks.h"
 #include "model/model.h"
+#include "shop/stocks.h"
 #include "utils/assert.h"
 #include "utils/logger.h"
 
