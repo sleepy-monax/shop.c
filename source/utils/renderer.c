@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "utils/math.h"
 #include "utils/renderer.h"
@@ -86,10 +87,18 @@ void surface_update(Surface *this)
     }
 }
 
+static int style_cmp(Style a, Style b)
+{
+    return memcmp(&a, &b, sizeof(Style));
+}
+
 void surface_render(Surface *this)
 {
     terminal_set_cursor_position(0, 0);
     terminal_hide_cursor();
+
+    Style current_style = DEFAULT_STYLE;
+    printf("\e[0m");
 
     for (int y = 0; y < this->height; y++)
     {
@@ -97,17 +106,24 @@ void surface_render(Surface *this)
         {
             Cell c = this->cells[x + y * this->width];
 
-            if (c.style.bold)
+            if (style_cmp(current_style, c.style) != 0)
             {
-                printf("\e[1m");
-            }
+                printf("\e[0m");
 
-            if (c.style.underline)
-            {
-                printf("\e[4m");
-            }
+                if (c.style.bold)
+                {
+                    printf("\e[1m");
+                }
 
-            printf("\e[3%d;4%dm", c.style.foreground, c.style.background);
+                if (c.style.underline)
+                {
+                    printf("\e[4m");
+                }
+
+                printf("\e[3%d;4%dm", c.style.foreground, c.style.background);
+
+                current_style = c.style;
+            }
 
             if (c.codepoint == 0)
             {
@@ -119,8 +135,6 @@ void surface_render(Surface *this)
                 strutf8(utf8, c.codepoint);
                 printf("%s", utf8);
             }
-
-            printf("\e[0m");
         }
     }
 
