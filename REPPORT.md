@@ -2,51 +2,68 @@
 <p align="right">VAN BOSSUYT Nicolas<br>JOLY Lucien</p>
 
 ## contenu du dossier **data** :
-- client.dat
-- stock.dat
-- user.dat
+
+| Nom du fichier |Fonctionnalités|
+| -------------  |:--------------|
+| client.dat     | contient des données sur les clients fidèles
+| stock.dat      | contient des données sur les articles en stock
+| user.dat       | contient des données sur le personnel du magasin
 
 ## contenu du dossier **source** :
 1. ### Dossier **model** 
-    - action.c
-    - lexer.c
-    - model_action.c
-    - model_view.c
-    - model.c
-    - user.c
-    - view.c
+
+| Nom du fichier |Fonctionnalités|
+| -------------  |:--------------|
+| action.c       | _todo_        
+| lexer.c        | _todo_        
+| model_action.c | _todo_        
+| model_view.c   | _todo_        
+| model.c        | _todo_        
+| user.c         | _todo_        
+| view.c         | _todo_       
 
 2. ### Dossier **shop**
-    - basket.c
-    - clients.c
-    - session.c
-    - shop.c
-    - stocks.c
-    - users.c
+
+| Nom du fichier |Fonctionnalités|
+| -------------  |:--------------|
+| basket.c       | liste chaînées des articles contenus dans le panier       
+| clients.c      | liste chaînée des clients
+| session.c      | _todo_        
+| shop.c         | _todo_        
+| stocks.c       | liste chaînée des articles en stock        
+| users.c        | _todo_        
 
 3. ### Dossier **utils**
-    - input.c
-    - list.c
-    - logger.c
-    - renderer.c
-    - string.c
-    - terminal.c
-    - variant.c
-    - assert.h
-    - math.h
+
+| Nom du fichier |Fonctionnalités|
+| -------------  |:--------------|
+| input.c        | _todo_ 
+| list.c         | _todo_ 
+| logger.c       | _todo_ 
+| renderer.c     | _todo_ 
+| string.c       | _todo_ 
+| terminal.c     | _todo_ 
+| variant.c      | _todo_ 
+| assert.h       | _todo_ 
+| math.h         | _todo_ 
 
 4. ### Dossier **view**
-    - cashier_input_card_id.c
-    - cashier_scan_item.c
-    - cashier_select_what_todo.c
-    - home_select_what_todo.c
-    - return_consigned_bottles.c
-    - select_client.c
-    - user_login.c
-    - views.h
+
+| Nom du fichier             |Fonctionnalités|
+| -------------              |:--------------|
+| cashier_input_card_id.c    | authentification du client et création d'un nouveau compte client
+| cashier_scan_item.c        | lecture et ajout d'articles dans le panier
+| cashier_select_what_todo.c | menu client
+| home_select_what_todo.c    | menu principal
+| return_consigned_bottles.c | retour de bouteilles consignées
+| select_client.c            | _todo_ 
+| user_login.c               | _todo_ 
+| views.h                    | entête des fonctions contenues dans les fichiers .c
+
 5. ### Le fichier main.c
 
-## des fichiers '.h' sont aussi presents dans l'aborescence, ils ont les mêmes noms que les fichiers '.c', ceux-ci contiennent les entêtes des fonctions présentes dans les fichiers '.c'.
+##### note :
+> des fichiers '.h' sont aussi presents dans l'aborescence, ils ont les mêmes noms que les fichiers '.c', ceux-ci contiennent les entêtes des fonctions présentes dans les fichiers '.c'.
 <br>
 
 # contenu des fichiers '.dat' :
