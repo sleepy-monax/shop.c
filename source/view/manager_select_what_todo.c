@@ -17,7 +17,7 @@ void manager_select_what_todo(User *user, UsersList *users, StockList *stock, Cl
     const char *choices[] = {
         "Liste des produits",
         "Liste des clients",
-        "Liste des employers",
+        "Liste des employés",
         " Retour",
         NULL,
     };
@@ -26,7 +26,7 @@ void manager_select_what_todo(User *user, UsersList *users, StockList *stock, Cl
 
     do
     {
-        switch (user_select(user, "Selectionnez une interface", choices))
+        switch (user_select(user, "Sélectionnez une interface", choices))
         {
         case 0:
             model_view(user, "Liste des produits", stocks_model_create(), stock);
@@ -37,7 +37,7 @@ void manager_select_what_todo(User *user, UsersList *users, StockList *stock, Cl
             break;
 
         case 2:
-            model_view(user, "Liste des employers", users_model_create(), users);
+            model_view(user, "Liste des employés", users_model_create(), users);
             break;
 
         case 3:

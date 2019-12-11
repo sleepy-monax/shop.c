@@ -1,11 +1,11 @@
-#include <string.h>
-#include <stdlib.h>
 #include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "model/view.h"
-#include "utils/terminal.h"
-#include "utils/math.h"
 #include "utils/assert.h"
+#include "utils/math.h"
+#include "utils/terminal.h"
 
 void quit_ModelActionCallback(
     User *user,
@@ -147,7 +147,7 @@ void edit_ModelActionCallback(
     do
     {
         surface_clear(surface, DEFAULT_STYLE);
-        model_view_title(NULL, surface, "Editer le model");
+        model_view_title(NULL, surface, "Editer le modèle");
         model_view_status_bar(surface, state, model, data);
 
         for (int i = 0; i < model.column_count(); i++)

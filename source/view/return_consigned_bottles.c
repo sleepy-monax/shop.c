@@ -1,8 +1,8 @@
 #include <stdlib.h>
 
-#include "view/views.h"
 #include "utils/input.h"
 #include "utils/string.h"
+#include "view/views.h"
 
 void autocomplete_stock_list_consigned(const char *user_input, StockList *stocks)
 {
@@ -36,14 +36,14 @@ void cashier_return_consigned_bottles(Session *session, StockList *stock)
     {
         stocks_display_consigned(stock);
 
-        user_input("Inserez le codebarre de la bouteille a rendre", "####", bottle_raw_barecode);
+        user_input("Inserez le codebarre de la bouteille à rendre", "####", bottle_raw_barecode);
         bottle_barecode = atoi(bottle_raw_barecode);
 
         bottle = stocks_lookup_item(stock, bottle_barecode);
 
         if (bottle && bottle->isConsigned)
         {
-            user_input("Entrez le nombre de bouteilles a rendre", "####", bottle_raw_count);
+            user_input("Entrez le nombre de bouteilles à rendre", "####", bottle_raw_count);
             bottle_count = atoi(bottle_raw_count);
 
             totValue += bottle->consignedValue * bottle_count;
@@ -52,7 +52,7 @@ void cashier_return_consigned_bottles(Session *session, StockList *stock)
         }
         else
         {
-            printf("Erreur, le codebarre entré ne correpond pas a un article consigne\n");
+            printf("Erreur, le codebarre entré ne correpond pas à un article consigne\n");
         }
     } while (user_yes_no("Voulez-vous continuer ?") == YES);
 }

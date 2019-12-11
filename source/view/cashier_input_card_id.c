@@ -22,7 +22,7 @@ static void login_client(Session *session, ClientsList *clients)
         {
             log_error("Ce compte n'existe pas");
 
-            if (user_yes_no("Erreur, identifiant incorrect, voulez-vous reessayer ? ") == NO)
+            if (user_yes_no("Erreur, identifiant incorrect, voulez-vous réessayer ? ") == NO)
             {
                 return;
             }
@@ -40,7 +40,7 @@ static void new_client(Session *session, ClientsList *clients)
     do
     {
         user_input("Inserez votre nom ", "......................", nouveau_client->lastname);
-        user_input("Inserez votre prenom ", "......................", nouveau_client->firstname);
+        user_input("Inserez votre prénom ", "......................", nouveau_client->firstname);
         user_input("Inserez votre email ", "********************************", nouveau_client->email);
 
         printf("\nVos informations :\n"
@@ -85,7 +85,7 @@ void cashier_input_card_id(Session *session, ClientsList *clients)
         break;
 
     case 1:
-        if (user_yes_no("Acceptez-vous les condition d'utilisation?") == YES)
+        if (user_yes_no("Acceptez-vous les conditions d'utilisation?") == YES)
             new_client(session, clients);
         break;
 
