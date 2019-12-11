@@ -49,7 +49,7 @@ void basket_add_item(Basket *this, BareCode barecode, bool is_consigned, int qua
 
         item->barecode = barecode;
         item->quantity = quantity;
-        item->is_consigne = true;
+        item->is_consigne = is_consigned;
 
         list_pushback(this->items, item);
     }

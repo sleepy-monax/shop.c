@@ -11,7 +11,7 @@ void home_select_what_todo(User *user, UsersList *users, StockList *stocks, Clie
 
 void manager_select_what_todo(User *user, UsersList *users, StockList *stock, ClientsList *clients);
 
-void cashier_select_what_todo(User *user, Basket *basket, StockList *stocks, ClientsList *clients);
+void cashier_select_what_todo(User *user, Basket *basket, StockList *stocks);
 
 void cashier_scan_items(Basket *basket, StockList *stock);
 

@@ -4,22 +4,6 @@
 #include "utils/string.h"
 #include "view/views.h"
 
-void autocomplete_stock_list_consigned(const char *user_input, StockList *stocks)
-{
-    list_foreach(item, stocks)
-    {
-        Item *itemInStocks = (Item *)item->value;
-
-        char item_id_string[5];
-        sprintf(item_id_string, "%03d", itemInStocks->id);
-
-        if (str_start_with(user_input, item_id_string) && itemInStocks->isConsigned)
-        {
-            printf("%04d %s %5.2f€\n", itemInStocks->id, itemInStocks->label, itemInStocks->consignedValue);
-        }
-    }
-}
-
 void cashier_return_consigned_bottles(Basket *basket, StockList *stock)
 {
     float totValue = 0.;

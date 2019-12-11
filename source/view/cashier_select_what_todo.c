@@ -10,34 +10,8 @@
 
 #include "shop/basket.h"
 
-void autocomplete_stock_list(const char *user_input, StockList *stocks)
+void cashier_select_what_todo(User *user, Basket *basket, StockList *stocks)
 {
-    list_foreach(item, stocks)
-    {
-        Item *itemInStocks = (Item *)item->value;
-
-        char item_id_string[5];
-        sprintf(item_id_string, "%03d", itemInStocks->id);
-
-        if (str_start_with(user_input, item_id_string))
-        {
-            printf("%04d %s %5.2f€ ", itemInStocks->id, itemInStocks->label, itemInStocks->price);
-            if (itemInStocks->discount != 0)
-            {
-                printf("%3d %%", itemInStocks->discount);
-            }
-            printf("\n");
-        }
-    }
-}
-
-void cashier_select_what_todo(User *user, Basket *basket, StockList *stocks, ClientsList *clients)
-{
-    if (basket->owner == NULL)
-    {
-        basket->owner = cashier_input_card_id(clients);
-    }
-
     const char *choices[] = {
         "Effectuer un achat",
         "Rendre des bouteilles consignées",

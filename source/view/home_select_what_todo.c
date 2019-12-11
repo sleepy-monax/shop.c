@@ -30,7 +30,7 @@ void home_select_what_todo(User *user, UsersList *users, StockList *stock, Clien
 
             log_info("Bonjour et bienvenue chez Colruyt");
 
-            cashier_select_what_todo(user, basket, stock, clients);
+            cashier_select_what_todo(user, basket, stock);
             float total = basket_bill(basket, stdout);
             if (basket->owner)
             {
