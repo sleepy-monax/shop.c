@@ -31,7 +31,17 @@ void edit_ModelActionCallback(User *user, Surface *surface, struct ModelViewStat
 void create_ModelActionCallback(User *user, Surface *surface, struct ModelViewState *state, struct Model model, void *data, int row);
 void delete_ModelActionCallback(User *user, Surface *surface, struct ModelViewState *state, struct Model model, void *data, int row);
 
-#define DEFAULT_MODEL_VIEW_ACTION {'q', quit_ModelActionCallback, "Quitter", "Quitter l'inpecteur de model."},            \
+#define DEFAULT_MODEL_MOVE_ACTION {'q', quit_ModelActionCallback, "Quitter", "Quitter l'inpecteur de modèle."},        \
+                                  {'h', help_ModelActionCallback, "Aide", "Afficher l'aide"},                          \
+                                  {'k', scroll_up_ModelActionCallback, "Scroll haut", "Scroller vers le haut."},       \
+                                  {'j', scroll_down_ModelActionCallback, "Scroll base", "Scroller vers le base"},      \
+                                  {'K', page_up_ModelActionCallback, "Page haut", "Scroller une page vers le haut."},  \
+                                  {'J', page_down_ModelActionCallback, "Page bas", "Scroller une page vers le base."}, \
+                                  {'g', home_ModelActionCallback, "Début", "Scroller tout en haut de la liste."},      \
+                                  {'G', end_ModelActionCallback, "Fin", "Scroller tout en bas de la liste."},          \
+                                  {'e', edit_ModelActionCallback, "Éditer", "Éditer l'élément actuelle."},
+
+#define DEFAULT_MODEL_VIEW_ACTION {'q', quit_ModelActionCallback, "Quitter", "Quitter l'inpecteur de modèle."},           \
                                   {'h', help_ModelActionCallback, "Aide", "Afficher l'aide"},                             \
                                   {'k', scroll_up_ModelActionCallback, "Scroll haut", "Scroller vers le haut."},          \
                                   {'j', scroll_down_ModelActionCallback, "Scroll base", "Scroller vers le base"},         \

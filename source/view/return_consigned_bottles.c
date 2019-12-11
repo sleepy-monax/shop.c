@@ -20,11 +20,8 @@ void autocomplete_stock_list_consigned(const char *user_input, StockList *stocks
     }
 }
 
-void cashier_return_consigned_bottles(Session *session, StockList *stock)
+void cashier_return_consigned_bottles(Basket *basket, StockList *stock)
 {
-    //TODO: Add support for session
-    (void)session;
-
     float totValue = 0.;
     BareCode bottle_barecode;
     char bottle_raw_barecode[5];
@@ -46,8 +43,8 @@ void cashier_return_consigned_bottles(Session *session, StockList *stock)
             user_input("Entrez le nombre de bouteilles à rendre", "####", bottle_raw_count);
             bottle_count = atoi(bottle_raw_count);
 
-            totValue += bottle->consignedValue * bottle_count;
-
+            totValue = bottle->consignedValue * bottle_count;
+            basket_add_item(basket, bottle_barecode, true, bottle_count);
             printf("Vous allez recuperer %5.2f€\n", totValue);
         }
         else

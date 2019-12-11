@@ -7,30 +7,33 @@
 
 #include "utils/terminal.h"
 
-static void login_client(Session *session, ClientsList *clients)
+static Client *login_client(ClientsList *clients)
 {
     BareCode extra_barecode;
+    Client *client = NULL;
 
     do
     {
         extra_barecode = barecode_input("Inserez votre code " EXTRA);
-        session->client = clients_lookup(clients, extra_barecode);
+        client = clients_lookup(clients, extra_barecode);
 
         log_info("Connection avec " EXTRA "#%04d...", extra_barecode);
 
-        if (session->client == NULL)
+        if (client == NULL)
         {
             log_error("Ce compte n'existe pas");
 
             if (user_yes_no("Erreur, identifiant incorrect, voulez-vous réessayer ? ") == NO)
             {
-                return;
+                return NULL;
             }
         }
-    } while (session->client == NULL);
+    } while (client == NULL);
+
+    return client;
 }
 
-static void new_client(Session *session, ClientsList *clients)
+static Client *new_client(ClientsList *clients)
 {
     BareCode nouveau_client_id = clients_generate_id(clients);
     Client *nouveau_client = (Client *)malloc(sizeof(Client));
@@ -64,10 +67,10 @@ static void new_client(Session *session, ClientsList *clients)
 
     list_pushback(clients, nouveau_client);
 
-    session->client = nouveau_client;
+    return nouveau_client;
 }
 
-void cashier_input_card_id(Session *session, ClientsList *clients)
+Client *cashier_input_card_id(ClientsList *clients)
 {
     const char *prompt = "Cher client, vous pouvez profiter des points extra grace au compte EXTRA Colruyt";
 
@@ -81,16 +84,17 @@ void cashier_input_card_id(Session *session, ClientsList *clients)
     switch (user_select(NULL, prompt, choices))
     {
     case 0:
-        login_client(session, clients);
-        break;
+        return login_client(clients);
 
     case 1:
         if (user_yes_no("Acceptez-vous les conditions d'utilisation?") == YES)
-            new_client(session, clients);
-        break;
+            return new_client(clients);
 
+        break;
     case 2:
         log_info("Vous continuez sans compte...");
         break;
     }
+
+    return NULL;
 }

@@ -1,19 +1,31 @@
 #pragma once
 
-#include "shop/stocks.h"
 #include "shop/barecode.h"
+#include "shop/clients.h"
+#include "shop/stocks.h"
 #include "utils/list.h"
 
 typedef struct
 {
-    Item *item;
+    BareCode barecode;
     int quantity;
+    bool is_consigne;
 } BasketItem;
 
-typedef List Basket;
+typedef struct
+{
+    bool pay_with_point;
+    StockList *stocks;
+    List *items;
+    Client *owner;
+} Basket;
 
-Basket *basket_create(void);
+Basket *basket_create(StockList *stocks, Client *owner);
 
 void basket_destroy(Basket *basket);
 
-void basket_add_item(Basket *this, Item *item, int quantity);
+void basket_add_item(Basket *this, BareCode barecode, bool is_consigned, int quantity);
+
+Model basket_model_create(void);
+
+float basket_bill(Basket *this, FILE *out);

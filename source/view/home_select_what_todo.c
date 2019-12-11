@@ -1,8 +1,9 @@
 #include <string.h>
 
-#include "view/views.h"
 #include "utils/input.h"
 #include "utils/logger.h"
+#include "utils/terminal.h"
+#include "view/views.h"
 
 void home_select_what_todo(User *user, UsersList *users, StockList *stock, ClientsList *clients)
 {
@@ -24,12 +25,21 @@ void home_select_what_todo(User *user, UsersList *users, StockList *stock, Clien
 
         case 1:
         {
-            Session *session = session_create();
+
+            Basket *basket = basket_create(stock, cashier_input_card_id(clients));
 
             log_info("Bonjour et bienvenue chez Colruyt");
-            cashier_select_what_todo(session, stock, clients);
 
-            session_destroy(session);
+            cashier_select_what_todo(user, basket, stock, clients);
+            float total = basket_bill(basket, stdout);
+            if (basket->owner)
+            {
+                basket->owner->points += total / 10;
+            }
+
+            terminal_read_key();
+
+            basket_destroy(basket);
             break;
         }
 

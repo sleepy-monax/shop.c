@@ -2,6 +2,7 @@
 
 typedef enum
 {
+    ACCESS_NONE = -1,
     ACCESS_ADMIN,
     ACCESS_MANAGER,
     ACCESS_CASHIER,

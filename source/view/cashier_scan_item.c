@@ -1,6 +1,6 @@
-#include "view/views.h"
 #include "utils/input.h"
 #include "utils/logger.h"
+#include "view/views.h"
 
 #include <stdlib.h>
 #include <time.h>
@@ -14,9 +14,8 @@ void delay(int number_of_seconds)
         ;
 }
 
-void cashier_scan_items(Session *session, StockList *stock)
+void cashier_scan_items(Basket *basket, StockList *stock)
 {
-    (void)session;
     Item *item;
 
     BareCode item_barecode = -1;
@@ -46,22 +45,13 @@ void cashier_scan_items(Session *session, StockList *stock)
             }
             else
             {
-                basket_add_item(session->basket, item, item_quantity);
+                basket_add_item(basket, item_barecode, false, item_quantity);
 
                 totValue = item->price;
                 totValue -= item->price * item->discount;
                 totValue *= item_quantity;
-
-                if (session->client != NULL)
-                {
-                    int nbPoints = totValue;
-                    session->client->points += nbPoints;
-                }
             }
         }
 
     } while (user_yes_no("Voulez-vous continuer a ajouter des articles au panier ?") == YES);
-
-    session_print_bill(session);
-    getchar();
 }

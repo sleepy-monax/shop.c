@@ -1,3 +1,5 @@
+#include <unistd.h>
+
 #include "utils/input.h"
 #include "view/views.h"
 
@@ -21,6 +23,7 @@ void user_login(UsersList *users, StockList *stocks, ClientsList *clients)
         }
         else
         {
+            sleep(3);
             printf("\n\e[35mMot de passe ou nom d'utilisateur incorrect!\e[0m\n");
         }
     } while (true);
