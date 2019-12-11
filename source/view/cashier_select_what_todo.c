@@ -16,7 +16,7 @@ void cashier_select_what_todo(User *user, Basket *basket, StockList *stocks)
         "Effectuer un achat",
         "Rendre des bouteilles consignées",
         "Afficher le panier",
-        " Retour",
+        " Passer à l'achat",
         NULL,
     };
 
