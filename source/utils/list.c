@@ -227,8 +227,6 @@ bool list_pop(List *this, void **value)
         *value = item->value;
     }
 
-    free(item);
-
     return true;
 }
 
@@ -282,8 +280,6 @@ bool list_popback(List *this, void **value)
         *value = item->value;
     }
 
-    free(item);
-
     return true;
 }
 
@@ -322,7 +318,7 @@ bool list_remove(List *this, void *value)
     return false;
 }
 
-bool list_containe(List *this, void *value)
+bool list_contains(List *this, void *value)
 {
     list_foreach(item, this)
     {

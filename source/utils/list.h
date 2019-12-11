@@ -48,7 +48,7 @@ bool list_pop(List *this, void **value);
 
 bool list_popback(List *this, void **value);
 
-bool list_containe(List *this, void *value);
+bool list_contains(List *this, void *value);
 
 bool list_remove(List *this, void *value);
 
