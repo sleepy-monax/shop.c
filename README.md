@@ -1,2 +1,11 @@
 # shop.c
-Application de gestion de magasin écrite dans le cadre du cours de langage C.
+
+This is a school project, made in C.
+The project consist of making an interface for the clients and the managers of a shop (we took Colruyt, a belgian shop as exemple).
+<br><br>
+## Status of the project : 
+The project is nearly done
+
+## Working on :
+- the repport
+- fixing printing bugs
