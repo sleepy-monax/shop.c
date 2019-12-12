@@ -201,3 +201,10 @@ Les fonctions présentes dans *list.c* permettent de mieux manipuler ces listes.
 | list_push                         | void           | ajoute un élément au début de la liste                                                                                        |
 | list_pushback                     | void           | ajoute un élément à la fin de la liste                                                                                        |
 | list_remove                       | bool           | supprime un élément de la liste                                                                                               |
+
+
+# Fonctionnement du programme 
+
+Voici un organigramme pour simplifier l'explication du fonctionnement du programme : 
+
+![Organigramme\label{fig-flowchart}](assets/organigramme.png)
