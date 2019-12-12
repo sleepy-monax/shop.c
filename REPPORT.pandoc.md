@@ -202,6 +202,49 @@ Les fonctions présentes dans *list.c* permettent de mieux manipuler ces listes.
 | list_pushback                     | void           | ajoute un élément à la fin de la liste                                                                                        |
 | list_remove                       | bool           | supprime un élément de la liste                                                                                               |
 
+## Structures de chaque liste chaînée :
+
+```C
+typedef struct
+{
+    BareCode id;
+    char label[ITEM_LABEL_SIZE];
+
+    float price;
+    int discount;
+    ItemCategory category;
+    bool isConsigned;
+    float consignedValue;
+} Item;
+
+typedef struct
+{
+    BareCode id;
+
+    char firstname[CLIENT_FIRST_NAME_SIZE];
+    char lastname[CLIENT_LAST_NAME_SIZE];
+    char email[CLIENT_EMAIL_SIZE];
+
+    int points;
+} Client;
+
+typedef struct
+{
+    BareCode barecode;
+    int quantity;
+    bool is_consigne;
+} BasketItem;
+
+typedef struct
+{
+    bool pay_with_point;
+    StockList *stocks;
+    List *items;
+    Client *owner;
+} Basket;
+```
+
+
 
 # Fonctionnement du programme 
 
