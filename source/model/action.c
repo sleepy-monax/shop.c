@@ -158,20 +158,20 @@ void edit_ModelActionCallback(
                 if (i == selected)
                 {
                     char buffer[256];
-                    snprintf(buffer, 256, "%16s: %s▂", model.column_name(i, ROLE_DATA), edited_value);
+                    snprintf(buffer, 256, "%16s: %s▂", model.column_name(i, ROLE_DISPLAY), edited_value);
                     surface_text(surface, buffer, 0, i, surface_width(surface), DEFAULT_STYLE);
                 }
                 else
                 {
                     char buffer[256];
-                    snprintf(buffer, 256, "%16s: %s", model.column_name(i, ROLE_DATA), model_get_data_with_access(model, data, row, i, user, ROLE_DATA).as_string);
+                    snprintf(buffer, 256, "%16s: %s", model.column_name(i, ROLE_DISPLAY), model_get_data_with_access(model, data, row, i, user, ROLE_DATA).as_string);
                     surface_text(surface, buffer, 0, i, surface_width(surface), DISABLED_DEFAULT_STYLE);
                 }
             }
             else
             {
                 char buffer[256];
-                snprintf(buffer, 256, "%16s: %-16s", model.column_name(i, ROLE_DATA), model_get_data_with_access(model, data, row, i, user, ROLE_EDITOR).as_string);
+                snprintf(buffer, 256, "%16s: %-16s", model.column_name(i, ROLE_DISPLAY), model_get_data_with_access(model, data, row, i, user, ROLE_EDITOR).as_string);
 
                 if (user->access <= model.write_access(data, row, i, user))
                 {

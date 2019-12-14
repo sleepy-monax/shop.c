@@ -226,28 +226,58 @@ const char *basket_ModelColumnName(int index, ModelRole role)
 {
     (void)role;
 
-    switch (index)
+    if (role == ROLE_DISPLAY)
     {
-    case COL_BASKET_BARECODE:
-        return "BARECODE";
+        switch (index)
+        {
+        case COL_BASKET_BARECODE:
+            return "N°.art";
 
-    case COL_BASKET_LABEL:
-        return "LABEL";
+        case COL_BASKET_LABEL:
+            return "Dénomination";
 
-    case COL_BASKET_CONSIGNE:
-        return "CONSIGNE";
+        case COL_BASKET_CONSIGNE:
+            return "Vidange";
 
-    case CAL_BASKET_UNIT_PRICE:
-        return "UNIT_PRICE";
+        case CAL_BASKET_UNIT_PRICE:
+            return "Prix Unitaire";
 
-    case COL_BASKET_QUANTITY:
-        return "QUANTITY";
+        case COL_BASKET_QUANTITY:
+            return "Quantitée";
 
-    case COL_BASKET_REDUCTION:
-        return "REDUCTION";
+        case COL_BASKET_REDUCTION:
+            return "Réduction";
 
-    case COL_BASKET_PRICE:
-        return "PRICE";
+        case COL_BASKET_PRICE:
+            return "Montant";
+        }
+    }
+    else
+    {
+
+        switch (index)
+        {
+        case COL_BASKET_BARECODE:
+            return "BARECODE";
+
+        case COL_BASKET_LABEL:
+            return "LABEL";
+
+        case COL_BASKET_CONSIGNE:
+            return "CONSIGNE";
+
+        case CAL_BASKET_UNIT_PRICE:
+            return "UNIT_PRICE";
+
+        case COL_BASKET_QUANTITY:
+            return "QUANTITY";
+
+        case COL_BASKET_REDUCTION:
+            return "REDUCTION";
+
+        case COL_BASKET_PRICE:
+            return "PRICE";
+        }
     }
 
     ASSERT_NOT_REACHED();
@@ -394,7 +424,14 @@ Variant basket_ModelGetData(Basket *basket, int row, int column, ModelRole role)
                 }
 
             case COL_BASKET_REDUCTION:
-                return vint(item->discount);
+                if (role == ROLE_DISPLAY)
+                {
+                    return vstringf("-%2d%%", item->discount);
+                }
+                else
+                {
+                    return vint(item->discount);
+                }
 
             case COL_BASKET_PRICE:
             {

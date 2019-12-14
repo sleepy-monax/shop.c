@@ -169,10 +169,10 @@ const char *stocks_ModelColumnName(int index, ModelRole role)
         switch (index)
         {
         case COL_ITEM_BARECODE:
-            return "Code";
+            return "N°.art";
 
         case COL_ITEM_LABEL:
-            return "Libellé";
+            return "Dénomination";
 
         case COL_ITEM_PRICE:
             return "Prix";
