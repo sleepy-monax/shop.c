@@ -3,6 +3,7 @@
 
 #include "shop/users.h"
 #include "utils/assert.h"
+#include "utils/string.h"
 
 typedef enum
 {
@@ -179,7 +180,7 @@ const char *users_ModelColumnName(int index, ModelRole role)
     ASSERT_NOT_REACHED();
 }
 
-VarianType users_ModelColumnType(int index)
+VarianType users_ModelColumnType(int index, ModelRole role)
 {
     switch (index)
     {
@@ -193,7 +194,14 @@ VarianType users_ModelColumnType(int index)
         return VARIANT_STRING;
 
     case COL_USERS_PASSWORD:
-        return VARIANT_INT;
+        if (role == ROLE_EDITOR)
+        {
+            return VARIANT_STRING;
+        }
+        else
+        {
+            return VARIANT_INT;
+        }
 
     case COL_USERS_ACCESS:
         return VARIANT_INT;
@@ -244,7 +252,14 @@ Variant users_ModelGetData(UsersList *users, int row, int column, ModelRole role
         return vstring(user->lastname);
 
     case COL_USERS_PASSWORD:
-        return vint(user->password);
+        if (role == ROLE_EDITOR)
+        {
+            return vstring("*****");
+        }
+        else
+        {
+            return vint(user->password);
+        }
 
     case COL_USERS_ACCESS:
         if (role == ROLE_DISPLAY)
@@ -252,7 +267,7 @@ Variant users_ModelGetData(UsersList *users, int row, int column, ModelRole role
             switch (user->access)
             {
             case ACCESS_ADMIN:
-                return vstring("Administrateur");
+                return vstring("Admin");
 
             case ACCESS_MANAGER:
                 return vstring("Manager");
@@ -273,7 +288,7 @@ Variant users_ModelGetData(UsersList *users, int row, int column, ModelRole role
     ASSERT_NOT_REACHED();
 }
 
-void users_ModelSetData(UsersList *users, int row, int column, Variant value)
+void users_ModelSetData(UsersList *users, int row, int column, Variant value, ModelRole role)
 {
     User *user;
     list_peekat(users, row, (void **)&user);
@@ -295,7 +310,17 @@ void users_ModelSetData(UsersList *users, int row, int column, Variant value)
         break;
 
     case COL_USERS_PASSWORD:
-        user->password = value.as_int;
+        if (role == ROLE_EDITOR)
+        {
+            if (strcmp(value.as_string, "*****") != 0)
+            {
+                user->password = strhash((const uint8_t *)value.as_string);
+            }
+        }
+        else
+        {
+            user->password = value.as_int;
+        }
         break;
 
     case COL_USERS_ACCESS:

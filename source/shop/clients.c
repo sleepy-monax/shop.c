@@ -152,8 +152,10 @@ const char *clients_ModelColumnName(int index, ModelRole role)
     ASSERT_NOT_REACHED();
 }
 
-VarianType clients_ModelColumnType(int index)
+VarianType clients_ModelColumnType(int index, ModelRole role)
 {
+    (void)role;
+
     switch (index)
     {
     case COL_CLIENTS_BARECODE:
@@ -235,8 +237,10 @@ Variant clients_ModelGetData(ClientsList *clients, int row, int column, ModelRol
     ASSERT_NOT_REACHED();
 }
 
-void clients_ModelSetData(ClientsList *clients, int row, int column, Variant value)
+void clients_ModelSetData(ClientsList *clients, int row, int column, Variant value, ModelRole role)
 {
+    (void)role;
+
     Client *client;
     list_peekat(clients, row, (void **)&client);
     assert(client);

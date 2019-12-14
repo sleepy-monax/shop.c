@@ -10,7 +10,8 @@
 typedef enum
 {
     ROLE_DATA,
-    ROLE_DISPLAY
+    ROLE_DISPLAY,
+    ROLE_EDITOR,
 } ModelRole;
 
 typedef ModelAccess (*ModelReadAccess)(void *data, int row, int column, User *user);
@@ -22,11 +23,11 @@ typedef void (*ModelRowDelete)(void *data, int index);
 
 typedef int (*ModelColumnCount)(void);
 typedef const char *(*ModelColumnName)(int index, ModelRole role);
-typedef VarianType (*ModelColumnType)(int index);
+typedef VarianType (*ModelColumnType)(int index, ModelRole role);
 typedef Style (*ModelColumnStyle)(int index);
 
 typedef Variant (*ModelGetData)(void *data, int row, int column, ModelRole role);
-typedef void (*ModelSetData)(void *data, int row, int column, Variant value);
+typedef void (*ModelSetData)(void *data, int row, int column, Variant value, ModelRole role);
 
 typedef ModelAction *(*ModelGetActions)(void);
 

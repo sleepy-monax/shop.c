@@ -92,9 +92,9 @@ void model_load(Model model, void *data, FILE *source)
             {
                 Variant value = variant_deserialize(tok.literal);
 
-                if (value.type == model.column_type(column))
+                if (value.type == model.column_type(column, ROLE_DATA))
                 {
-                    model.set_data(data, row, column, value);
+                    model.set_data(data, row, column, value, ROLE_DATA);
                 }
                 else
                 {
@@ -103,7 +103,7 @@ void model_load(Model model, void *data, FILE *source)
                               tok.col,
                               model.column_name(column, ROLE_DATA),
                               value.type,
-                              model.column_type(column));
+                              model.column_type(column, ROLE_DATA));
                 }
 
                 state = MODEL_LOAD_KEY;
@@ -153,6 +153,6 @@ void model_set_data_with_access(Model model, void *data, int row, int column, Va
 {
     if (user->access <= model.read_access(data, row, column, user))
     {
-        return model.set_data(data, row, column, value);
+        return model.set_data(data, row, column, value, ROLE_DATA);
     }
 }

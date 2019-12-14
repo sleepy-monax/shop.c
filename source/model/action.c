@@ -171,7 +171,7 @@ void edit_ModelActionCallback(
             else
             {
                 char buffer[256];
-                snprintf(buffer, 256, "%16s: %-16s", model.column_name(i, ROLE_DATA), model_get_data_with_access(model, data, row, i, user, ROLE_DATA).as_string);
+                snprintf(buffer, 256, "%16s: %-16s", model.column_name(i, ROLE_DATA), model_get_data_with_access(model, data, row, i, user, ROLE_EDITOR).as_string);
 
                 if (user->access <= model.write_access(data, row, i, user))
                 {
@@ -210,19 +210,19 @@ void edit_ModelActionCallback(
             if (key == '\n')
             {
                 editing = false;
-                if (model.column_type(selected) == VARIANT_INT)
+                if (model.column_type(selected, ROLE_EDITOR) == VARIANT_INT)
                 {
-                    model.set_data(data, row, selected, vint(atoi(edited_value)));
+                    model.set_data(data, row, selected, vint(atoi(edited_value)), ROLE_EDITOR);
                 }
-                else if (model.column_type(selected) == VARIANT_FLOAT)
+                else if (model.column_type(selected, ROLE_EDITOR) == VARIANT_FLOAT)
                 {
                     float value;
                     sscanf(edited_value, "%f", &value);
-                    model.set_data(data, row, selected, vfloat(value));
+                    model.set_data(data, row, selected, vfloat(value), ROLE_EDITOR);
                 }
                 else
                 {
-                    model.set_data(data, row, selected, vstring(edited_value));
+                    model.set_data(data, row, selected, vstring(edited_value), ROLE_EDITOR);
                 }
             }
             else if (key == 127)
@@ -239,7 +239,7 @@ void edit_ModelActionCallback(
             }
             else if (edited_offset < VARIANT_STRING_SIZE - 1)
             {
-                switch (model.column_type(selected))
+                switch (model.column_type(selected, ROLE_EDITOR))
                 {
                 case VARIANT_INT:
                     if (key >= '0' && key <= '9')
@@ -288,7 +288,7 @@ void edit_ModelActionCallback(
                 if (user->access <= model.write_access(data, row, selected, user))
                 {
                     editing = true;
-                    strcpy(edited_value, model.get_data(data, row, selected, ROLE_DATA).as_string);
+                    strcpy(edited_value, model.get_data(data, row, selected, ROLE_EDITOR).as_string);
                     edited_offset = strlen(edited_value);
                 }
             }

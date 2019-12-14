@@ -191,8 +191,10 @@ const char *stocks_ModelColumnName(int index, ModelRole role)
     ASSERT_NOT_REACHED();
 }
 
-VarianType stocks_ModelColumnType(int index)
+VarianType stocks_ModelColumnType(int index, ModelRole role)
 {
+    (void)role;
+
     switch (index)
     {
     case COL_ITEM_BARECODE:
@@ -321,8 +323,10 @@ Variant stocks_ModelGetData(StockList *stock, int row, int column, ModelRole rol
     ASSERT_NOT_REACHED();
 }
 
-void stocks_ModelSetData(StockList *stock, int row, int column, Variant value)
+void stocks_ModelSetData(StockList *stock, int row, int column, Variant value, ModelRole role)
 {
+    (void)role;
+
     Item *item;
     list_peekat(stock, row, (void **)&item);
     assert(item);
