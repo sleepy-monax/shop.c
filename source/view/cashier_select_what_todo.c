@@ -2,13 +2,13 @@
 #include <string.h>
 
 #include "model/view.h"
+#include "shop/basket.h"
 #include "shop/clients.h"
 #include "utils/input.h"
 #include "utils/logger.h"
 #include "utils/string.h"
+#include "utils/terminal.h"
 #include "view/views.h"
-
-#include "shop/basket.h"
 
 void cashier_select_what_todo(User *user, Basket *basket, StockList *stocks)
 {
@@ -16,7 +16,8 @@ void cashier_select_what_todo(User *user, Basket *basket, StockList *stocks)
         "Effectuer un achat",
         "Rendre des bouteilles consignées",
         "Afficher le panier",
-        " Passer à l'achat",
+        "Payer",
+        " Annuler",
         NULL,
     };
 
@@ -29,8 +30,6 @@ void cashier_select_what_todo(User *user, Basket *basket, StockList *stocks)
     {
         sprintf(greeting, "Bonjour veuillez faire un choix");
     }
-
-    bool exited = false;
 
     do
     {
@@ -51,9 +50,29 @@ void cashier_select_what_todo(User *user, Basket *basket, StockList *stocks)
             model_view(user, "Panier", basket_model_create(), basket);
             break;
         }
+        case 3:
+        {
+            if (basket->owner)
+            {
+                if (user_yes_no("Voulez-vous payer avec vos points fidelitée?"))
+                {
+                    basket->pay_with_point = true;
+                }
+            }
+
+            float total = basket_bill(basket, stdout);
+
+            if (basket->owner)
+            {
+                basket->owner->points += total / 10;
+            }
+
+            terminal_read_key();
+
+            return;
+        }
         default:
-            exited = true;
-            break;
+            return;
         };
-    } while (!exited);
+    } while (true);
 }

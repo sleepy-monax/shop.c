@@ -63,8 +63,8 @@ float basket_bill(Basket *this, FILE *fout)
     if (fout)
     {
         fprintf(fout, "Voici le contenu du panier : \n\n");
-        fprintf(fout, "Label                     Prix            Prix discount\n");
-        fprintf(fout, "-------------------------------------------------------\n");
+        fprintf(fout, " N°.art | Dénomination               | Vidange | Qte | Prix unitaire | Montant \n");
+        fprintf(fout, "-------------------------------------------------------------------------------\n");
     }
 
     float basket_total = 0;
@@ -75,81 +75,79 @@ float basket_bill(Basket *this, FILE *fout)
         BasketItem *basket_item = (BasketItem *)item->value;
         Item *stock_item = stocks_lookup_item(this->stocks, basket_item->barecode);
 
-        if (fout)
-        {
-            if (basket_item->quantity)
-            {
-                fprintf(fout, "%04d %s x%-3d ", basket_item->barecode, stock_item->label, basket_item->quantity);
-            }
-            else
-            {
-                fprintf(fout, "%04d %s ", basket_item->barecode, stock_item->label);
-            }
-        }
-
-        float basket_item_price;
-        float basket_item_discount;
+        fprintf(fout, "  %04d  |", basket_item->barecode);
+        fprintf(fout, " %-26s |", stock_item->label);
 
         if (basket_item->is_consigne)
         {
-            basket_item_price = -(stock_item->consignedValue * basket_item->quantity);
-            basket_item_discount = 0;
-
-            if (fout)
-            {
-                fprintf(fout, "consigne %4.2f ", stock_item->consignedValue);
-            }
-        }
-        else if (stock_item->discount)
-        {
-            basket_item_discount = stock_item->price * basket_item->quantity * (stock_item->discount / 100.0);
-            basket_item_price = stock_item->price * basket_item->quantity - basket_discount;
-
-            if (fout)
-            {
-                fprintf(fout, "-%-3d%% ", stock_item->discount);
-            }
+            fprintf(fout, " oui     |");
         }
         else
         {
-            basket_item_price = stock_item->price * basket_item->quantity;
-            basket_item_discount = 0;
+            fprintf(fout, "         |");
         }
 
-        if (fout)
+        if (basket_item->quantity)
         {
-            fprintf(fout, "%7.2f€\n", basket_item_price);
+            fprintf(fout, " x%-2d |", basket_item->quantity);
+        }
+        else
+        {
+            fprintf(fout, "      ");
         }
 
-        basket_total += basket_item_price;
-        basket_discount += basket_item_discount;
+        float item_unit_value = 0.0;
+        float item_unit_discount = 0.0;
+
+        if (basket_item->is_consigne)
+        {
+            item_unit_value = -stock_item->consignedValue;
+            fprintf(fout, " %5.2f         |", item_unit_value);
+        }
+        else
+        {
+            item_unit_value = stock_item->price;
+            item_unit_discount = item_unit_value * (stock_item->discount / 100.0);
+
+            if (stock_item->discount)
+            {
+                fprintf(fout, " %5.2f  -%-2d%%   |", item_unit_value, stock_item->discount);
+            }
+            else
+            {
+                fprintf(fout, " %5.2f         |", item_unit_value);
+            }
+        }
+
+        fprintf(fout, " %7.2f \n", item_unit_value * basket_item->quantity);
+
+        basket_total += item_unit_value * basket_item->quantity;
+        basket_discount += item_unit_discount * basket_item->quantity;
     }
+
+    fprintf(fout, "\n-------------------------------------------------------------------------------\n\n");
+
+    float basket_point_discount = 0.0;
+
+    fprintf(fout, "Total hors réduction: %.2f€\n", basket_total);
 
     if (this->owner && this->pay_with_point)
     {
-        int point_used = min(basket_total * 100, this->owner->points);
+        int point_used = min((basket_total - basket_discount) * 100, this->owner->points);
 
-        if (fout)
-        {
-            fprintf(fout, "Reduction fidelité: %.2f€ (%dpts)\n", point_used / 100.0, point_used);
-        }
+        fprintf(fout, "Reduction fidelité: %.2f€ (%2dpts)\n", point_used / 100.0, point_used);
 
-        basket_total -= (point_used / 100.0);
+        basket_point_discount = (point_used / 100.0);
     }
 
-    if (fout)
+    float basket_final_total = basket_total - basket_discount - basket_point_discount;
+
+    fprintf(fout, "Reduction: %.2f€\n", basket_discount);
+    fprintf(fout, "\nTotal à payer: %.2f€\n\n", basket_final_total);
+
+    if (this->owner)
     {
-        if (basket_discount && fout)
-        {
-            fprintf(fout, "Reduction %5.2f€\n", basket_discount);
-        }
-
-        fprintf(fout, "TOTAL : %5.2f€\n", basket_total);
-
-        if (this->owner)
-        {
-            fprintf(fout, "Vous avez gagnez %dpts\n", (int)basket_total / 10);
-        }
+        fprintf(fout, "Vous avez gagnez %dpts\n", (int)basket_final_total / 10);
     }
 
     return basket_total;
@@ -307,6 +305,18 @@ Variant basket_ModelGetData(Basket *basket, int row, int column, ModelRole role)
     }
     else
     {
+        if (column == COL_BASKET_QUANTITY)
+        {
+            if (role == ROLE_DATA || role == ROLE_EDITOR)
+            {
+                return vint(basket_item->quantity);
+            }
+            else
+            {
+                return vstringf("x%-3d", basket_item->quantity);
+            }
+        }
+
         if (basket_item->is_consigne)
         {
             switch (column)
@@ -318,7 +328,7 @@ Variant basket_ModelGetData(Basket *basket, int row, int column, ModelRole role)
                 return vstring(item->label);
 
             case COL_BASKET_CONSIGNE:
-                if (role == ROLE_DATA)
+                if (role == ROLE_DATA || role == ROLE_EDITOR)
                 {
                     return vint(1);
                 }
@@ -328,7 +338,7 @@ Variant basket_ModelGetData(Basket *basket, int row, int column, ModelRole role)
                 }
 
             case CAL_BASKET_UNIT_PRICE:
-                if (role == ROLE_DATA)
+                if (role == ROLE_DATA || role == ROLE_EDITOR)
                 {
                     return vfloat(item->consignedValue);
                 }
@@ -337,21 +347,11 @@ Variant basket_ModelGetData(Basket *basket, int row, int column, ModelRole role)
                     return vstringf("%5.2f€", item->consignedValue);
                 }
 
-            case COL_BASKET_QUANTITY:
-                if (role == ROLE_DATA)
-                {
-                    return vint(basket_item->quantity);
-                }
-                else
-                {
-                    return vstringf("x %-3d", basket_item->quantity);
-                }
-
             case COL_BASKET_REDUCTION:
                 return vstring("-");
 
             case COL_BASKET_PRICE:
-                if (role == ROLE_DATA)
+                if (role == ROLE_DATA || role == ROLE_EDITOR)
                 {
                     return vfloat(-(item->consignedValue * basket_item->quantity));
                 }
@@ -374,7 +374,7 @@ Variant basket_ModelGetData(Basket *basket, int row, int column, ModelRole role)
                 return vstring(item->label);
 
             case COL_BASKET_CONSIGNE:
-                if (role == ROLE_DATA)
+                if (role == ROLE_DATA || role == ROLE_EDITOR)
                 {
                     return vint(0);
                 }
@@ -384,16 +384,31 @@ Variant basket_ModelGetData(Basket *basket, int row, int column, ModelRole role)
                 }
 
             case CAL_BASKET_UNIT_PRICE:
-                return vfloat(item->price);
-
-            case COL_BASKET_QUANTITY:
-                return vint(basket_item->quantity);
+                if (role == ROLE_DATA || role == ROLE_EDITOR)
+                {
+                    return vfloat(item->price);
+                }
+                else
+                {
+                    return vstringf("%5.2f€", item->price);
+                }
 
             case COL_BASKET_REDUCTION:
                 return vint(item->discount);
 
             case COL_BASKET_PRICE:
-                return vfloat((item->price * basket_item->quantity) * (1 - item->discount / 100.0));
+            {
+                float total_value = (item->price * basket_item->quantity) * (1 - item->discount / 100.0);
+
+                if (role == ROLE_DATA || role == ROLE_EDITOR)
+                {
+                    return vfloat(total_value);
+                }
+                else
+                {
+                    return vstringf("%5.2f€", total_value);
+                }
+            }
             }
 
             ASSERT_NOT_REACHED();
@@ -422,72 +437,7 @@ void basket_ModelSetData(Basket *basket, int row, int column, Variant value, Mod
     }
 }
 
-void add_item_BasketAction(
-    User *user,
-    Surface *surface,
-    ModelViewState *state,
-    Model model,
-    Basket *data,
-    int row)
-{
-    (void)user, (void)surface, (void)state, (void)model, (void)data, (void)row;
-
-    terminal_disable_alternative_screen_buffer();
-
-    terminal_enable_alternative_screen_buffer();
-}
-
-void add_consigned_BasketAction(
-    User *user,
-    Surface *surface,
-    ModelViewState *state,
-    Model model,
-    Basket *data,
-    int row)
-{
-    (void)user, (void)surface, (void)state, (void)model, (void)data, (void)row;
-
-    surface_update(surface);
-
-    surface_clear(surface, DEFAULT_STYLE);
-
-    model_view_title(user, surface, "Ajouter une consigne au panier");
-
-    surface_pop_clip(surface);
-
-    surface_render(surface);
-
-    terminal_read_key();
-}
-
-void remove_item_basket_action(
-    User *user,
-    Surface *surface,
-    ModelViewState *state,
-    Model model,
-    Basket *data,
-    int row)
-{
-    (void)user, (void)surface, (void)state, (void)model, (void)data, (void)row;
-}
-
-void print_bill_basket_action(
-    User *user,
-    Surface *surface,
-    ModelViewState *state,
-    Model model,
-    Basket *data,
-    int row)
-{
-    (void)user, (void)surface, (void)state, (void)model, (void)data, (void)row;
-}
-
-#define BASKET_MODEL_ACTION {'a', (ModelActionCallback)add_item_BasketAction, "Ajouter", "Ajouter un article au panier."},         \
-                            {'c', (ModelActionCallback)add_consigned_BasketAction, "Consign", "Ajouter une consigne au panier."},  \
-                            {'d', (ModelActionCallback)remove_item_basket_action, "Supprimer", "Supprimer un article du panier."}, \
-                            {'p', (ModelActionCallback)print_bill_basket_action, "Imprimer", "Imprimer le ticket pour le client."},
-
-ModelAction basket_actions[] = {DEFAULT_MODEL_MOVE_ACTION BASKET_MODEL_ACTION END_MODEL_VIEW_ACTION};
+ModelAction basket_actions[] = {DEFAULT_MODEL_VIEW_ACTION END_MODEL_VIEW_ACTION};
 
 ModelAction *basket_ModelGetActions(void)
 {

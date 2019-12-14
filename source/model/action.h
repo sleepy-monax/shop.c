@@ -38,8 +38,7 @@ void delete_ModelActionCallback(User *user, Surface *surface, struct ModelViewSt
                                   {'K', page_up_ModelActionCallback, "Page haut", "Scroller une page vers le haut."},  \
                                   {'J', page_down_ModelActionCallback, "Page bas", "Scroller une page vers le base."}, \
                                   {'g', home_ModelActionCallback, "Début", "Scroller tout en haut de la liste."},      \
-                                  {'G', end_ModelActionCallback, "Fin", "Scroller tout en bas de la liste."},          \
-                                  {'e', edit_ModelActionCallback, "Éditer", "Éditer l'élément actuelle."},
+                                  {'G', end_ModelActionCallback, "Fin", "Scroller tout en bas de la liste."},
 
 #define DEFAULT_MODEL_VIEW_ACTION {'q', quit_ModelActionCallback, "Quitter", "Quitter l'inpecteur de modèle."},           \
                                   {'h', help_ModelActionCallback, "Aide", "Afficher l'aide"},                             \
