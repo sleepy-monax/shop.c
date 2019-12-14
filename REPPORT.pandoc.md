@@ -15,6 +15,10 @@ Voir figure \ref{fig-ticket-match} et \ref{fig-ticket}.
 
 ![Ticket de caisse du Colruyt\label{fig-ticket}](assets/ticket.jpg)
 
+L'interface utilisateur est base sur le design des application de bureau de fin des années 80 début des années 90.
+Voir figure \ref{fig-interface}.
+Les racoucis claviers sont basé sur ceux de VI.
+
 ![Interface utilisateur en mode texte\label{fig-interface}](assets/inspiration.jpg)
 
 # Structure du code source et des données
@@ -105,15 +109,17 @@ END
 
 ## **source/** :
 
-## **model/** 
+## **view/**
 
-| Nom du fichier | Fonctionnalités                                                             |
-|----------------|:----------------------------------------------------------------------------|
-| action.c       | Action applicable a tout les modèles                                        |
-| lexer.c        | Lecture des fichiers de données                                             |
-| model.c        | Structure de données qui gèrent les accès et actions d'un modèle de données |
-| user.c         | Utilisateur du système                                                      |
-| view.c         | Affichage d'un modèle de données                                            |
+| Nom du fichier             | Fonctionnalités                                                   |
+|----------------------------|:------------------------------------------------------------------|
+| home_select_what_todo.c    | Menu principal                                                    |
+| cashier_select_what_todo.c | Menu client                                                       |
+| cashier_input_card_id.c    | Authentification du client et création d'un nouveau compte client |
+| cashier_scan_item.c        | Lecture et ajout d'articles dans le panier                        |
+| return_consigned_bottles.c | Retour de bouteilles consignées                                   |
+| user_login.c               | Interaface de connection de l'utilisateur.                        |
+| views.h                    | Entête des fonctions contenues dans les fichiers **view/*.c**     |
 
 ## **shop/**
 
@@ -125,6 +131,16 @@ END
 | users.c        | Modèle de données et gestion des utilisateurs de l'application                 |
 | barecode.c     | Gestion des codebares et indentifiant unique                                   |
 
+## **model/** 
+
+| Nom du fichier | Fonctionnalités                                                             |
+|----------------|:----------------------------------------------------------------------------|
+| action.c       | Action applicable a tout les modèles                                        |
+| lexer.c        | Lecture des fichiers de données                                             |
+| model.c        | Structure de données qui gèrent les accès et actions d'un modèle de données |
+| user.c         | Utilisateur du système                                                      |
+| view.c         | Affichage d'un modèle de données                                            |
+
 ## **utils/**
 
 | Nom du fichier | Fonctionnalités                                                                                                |
@@ -135,21 +151,9 @@ END
 | renderer.c     | Gestionnaire d'affichage de l'application                                                                      |
 | string.c       | Utilitaire pour la manipulation de chaîne de caractères UTF-8                                                  |
 | terminal.c     | Intéraction de bas niveau avec le terminal                                                                     |
-| variant.c      | Type de donnée generique utilisée pour la comunication entre l'interface utilisateur et le modelèle de données |
+| variant.c      | Type de donnée generique utilisée pour la comunication entre l'interface utilisateur et le modèle de données |
 | assert.h       | Utilitaire de debuggage                                                                                        |
 | math.h         | Fonctions mathematiques suplémentaires                                                                         |
-
-## **view/**
-
-| Nom du fichier             | Fonctionnalités                                                   |
-|----------------------------|:------------------------------------------------------------------|
-| cashier_input_card_id.c    | Authentification du client et création d'un nouveau compte client |
-| cashier_scan_item.c        | Lecture et ajout d'articles dans le panier                        |
-| cashier_select_what_todo.c | Menu client                                                       |
-| home_select_what_todo.c    | Menu principal                                                    |
-| return_consigned_bottles.c | Retour de bouteilles consignées                                   |
-| user_login.c               | Interaface de connection de l'utilisateur.                        |
-| views.h                    | Entête des fonctions contenues dans les fichiers **view/*.c**     |
 
 ## main.c
 
@@ -165,44 +169,38 @@ Le programme comprend 4 listes chaînées :
  - StockList
  - Basket
 
-Ces listes chaînées sont générées par les fonctions de List.c 
-avec la structure 
-```C
-typedef struct list
-{
-    int count;                  // -> nombre d'éléments dans la liste
+Ces liste sont basées sur un modele de double liste chainer.
+Voir figure \ref{fig-list}.
 
-    ListItem *head;             // -> premier élément de la liste
-    ListItem *tail;             // -> dernier élément de la liste
-} List;
-```
-on peut ensuite faire ceci :
+![Organigramme\label{fig-list}](assets/list.png)
 
-```C
-typedef List StockList;
-```
+Ceci permets d'acceder plus rapidement au dernier elements de la liste en parcourant la liste depuis le dernier elements dans le cas ou l'index de l'elements est apres le milieu de la liste.
+
+Des pointeur sans type (`void *`) sont utiliser pour permettre de pouvoir reutiliser la meme implementation de liste chainer pour plusieur conteneur.
+
+Et les functions suivante permet de manipuler une conteneur deriver d'une liste doublement chainer:
 
 Les fonctions présentes dans *list.c* permettent de mieux manipuler ces listes.
 
 | Fonction &nbsp;&nbsp;&nbsp;&nbsp; | type de retour | Fonctionnalités                                                                                                               |
 |-----------------------------------|----------------|-------------------------------------------------------------------------------------------------------------------------------|
+| list_create                       | List*          | crée une nouvelle instance de liste chainé                                                                                                                 |
+| list_destroy                      | void           | détruit l'instance de liste chainer et tout les elements qu'elle contien                                                                                                           |
 | list_clear                        | void           | purge la liste                                                                                                                |
-| list_clone                        | List*          | clone la liste                                                                                                                |
+| list_clone                        | List*          | crée une copie de la liste                                                                                                                |
 | list_contains                     | bool           | vérifie si la valeur existe dans la liste                                                                                     |
-| list_create                       | List*          | crée la liste                                                                                                                 |
-| list_destroy                      | void           | détruit la liste                                                                                                              |
 | list_indexof                      | int            | renvoie l'index de la position de la valeur dans la liste                                                                     |
 | list_insert_sorted                | void           | insère un élement trié                                                                                                        |
-| list_peek                         | bool           | vérifie si le 1er élément de la liste correpond à l'élément entré en argument, sinon met cet argument (pointeur) à NULL sinon |
+| list_peek                         | bool           | retour l' elements a l'index 0 si il y en a un sinon return NULL |
 | list_peekat                       | bool           | comme *list_peek* mais à un index                                                                                             |
 | list_peekback                     | bool           | comme *list_peek* mais à la fin de la liste                                                                                   |
 | list_pop                          | bool           | supprime le premier élément de la liste et modifie le pointeur mis en argument avec que l'élément supprimé                    |
 | list_popback                      | bool           | même que *list_pop* mais avec le dernier élément                                                                              |
-| list_push                         | void           | ajoute un élément au début de la liste                                                                                        |
-| list_pushback                     | void           | ajoute un élément à la fin de la liste                                                                                        |
+| list_push                         | void           | pousse un élément au début de la liste                                                                                        |
+| list_pushback                     | void           | pousse un élément à la fin de la liste                                                                                        |
 | list_remove                       | bool           | supprime un élément de la liste                                                                                               |
 
-## Structures de chaque liste chaînée :
+## Structures des données contenues dans les listes chainées :
 
 ```C
 typedef struct
@@ -215,7 +213,7 @@ typedef struct
     ItemCategory category;
     bool isConsigned;
     float consignedValue;
-} Item;
+} Item; // Representation d'un article en stock
 
 typedef struct
 {
@@ -226,14 +224,14 @@ typedef struct
     char email[CLIENT_EMAIL_SIZE];
 
     int points;
-} Client;
+} Client; // Representation d'un client qui a une carte de fideliter
 
 typedef struct
 {
     BareCode barecode;
     int quantity;
     bool is_consigne;
-} BasketItem;
+} BasketItem; // Representation d'un article dans le panier d'un client
 
 typedef struct
 {
@@ -241,7 +239,7 @@ typedef struct
     StockList *stocks;
     List *items;
     Client *owner;
-} Basket;
+} Basket; // Representation du panier d'un client.
 ```
 
 
@@ -250,4 +248,8 @@ typedef struct
 
 Voici un organigramme pour simplifier l'explication du fonctionnement du programme : 
 
+Architecture de l'application baser sur MVVM (figure \ref{fig-modele})
+![Organigramme\label{fig-modele}](assets/modele.png)
+
+Navigation de l'utilisateur dans l'application (figure \ref{fig-flowchart})
 ![Organigramme\label{fig-flowchart}](assets/organigramme.png)
