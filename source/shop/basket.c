@@ -426,7 +426,14 @@ Variant basket_ModelGetData(Basket *basket, int row, int column, ModelRole role)
             case COL_BASKET_REDUCTION:
                 if (role == ROLE_DISPLAY)
                 {
-                    return vstringf("-%2d%%", item->discount);
+                    if (item->discount)
+                    {
+                        return vstringf("-%2d%%", item->discount);
+                    }
+                    else
+                    {
+                        return vstring("-");
+                    }
                 }
                 else
                 {
@@ -435,7 +442,7 @@ Variant basket_ModelGetData(Basket *basket, int row, int column, ModelRole role)
 
             case COL_BASKET_PRICE:
             {
-                float total_value = (item->price * basket_item->quantity) * (1 - item->discount / 100.0);
+                float total_value = (item->price * basket_item->quantity);
 
                 if (role == ROLE_DATA || role == ROLE_EDITOR)
                 {
