@@ -6,20 +6,139 @@ lang: "fr-BE"
 geometry: margin = 2cm
 ---
 
+\cleardoublepage
+
 # Recherches
 
 Des ticket de plusieurs enseignes on ete récupérés pour servir d'inspiration.
 Voir figure \ref{fig-ticket-match} et \ref{fig-ticket}.
 
-![Ticket de caisse du Match\label{fig-ticket-match}](assets/ticket-match.jpg)
-
 ![Ticket de caisse du Colruyt\label{fig-ticket}](assets/ticket.jpg)
+
+![Ticket de caisse du Match\label{fig-ticket-match}](assets/ticket-match.jpg)
 
 L'interface utilisateur est base sur le design des application de bureau de fin des années 80 début des années 90.
 Voir figure \ref{fig-interface}.
 Les racoucis claviers sont basé sur ceux de VI.
 
 ![Interface utilisateur en mode texte\label{fig-interface}](assets/inspiration.jpg)
+
+\cleardoublepage
+
+# Fonctionnement du programme 
+
+L'application est divisée en une serie de d'interface qui s'appele entre elles (figure \ref{fig-flowchart})
+
+![Navigation de l'utilisateur dans l'application\label{fig-flowchart}](assets/organigramme.png)
+
+Les interfaces, la logique et les données de manipuler par ces dernier on été diviser a l'aide du design pattern MVVM (Model, View, View Model) (figure \ref{fig-modele})
+
+![Architecture global de l'application\label{fig-modele}](assets/modele.png)
+
+## Mode d'emploi du programme :
+
+Une fois que le personnel s'est authentifié, il sera amené à choisir 2 interfaces :
+
+1. les interfaces manager qui contiennent la liste des clients, des produits en stock et des employés.
+le personnel aura ou n'aura pas accès à certaines fonctionnalités (tels que modifier les informations d'un produit) selon son titre.
+
+2. l'interface caissier qui permet de faire des achats et de rendre des bouteilles consignées.
+Avant de passer l'achat, il faut également s'authentifier. le client à le choix, il peut soit poursuivre l'achat avec son compte déjà existant, soit en créer un, soit poursuivre sans compte.
+A savoir qu'un client sans compte ne pourra pas bénéficier de réductions EXTRA si gagner des points après un achat.
+
+Il est à noter que : 
+- on peut passer d'une interface à l'autre sans devoir fermer et relancer le programme.
+- chaque entité (client, produit, employé) est identifié par un code unique composé de 4 chiffres, on utilisera ce code pour retrouver cette entité (ex : si on veut acheter des poires, le client devra entrer "4387").
+- si le client poursuit son achat avec un compte, il pourra bénéficier de réducition s'il a au moins 500 points. Ses points sont débités en fonction du coût de son achat s'il décide de les utiliser, dans le cas contraire, il empochera des points, dépendant aussi du coût de son achat.
+- les points EXTRA n'interviennent pas dans la remise de bouteilles consignées.
+
+\cleardoublepage
+
+# Fonctionnement des listes chaînées
+
+![Liste doublement chainée\label{fig-list}](assets/list.png)
+
+Le programme comprend 4 listes chaînées :
+
+ - ClientsList
+ - UsersList
+ - StockList
+ - Basket
+
+Ces liste sont basées sur un modele de double liste chainer.
+Voir figure \ref{fig-list}.
+
+Ceci permets d'acceder plus rapidement au dernier elements de la liste en parcourant la liste depuis le dernier elements dans le cas ou l'index de l'elements est apres le milieu de la liste.
+
+Des pointeur sans type (`void *`) sont utiliser pour permettre de pouvoir reutiliser la meme implementation de liste chainer pour plusieur conteneur.
+
+Et les functions suivante permet de manipuler une conteneur deriver d'une liste doublement chainer:
+
+Les fonctions présentes dans *list.c* permettent de mieux manipuler ces listes.
+
+| Fonction &nbsp;&nbsp;&nbsp;&nbsp; | type de retour | Fonctionnalités                                                                                            |
+| --------------------------------- | -------------- | ---------------------------------------------------------------------------------------------------------- |
+| list_create                       | List*          | crée une nouvelle instance de liste chainé                                                                 |
+| list_destroy                      | void           | détruit l'instance de liste chainer et tout les elements qu'elle contien                                   |
+| list_clear                        | void           | purge la liste                                                                                             |
+| list_clone                        | List*          | crée une copie de la liste                                                                                 |
+| list_contains                     | bool           | vérifie si la valeur existe dans la liste                                                                  |
+| list_indexof                      | int            | renvoie l'index de la position de la valeur dans la liste                                                  |
+| list_insert_sorted                | void           | insère un élement trié                                                                                     |
+| list_peek                         | bool           | retour l' elements a l'index 0 si il y en a un sinon return NULL                                           |
+| list_peekat                       | bool           | comme *list_peek* mais à un index                                                                          |
+| list_peekback                     | bool           | comme *list_peek* mais à la fin de la liste                                                                |
+| list_pop                          | bool           | supprime le premier élément de la liste et modifie le pointeur mis en argument avec que l'élément supprimé |
+| list_popback                      | bool           | même que *list_pop* mais avec le dernier élément                                                           |
+| list_push                         | void           | pousse un élément au début de la liste                                                                     |
+| list_pushback                     | void           | pousse un élément à la fin de la liste                                                                     |
+| list_remove                       | bool           | supprime un élément de la liste                                                                            |
+
+\cleardoublepage
+
+## Structures des données contenues dans les listes chainées :
+
+```Cpp
+typedef struct
+{
+    BareCode id;
+    char label[ITEM_LABEL_SIZE];
+
+    float price;
+    int discount;
+    ItemCategory category;
+    bool isConsigned;
+    float consignedValue;
+} Item; // Représentation d'un article en stock
+
+typedef struct
+{
+    BareCode id;
+
+    char firstname[CLIENT_FIRST_NAME_SIZE];
+    char lastname[CLIENT_LAST_NAME_SIZE];
+    char email[CLIENT_EMAIL_SIZE];
+
+    int points;
+} Client; // Représentation d'un client qui a une carte de fidelité
+
+typedef struct
+{
+    BareCode barecode;
+    int quantity;
+    bool is_consigne;
+} BasketItem; // Représentation d'un article dans le panier d'un client
+
+typedef struct
+{
+    bool pay_with_point;
+    StockList *stocks;
+    List *items;
+    Client *owner;
+} Basket; // Représentation du panier d'un client.
+```
+
+\cleardoublepage
 
 # Structure du code source et des données
 
@@ -158,119 +277,3 @@ END
 ## main.c
 
 > Des fichiers '.h' sont aussi presents dans l'aborescence, ils ont les mêmes noms que les fichiers '.c', ceux-ci contiennent les entêtes des fonctions présentes dans les fichiers '.c'.
-
-
-# Fonctionnement des listes chaînées
-
-Le programme comprend 4 listes chaînées :
-
- - ClientsList
- - UsersList
- - StockList
- - Basket
-
-Ces liste sont basées sur un modele de double liste chainer.
-Voir figure \ref{fig-list}.
-
-![Liste doublement chainée\label{fig-list}](assets/list.png)
-
-Ceci permets d'acceder plus rapidement au dernier elements de la liste en parcourant la liste depuis le dernier elements dans le cas ou l'index de l'elements est apres le milieu de la liste.
-
-Des pointeur sans type (`void *`) sont utiliser pour permettre de pouvoir reutiliser la meme implementation de liste chainer pour plusieur conteneur.
-
-Et les functions suivante permet de manipuler une conteneur deriver d'une liste doublement chainer:
-
-Les fonctions présentes dans *list.c* permettent de mieux manipuler ces listes.
-
-| Fonction &nbsp;&nbsp;&nbsp;&nbsp; | type de retour | Fonctionnalités                                                                                            |
-| --------------------------------- | -------------- | ---------------------------------------------------------------------------------------------------------- |
-| list_create                       | List*          | crée une nouvelle instance de liste chainé                                                                 |
-| list_destroy                      | void           | détruit l'instance de liste chainer et tout les elements qu'elle contien                                   |
-| list_clear                        | void           | purge la liste                                                                                             |
-| list_clone                        | List*          | crée une copie de la liste                                                                                 |
-| list_contains                     | bool           | vérifie si la valeur existe dans la liste                                                                  |
-| list_indexof                      | int            | renvoie l'index de la position de la valeur dans la liste                                                  |
-| list_insert_sorted                | void           | insère un élement trié                                                                                     |
-| list_peek                         | bool           | retour l' elements a l'index 0 si il y en a un sinon return NULL                                           |
-| list_peekat                       | bool           | comme *list_peek* mais à un index                                                                          |
-| list_peekback                     | bool           | comme *list_peek* mais à la fin de la liste                                                                |
-| list_pop                          | bool           | supprime le premier élément de la liste et modifie le pointeur mis en argument avec que l'élément supprimé |
-| list_popback                      | bool           | même que *list_pop* mais avec le dernier élément                                                           |
-| list_push                         | void           | pousse un élément au début de la liste                                                                     |
-| list_pushback                     | void           | pousse un élément à la fin de la liste                                                                     |
-| list_remove                       | bool           | supprime un élément de la liste                                                                            |
-
-## Structures des données contenues dans les listes chainées :
-
-```Cpp
-typedef struct
-{
-    BareCode id;
-    char label[ITEM_LABEL_SIZE];
-
-    float price;
-    int discount;
-    ItemCategory category;
-    bool isConsigned;
-    float consignedValue;
-} Item; // Représentation d'un article en stock
-
-typedef struct
-{
-    BareCode id;
-
-    char firstname[CLIENT_FIRST_NAME_SIZE];
-    char lastname[CLIENT_LAST_NAME_SIZE];
-    char email[CLIENT_EMAIL_SIZE];
-
-    int points;
-} Client; // Représentation d'un client qui a une carte de fidelité
-
-typedef struct
-{
-    BareCode barecode;
-    int quantity;
-    bool is_consigne;
-} BasketItem; // Représentation d'un article dans le panier d'un client
-
-typedef struct
-{
-    bool pay_with_point;
-    StockList *stocks;
-    List *items;
-    Client *owner;
-} Basket; // Représentation du panier d'un client.
-```
-
-
-
-# Fonctionnement du programme 
-
-Voici un organigramme pour simplifier l'explication du fonctionnement du programme : 
-
-Architecture de l'application baser sur MVVM (figure \ref{fig-modele})
-
-![Architecture global de l'application\label{fig-modele}](assets/modele.png)
-
-Navigation de l'utilisateur dans l'application (figure \ref{fig-flowchart})
-
-![Organigramme\label{fig-flowchart}](assets/organigramme.png)
-
-## Mode d'emploi du programme :
-
-Une fois que le personnel s'est authentifié, il sera amené à choisir 2 interfaces :
-
-1. les interfaces manager qui contiennent la liste des clients, des produits en stock et des employés.
-le personnel aura ou n'aura pas accès à certaines fonctionnalités (tels que modifier les informations d'un produit) selon son titre.
-
-2. l'interface caissier qui permet de faire des achats et de rendre des bouteilles consignées.
-Avant de passer l'achat, il faut également s'authentifier. le client à le choix, il peut soit poursuivre l'achat avec son compte déjà existant, soit en créer un, soit poursuivre sans compte.
-A savoir qu'un client sans compte ne pourra pas bénéficier de réductions EXTRA si gagner des points après un achat.
-
-
-
-Il est à noter que : 
-- on peut passer d'une interface à l'autre sans devoir fermer et relancer le programme.
-- chaque entité (client, produit, employé) est identifié par un code unique composé de 4 chiffres, on utilisera ce code pour retrouver cette entité (ex : si on veut acheter des poires, le client devra entrer "4387").
-- si le client poursuit son achat avec un compte, il pourra bénéficier de réducition s'il a au moins 500 points. Ses points sont débités en fonction du coût de son achat s'il décide de les utiliser, dans le cas contraire, il empochera des points, dépendant aussi du coût de son achat.
-- les points EXTRA n'interviennent pas dans la remise de bouteilles consignées.
