@@ -31,7 +31,7 @@
       <w>160</w>
       <h>30</h>
     </coordinates>
-    <panel_attributes>Modéle de données</panel_attributes>
+    <panel_attributes>Modèle de données</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -127,7 +127,7 @@ style=wordwrap</panel_attributes>
 style=wordwrap
 *Modèle de donnés*
 
-Un modèle de donnés est un module qui contient la logique pour charger, manipuler et sauvgarder les objets de l'application.
+Un modèle de données est un module qui contient la logique pour charger, manipuler et sauvegarder les objets de l'application.
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -139,7 +139,7 @@ Un modèle de donnés est un module qui contient la logique pour charger, manipu
       <w>160</w>
       <h>30</h>
     </coordinates>
-    <panel_attributes>Modéle de données</panel_attributes>
+    <panel_attributes>Modèle de données</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -150,7 +150,7 @@ Un modèle de donnés est un module qui contient la logique pour charger, manipu
       <w>160</w>
       <h>30</h>
     </coordinates>
-    <panel_attributes>Modéle de données</panel_attributes>
+    <panel_attributes>Modèle de données</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -220,7 +220,7 @@ Un modèle de donnés est un module qui contient la logique pour charger, manipu
 style=wordwrap
 *Fichiers*
 
-Les fichier manipuler par les modèles de données sont tous sous le même format "clé=valeur".</panel_attributes>
+Les fichiers manipulés par les modèles de données sont tous sous le même format "clé = valeur".</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -246,7 +246,7 @@ Les fichier manipuler par les modèles de données sont tous sous le même forma
 style=wordwrap
 *Interface utilisateur*
 
-L'interace utilisateur est la même quelque soit le modèle de données, c'est le modèle qui precise quelles operations sont possibles et comment les informations doivent être présenter à l'utilisateur.</panel_attributes>
+L'Interface utilisateur est la même, quelque soit le modèle de données, c'est le modèle qui précise quelles operations sont possibles et comment les informations doivent être présentées à l'utilisateur.</panel_attributes>
     <additional_attributes/>
   </element>
   <element>

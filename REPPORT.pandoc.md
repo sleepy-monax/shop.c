@@ -202,7 +202,7 @@ Les fonctions présentes dans *list.c* permettent de mieux manipuler ces listes.
 
 ## Structures des données contenues dans les listes chainées :
 
-```C
+```Cpp
 typedef struct
 {
     BareCode id;
@@ -213,7 +213,7 @@ typedef struct
     ItemCategory category;
     bool isConsigned;
     float consignedValue;
-} Item; // Representation d'un article en stock
+} Item; // Représentation d'un article en stock
 
 typedef struct
 {
@@ -224,14 +224,14 @@ typedef struct
     char email[CLIENT_EMAIL_SIZE];
 
     int points;
-} Client; // Representation d'un client qui a une carte de fideliter
+} Client; // Représentation d'un client qui a une carte de fidelité
 
 typedef struct
 {
     BareCode barecode;
     int quantity;
     bool is_consigne;
-} BasketItem; // Representation d'un article dans le panier d'un client
+} BasketItem; // Représentation d'un article dans le panier d'un client
 
 typedef struct
 {
@@ -239,7 +239,7 @@ typedef struct
     StockList *stocks;
     List *items;
     Client *owner;
-} Basket; // Representation du panier d'un client.
+} Basket; // Représentation du panier d'un client.
 ```
 
 
@@ -249,7 +249,28 @@ typedef struct
 Voici un organigramme pour simplifier l'explication du fonctionnement du programme : 
 
 Architecture de l'application baser sur MVVM (figure \ref{fig-modele})
+
 ![Organigramme\label{fig-modele}](assets/modele.png)
 
 Navigation de l'utilisateur dans l'application (figure \ref{fig-flowchart})
+
 ![Organigramme\label{fig-flowchart}](assets/organigramme.png)
+
+## Mode d'emploi du programme :
+
+Une fois que le personnel s'est authentifié, il sera amené à choisir 2 interfaces :
+
+1. les interfaces manager qui contiennent la liste des clients, des produits en stock et des employés.
+le personnel aura ou n'aura pas accès à certaines fonctionnalités (tels que modifier les informations d'un produit) selon son titre.
+
+2. l'interface caissier qui permet de faire des achats et de rendre des bouteilles consignées.
+Avant de passer l'achat, il faut également s'authentifier. le client à le choix, il peut soit poursuivre l'achat avec son compte déjà existant, soit en créer un, soit poursuivre sans compte.
+A savoir qu'un client sans compte ne pourra pas bénéficier de réductions EXTRA si gagner des points après un achat.
+
+
+
+Il est à noter que : 
+- on peut passer d'une interface à l'autre sans devoir fermer et relancer le programme.
+- chaque entité (client, produit, employé) est identifié par un code unique composé de 4 chiffres, on utilisera ce code pour retrouver cette entité (ex : si on veut acheter des poires, le client devra entrer "4387").
+- si le client poursuit son achat avec un compte, il pourra bénéficier de réducition s'il a au moins 500 points. Ses points sont débités en fonction du coût de son achat s'il décide de les utiliser, dans le cas contraire, il empochera des points, dépendant aussi du coût de son achat.
+- les points EXTRA n'interviennent pas dans la remise de bouteilles consignées.
