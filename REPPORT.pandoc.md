@@ -28,7 +28,7 @@ Les racoucis claviers sont basé sur ceux de VI.
 Le dossier data contients les donnes utilser par l'application.
 
 | Nom du fichier | Fonctionnalités                                                                         |
-|----------------|:----------------------------------------------------------------------------------------|
+| -------------- | :-------------------------------------------------------------------------------------- |
 | client.dat     | La liste des clients qui ont un compte client "extra"                                   |
 | stock.dat      | La liste des articles vendu avec leur codebare, nom, catégorie, prix et promotion extra |
 | user.dat       | La liste des utilisateur de l'application avec leur nom, prénom, login et mots de passe |
@@ -112,7 +112,7 @@ END
 ## **view/**
 
 | Nom du fichier             | Fonctionnalités                                                   |
-|----------------------------|:------------------------------------------------------------------|
+| -------------------------- | :---------------------------------------------------------------- |
 | home_select_what_todo.c    | Menu principal                                                    |
 | cashier_select_what_todo.c | Menu client                                                       |
 | cashier_input_card_id.c    | Authentification du client et création d'un nouveau compte client |
@@ -124,7 +124,7 @@ END
 ## **shop/**
 
 | Nom du fichier | Fonctionnalités                                                                |
-|----------------|:-------------------------------------------------------------------------------|
+| -------------- | :----------------------------------------------------------------------------- |
 | basket.c       | Modèle de données et gestion des articles contenus dans le panier d'un clients |
 | clients.c      | Modèle de données et gestion des clients                                       |
 | stocks.c       | Modèle de données et gestion des articles en stock                             |
@@ -134,7 +134,7 @@ END
 ## **model/** 
 
 | Nom du fichier | Fonctionnalités                                                             |
-|----------------|:----------------------------------------------------------------------------|
+| -------------- | :-------------------------------------------------------------------------- |
 | action.c       | Action applicable a tout les modèles                                        |
 | lexer.c        | Lecture des fichiers de données                                             |
 | model.c        | Structure de données qui gèrent les accès et actions d'un modèle de données |
@@ -143,17 +143,17 @@ END
 
 ## **utils/**
 
-| Nom du fichier | Fonctionnalités                                                                                                |
-|----------------|:---------------------------------------------------------------------------------------------------------------|
-| input.c        | Entrée de l'utilisateur                                                                                        |
-| list.c         | Implémentation génerique d'une liste doublement chainée                                                        |
-| logger.c       | Journal de bord de l'application                                                                               |
-| renderer.c     | Gestionnaire d'affichage de l'application                                                                      |
-| string.c       | Utilitaire pour la manipulation de chaîne de caractères UTF-8                                                  |
-| terminal.c     | Intéraction de bas niveau avec le terminal                                                                     |
+| Nom du fichier | Fonctionnalités                                                                                              |
+| -------------- | :----------------------------------------------------------------------------------------------------------- |
+| input.c        | Entrée de l'utilisateur                                                                                      |
+| list.c         | Implémentation génerique d'une liste doublement chainée                                                      |
+| logger.c       | Journal de bord de l'application                                                                             |
+| renderer.c     | Gestionnaire d'affichage de l'application                                                                    |
+| string.c       | Utilitaire pour la manipulation de chaîne de caractères UTF-8                                                |
+| terminal.c     | Intéraction de bas niveau avec le terminal                                                                   |
 | variant.c      | Type de donnée generique utilisée pour la comunication entre l'interface utilisateur et le modèle de données |
-| assert.h       | Utilitaire de debuggage                                                                                        |
-| math.h         | Fonctions mathematiques suplémentaires                                                                         |
+| assert.h       | Utilitaire de debuggage                                                                                      |
+| math.h         | Fonctions mathematiques suplémentaires                                                                       |
 
 ## main.c
 
@@ -172,7 +172,7 @@ Le programme comprend 4 listes chaînées :
 Ces liste sont basées sur un modele de double liste chainer.
 Voir figure \ref{fig-list}.
 
-![Organigramme\label{fig-list}](assets/list.png)
+![Liste doublement chainée\label{fig-list}](assets/list.png)
 
 Ceci permets d'acceder plus rapidement au dernier elements de la liste en parcourant la liste depuis le dernier elements dans le cas ou l'index de l'elements est apres le milieu de la liste.
 
@@ -182,23 +182,23 @@ Et les functions suivante permet de manipuler une conteneur deriver d'une liste 
 
 Les fonctions présentes dans *list.c* permettent de mieux manipuler ces listes.
 
-| Fonction &nbsp;&nbsp;&nbsp;&nbsp; | type de retour | Fonctionnalités                                                                                                               |
-|-----------------------------------|----------------|-------------------------------------------------------------------------------------------------------------------------------|
-| list_create                       | List*          | crée une nouvelle instance de liste chainé                                                                                                                 |
-| list_destroy                      | void           | détruit l'instance de liste chainer et tout les elements qu'elle contien                                                                                                           |
-| list_clear                        | void           | purge la liste                                                                                                                |
-| list_clone                        | List*          | crée une copie de la liste                                                                                                                |
-| list_contains                     | bool           | vérifie si la valeur existe dans la liste                                                                                     |
-| list_indexof                      | int            | renvoie l'index de la position de la valeur dans la liste                                                                     |
-| list_insert_sorted                | void           | insère un élement trié                                                                                                        |
-| list_peek                         | bool           | retour l' elements a l'index 0 si il y en a un sinon return NULL |
-| list_peekat                       | bool           | comme *list_peek* mais à un index                                                                                             |
-| list_peekback                     | bool           | comme *list_peek* mais à la fin de la liste                                                                                   |
-| list_pop                          | bool           | supprime le premier élément de la liste et modifie le pointeur mis en argument avec que l'élément supprimé                    |
-| list_popback                      | bool           | même que *list_pop* mais avec le dernier élément                                                                              |
-| list_push                         | void           | pousse un élément au début de la liste                                                                                        |
-| list_pushback                     | void           | pousse un élément à la fin de la liste                                                                                        |
-| list_remove                       | bool           | supprime un élément de la liste                                                                                               |
+| Fonction &nbsp;&nbsp;&nbsp;&nbsp; | type de retour | Fonctionnalités                                                                                            |
+| --------------------------------- | -------------- | ---------------------------------------------------------------------------------------------------------- |
+| list_create                       | List*          | crée une nouvelle instance de liste chainé                                                                 |
+| list_destroy                      | void           | détruit l'instance de liste chainer et tout les elements qu'elle contien                                   |
+| list_clear                        | void           | purge la liste                                                                                             |
+| list_clone                        | List*          | crée une copie de la liste                                                                                 |
+| list_contains                     | bool           | vérifie si la valeur existe dans la liste                                                                  |
+| list_indexof                      | int            | renvoie l'index de la position de la valeur dans la liste                                                  |
+| list_insert_sorted                | void           | insère un élement trié                                                                                     |
+| list_peek                         | bool           | retour l' elements a l'index 0 si il y en a un sinon return NULL                                           |
+| list_peekat                       | bool           | comme *list_peek* mais à un index                                                                          |
+| list_peekback                     | bool           | comme *list_peek* mais à la fin de la liste                                                                |
+| list_pop                          | bool           | supprime le premier élément de la liste et modifie le pointeur mis en argument avec que l'élément supprimé |
+| list_popback                      | bool           | même que *list_pop* mais avec le dernier élément                                                           |
+| list_push                         | void           | pousse un élément au début de la liste                                                                     |
+| list_pushback                     | void           | pousse un élément à la fin de la liste                                                                     |
+| list_remove                       | bool           | supprime un élément de la liste                                                                            |
 
 ## Structures des données contenues dans les listes chainées :
 
@@ -250,7 +250,7 @@ Voici un organigramme pour simplifier l'explication du fonctionnement du program
 
 Architecture de l'application baser sur MVVM (figure \ref{fig-modele})
 
-![Organigramme\label{fig-modele}](assets/modele.png)
+![Architecture global de l'application\label{fig-modele}](assets/modele.png)
 
 Navigation de l'utilisateur dans l'application (figure \ref{fig-flowchart})
 
