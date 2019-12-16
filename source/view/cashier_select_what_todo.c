@@ -52,17 +52,28 @@ void cashier_select_what_todo(User *user, Basket *basket, StockList *stocks)
         }
         case 3:
         {
-            if (basket->owner)
+            if (basket->items->count == 0)
             {
-                if (user_yes_no("Voulez-vous payer avec vos points fidelitée?", YES))
+                if (user_yes_no("Votre panier est vide, voulez-vous quitter ?", NO) == YES)
                 {
-                    basket->pay_with_point = true;
+                    break;
                 }
             }
+            else
+            {
 
-            basket_pay(user, basket, stdout);
+                if (basket->owner)
+                {
+                    if (user_yes_no("Voulez-vous payer avec vos points fidelitée?", YES))
+                    {
+                        basket->pay_with_point = true;
+                    }
+                }
 
-            terminal_read_key();
+                basket_pay(user, basket, stdout);
+
+                terminal_read_key();
+            }
 
             return;
         }
