@@ -8,10 +8,10 @@ void user_login(UsersList *users, StockList *stocks, ClientsList *clients)
     do
     {
         char user_login[17];
-        user_input("Login", "****************", user_login);
+        user_input("\n\tLogin", "****************", user_login);
 
         char user_password[17];
-        user_input("Password", "****************", user_password);
+        user_input_password("\tPassword", user_password, 17);
         long int hash = strhash((uint8_t *)user_password);
 
         User *user = users_lookup(users, user_login);

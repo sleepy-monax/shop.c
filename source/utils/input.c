@@ -134,6 +134,43 @@ int user_select(User *user, const char *prompt, const char *options[])
     return selected;
 }
 
+void user_input_password(const char *prompt, char *result, int n)
+{
+    terminal_enter_rawmode();
+
+    char c;
+    int index = 0;
+
+    result[0] = '\0';
+
+    printf("%s: ", prompt);
+
+    do
+    {
+        c = terminal_read_key();
+
+        if (c == 127 && index > 0)
+        {
+            index--;
+            result[index] = '\0';
+        }
+        else if (iscntrl(c))
+        {
+            // do nothing with it
+        }
+        else if (index < n)
+        {
+            result[index] = c;
+            result[index + 1] = '\0';
+            index++;
+        }
+    } while (c != '\n');
+
+    printf("\n");
+
+    terminal_exit_rawmode();
+}
+
 void user_input(const char *prompt, const char *format, char *result)
 {
     terminal_enter_rawmode();

@@ -25,3 +25,5 @@ bool user_yes_no(const char *prompt, bool default_choice);
 int user_select(User *user, const char *prompt, const char *options[]);
 
 void user_input(const char *prompt, const char *format, char *result);
+
+void user_input_password(const char *prompt, char *result, int n);
