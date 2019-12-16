@@ -1,11 +1,11 @@
 #pragma once
 
-#include <stdio.h>
 #include <stdbool.h>
+#include <stdio.h>
 
+#include "model/model.h"
 #include "shop/barecode.h"
 #include "utils/list.h"
-#include "model/model.h"
 
 #define ITEM_CATEGORY_LIST(__ENTRY) \
     __ENTRY(UNDEFINED)              \
@@ -31,6 +31,7 @@ typedef struct
     BareCode id;
     char label[ITEM_LABEL_SIZE];
 
+    int quantity;
     float price;
     int discount; // in pourcent
     ItemCategory category;

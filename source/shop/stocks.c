@@ -12,6 +12,7 @@ typedef enum
     COL_ITEM_BARECODE,
     COL_ITEM_LABEL,
     COL_ITEM_PRICE,
+    COL_ITEM_QUANTITY,
     COL_ITEM_CONSIGNED,
     COL_ITEM_DISCOUNT,
     COL_ITEM_CATEGORY,
@@ -154,6 +155,9 @@ const char *stocks_ModelColumnName(int index, ModelRole role)
         case COL_ITEM_PRICE:
             return "PRICE";
 
+        case COL_ITEM_QUANTITY:
+            return "QUANTITY";
+
         case COL_ITEM_CONSIGNED:
             return "CONSIGNED";
 
@@ -176,6 +180,9 @@ const char *stocks_ModelColumnName(int index, ModelRole role)
 
         case COL_ITEM_PRICE:
             return "Prix";
+
+        case COL_ITEM_QUANTITY:
+            return "Quantitée";
 
         case COL_ITEM_CONSIGNED:
             return "Consigne";
@@ -206,6 +213,9 @@ VarianType stocks_ModelColumnType(int index, ModelRole role)
     case COL_ITEM_PRICE:
         return VARIANT_FLOAT;
 
+    case COL_ITEM_QUANTITY:
+        return VARIANT_INT;
+
     case COL_ITEM_CONSIGNED:
         return VARIANT_FLOAT;
 
@@ -231,6 +241,9 @@ Style stocks_ModelColumnStyle(int index)
 
     case COL_ITEM_PRICE:
         return style_centered(DEFAULT_STYLE);
+
+    case COL_ITEM_QUANTITY:
+        return style_centered(RED_STYLE);
 
     case COL_ITEM_CONSIGNED:
         return style_centered(DEFAULT_STYLE);
@@ -273,6 +286,23 @@ Variant stocks_ModelGetData(StockList *stock, int row, int column, ModelRole rol
         else
         {
             return vstringf("%5.2f€", item->price);
+        }
+
+    case COL_ITEM_QUANTITY:
+        if (role == ROLE_DATA)
+        {
+            return vint(item->quantity);
+        }
+        else
+        {
+            if (item->quantity)
+            {
+                return vstringf("x%-3d", item->quantity);
+            }
+            else
+            {
+                return vstring("VIDE!");
+            }
         }
 
     case COL_ITEM_CONSIGNED:
@@ -343,6 +373,10 @@ void stocks_ModelSetData(StockList *stock, int row, int column, Variant value, M
 
     case COL_ITEM_PRICE:
         item->price = value.as_float;
+        break;
+
+    case COL_ITEM_QUANTITY:
+        item->quantity = value.as_int;
         break;
 
     case COL_ITEM_CONSIGNED:
