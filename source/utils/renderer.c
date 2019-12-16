@@ -1,12 +1,12 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
+#include "utils/assert.h"
 #include "utils/math.h"
 #include "utils/renderer.h"
-#include "utils/terminal.h"
-#include "utils/assert.h"
 #include "utils/string.h"
+#include "utils/terminal.h"
 
 Style style_regular(Style style)
 {
@@ -92,13 +92,30 @@ static int style_cmp(Style a, Style b)
     return memcmp(&a, &b, sizeof(Style));
 }
 
+static void style_use(Style style)
+{
+    printf("\e[0m");
+
+    if (style.bold)
+    {
+        printf("\e[1m");
+    }
+
+    if (style.underline)
+    {
+        printf("\e[4m");
+    }
+
+    printf("\e[3%d;4%dm", style.foreground, style.background);
+}
+
 void surface_render(Surface *this)
 {
     terminal_set_cursor_position(0, 0);
     terminal_hide_cursor();
 
     Style current_style = DEFAULT_STYLE;
-    printf("\e[0m");
+    style_use(current_style);
 
     for (int y = 0; y < this->height; y++)
     {
@@ -108,19 +125,7 @@ void surface_render(Surface *this)
 
             if (style_cmp(current_style, c.style) != 0)
             {
-                printf("\e[0m");
-
-                if (c.style.bold)
-                {
-                    printf("\e[1m");
-                }
-
-                if (c.style.underline)
-                {
-                    printf("\e[4m");
-                }
-
-                printf("\e[3%d;4%dm", c.style.foreground, c.style.background);
+                style_use(c.style);
 
                 current_style = c.style;
             }

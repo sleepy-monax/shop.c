@@ -16,7 +16,7 @@ void cashier_select_what_todo(User *user, Basket *basket, StockList *stocks)
         "Effectuer un achat",
         "Rendre des bouteilles consignées",
         "Afficher le panier",
-        "Payer",
+        "$ Payer",
         " Annuler",
         NULL,
     };
@@ -54,13 +54,13 @@ void cashier_select_what_todo(User *user, Basket *basket, StockList *stocks)
         {
             if (basket->owner)
             {
-                if (user_yes_no("Voulez-vous payer avec vos points fidelitée?"))
+                if (user_yes_no("Voulez-vous payer avec vos points fidelitée?", YES))
                 {
                     basket->pay_with_point = true;
                 }
             }
 
-            float total = basket_bill(basket, stdout);
+            float total = basket_bill(user, basket, stdout);
 
             if (basket->owner)
             {

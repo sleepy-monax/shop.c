@@ -4,8 +4,8 @@
 #include "model/view.h"
 #include "shop/basket.h"
 #include "utils/assert.h"
-#include "utils/terminal.h"
 #include "utils/math.h"
+#include "utils/terminal.h"
 
 Basket *basket_create(StockList *stocks, Client *owner)
 {
@@ -58,8 +58,10 @@ void basket_add_item(Basket *this, BareCode barecode, bool is_consigned, int qua
     }
 }
 
-float basket_bill(Basket *this, FILE *fout)
+float basket_bill(User *user, Basket *this, FILE *fout)
 {
+    printf("Votre caissier: %s.\n\n", user->lastname);
+
     if (fout)
     {
         fprintf(fout, "Voici le contenu du panier : \n\n");
@@ -181,6 +183,20 @@ ModelAccess basket_ModelWriteAccess(Basket *basket, int row, int column, User *u
     (void)basket;
     (void)row;
     (void)user;
+
+    if (column == COL_BASKET_CONSIGNE)
+    {
+        BasketItem *item_in_basket = NULL;
+        list_peekat(basket->items, row, (void **)&item_in_basket);
+        Item *item_in_stock = stocks_lookup_item(basket->stocks, item_in_basket->barecode);
+
+        if (item_in_stock != NULL && item_in_stock->isConsigned)
+        {
+            return ACCESS_ALL;
+        }
+
+        return ACCESS_NONE;
+    }
 
     if (column == COL_BASKET_BARECODE ||
         column == COL_BASKET_QUANTITY ||

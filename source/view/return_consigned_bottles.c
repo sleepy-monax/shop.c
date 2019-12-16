@@ -35,5 +35,5 @@ void cashier_return_consigned_bottles(Basket *basket, StockList *stock)
         {
             printf("Erreur, le codebarre entré ne correpond pas à un article consigne\n");
         }
-    } while (user_yes_no("Voulez-vous continuer ?") == YES);
+    } while (user_yes_no("Voulez-vous continuer ?", YES) == YES);
 }

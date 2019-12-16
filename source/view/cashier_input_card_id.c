@@ -23,7 +23,7 @@ static Client *login_client(ClientsList *clients)
         {
             log_error("Ce compte n'existe pas");
 
-            if (user_yes_no("Erreur, identifiant incorrect, voulez-vous réessayer ? ") == NO)
+            if (user_yes_no("Erreur, identifiant incorrect, voulez-vous réessayer ? ", YES) == NO)
             {
                 return NULL;
             }
@@ -58,7 +58,7 @@ static Client *new_client(ClientsList *clients)
                nouveau_client->lastname,
                nouveau_client->email);
 
-    } while (user_yes_no("Confirmer ?") == NO);
+    } while (user_yes_no("Confirmer ?", NO) == NO);
 
     terminal_disable_alternative_screen_buffer();
 
@@ -87,7 +87,7 @@ Client *cashier_input_card_id(ClientsList *clients)
         return login_client(clients);
 
     case 1:
-        if (user_yes_no("Acceptez-vous les conditions d'utilisation?") == YES)
+        if (user_yes_no("Acceptez-vous les conditions d'utilisation?", NO) == YES)
             return new_client(clients);
 
         break;

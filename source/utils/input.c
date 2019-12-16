@@ -1,21 +1,15 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <ctype.h>
-#include <string.h>
 #include <assert.h>
+#include <ctype.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
-#include "utils/string.h"
-#include "utils/input.h"
-#include "utils/terminal.h"
-#include "utils/renderer.h"
 #include "model/view.h"
-
-//void user_input_display(const char *format, const char *input)
-//{
-//    int format_index = 0;
-//    int input_index = 0;
-//}
+#include "utils/input.h"
+#include "utils/renderer.h"
+#include "utils/string.h"
+#include "utils/terminal.h"
 
 InputValidState user_input_valid(const char *format, const char *input)
 {
@@ -35,23 +29,50 @@ InputValidState user_input_valid(const char *format, const char *input)
     return INPUT_VALID;
 }
 
-bool user_yes_no(const char *prompt)
+bool user_yes_no(const char *prompt, bool default_choice)
 {
-    printf("%s [Oui/Non]", prompt);
 
-    char c = terminal_read_key();
-
-    if (c == 'Y' || c == 'O' || c == 'y' || c == 'o')
+    if (default_choice == NO)
     {
-        printf(" Oui\n");
-
-        return true;
+        printf("%s [Oui/\e[1mNon\e[0m]", prompt);
     }
     else
     {
-        printf(" Non\n");
+        printf("%s [\e[1mOui\e[0m/Non]", prompt);
+    }
 
-        return false;
+    char c = terminal_read_key();
+
+    if (default_choice == NO)
+    {
+
+        if (c == 'Y' || c == 'O' || c == 'y' || c == 'o')
+        {
+            printf(" Oui\n");
+
+            return true;
+        }
+        else
+        {
+            printf(" Non\n");
+
+            return false;
+        }
+    }
+    else
+    {
+        if (c == 'N' || c == 'n')
+        {
+            printf(" Non\n");
+
+            return false;
+        }
+        else
+        {
+            printf(" Oui\n");
+
+            return true;
+        }
     }
 }
 

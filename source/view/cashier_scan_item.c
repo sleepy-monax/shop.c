@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include "utils/input.h"
 #include "utils/logger.h"
@@ -16,32 +17,48 @@ void cashier_scan_items(Basket *basket, StockList *stock)
 
     float totValue = 0.;
 
+    bool exited = false;
+
     do
     {
         stocks_display(stock);
         user_input("Inserez le codebarre de l'article", "####", item_raw_barecode);
 
-        item_barecode = atoi(item_raw_barecode);
-        item = stocks_lookup_item(stock, item_barecode);
-
-        if (item != NULL)
+        if (strlen(item_raw_barecode) == 0)
         {
-            user_input("Entrez la quatite que vous souhaitez acheter", "####", item_raw_quantity);
-            item_quantity = atoi(item_raw_quantity);
-
-            if (item_quantity <= 0)
+            if (user_yes_no("Voulez-vous continuer a ajouter des articles au panier ?", YES) == NO)
             {
-                printf("Achat annule!\n");
+                exited = true;
+            }
+        }
+        else
+        {
+            item_barecode = atoi(item_raw_barecode);
+            item = stocks_lookup_item(stock, item_barecode);
+
+            if (item != NULL)
+            {
+                user_input("Entrez la quatite que vous souhaitez acheter", "####", item_raw_quantity);
+                item_quantity = atoi(item_raw_quantity);
+
+                if (item_quantity <= 0)
+                {
+                    printf("Achat annule!\n");
+                }
+                else
+                {
+                    basket_add_item(basket, item_barecode, false, item_quantity);
+
+                    totValue = item->price;
+                    totValue -= item->price * item->discount;
+                    totValue *= item_quantity;
+                }
             }
             else
             {
-                basket_add_item(basket, item_barecode, false, item_quantity);
-
-                totValue = item->price;
-                totValue -= item->price * item->discount;
-                totValue *= item_quantity;
+                log_error("Code bare %04d incorrect!", item_barecode);
             }
         }
 
-    } while (user_yes_no("Voulez-vous continuer a ajouter des articles au panier ?") == YES);
+    } while (!exited);
 }

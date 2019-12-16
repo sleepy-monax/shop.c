@@ -20,7 +20,7 @@ void restore_terminal_after_user_input(void);
 #define YES 1
 #define NO 0
 
-bool user_yes_no(const char *prompt);
+bool user_yes_no(const char *prompt, bool default_choice);
 
 int user_select(User *user, const char *prompt, const char *options[]);
 
