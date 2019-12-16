@@ -60,12 +60,7 @@ void cashier_select_what_todo(User *user, Basket *basket, StockList *stocks)
                 }
             }
 
-            float total = basket_bill(user, basket, stdout);
-
-            if (basket->owner)
-            {
-                basket->owner->points += total / 10;
-            }
+            basket_pay(user, basket, stdout);
 
             terminal_read_key();
 

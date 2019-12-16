@@ -58,7 +58,7 @@ void basket_add_item(Basket *this, BareCode barecode, bool is_consigned, int qua
     }
 }
 
-float basket_bill(User *user, Basket *this, FILE *fout)
+float basket_pay(User *user, Basket *this, FILE *fout)
 {
     printf("Votre caissier: %s.\n\n", user->lastname);
 
@@ -140,16 +140,30 @@ float basket_bill(User *user, Basket *this, FILE *fout)
         fprintf(fout, "Reduction fidelité: %.2f€ (%2dpts)\n", point_used / 100.0, point_used);
 
         basket_point_discount = (point_used / 100.0);
+        this->owner->points -= point_used;
     }
 
     float basket_final_total = basket_total - basket_discount - basket_point_discount;
 
-    fprintf(fout, "Reduction: %.2f€\n", basket_discount);
+    fprintf(fout, "Réduction: %.2f€\n", basket_discount);
     fprintf(fout, "\nTotal à payer: %.2f€\n\n", basket_final_total);
 
     if (this->owner)
     {
         fprintf(fout, "Vous avez gagnez %dpts\n", (int)basket_final_total / 10);
+        this->owner->points += basket_total / 10;
+    }
+
+    // Apply stocks changes.
+
+    list_foreach(item, this->items)
+    {
+        BasketItem *item_in_basket = (BasketItem *)item->value;
+
+        if (!item_in_basket->is_consigne)
+        {
+            stocks_lookup_item(this->stocks, item_in_basket->barecode)->quantity -= item_in_basket->quantity;
+        }
     }
 
     return basket_total;

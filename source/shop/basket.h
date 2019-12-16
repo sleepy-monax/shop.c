@@ -28,4 +28,6 @@ void basket_add_item(Basket *this, BareCode barecode, bool is_consigned, int qua
 
 Model basket_model_create(void);
 
-float basket_bill(User *user, Basket *this, FILE *fout);
+float basket_pay(User *user, Basket *this, FILE *fout);
+
+BasketItem *Basket_lookup(Basket *this, BareCode id, bool is_consigned);
