@@ -171,7 +171,7 @@ void edit_ModelActionCallback(
             else
             {
                 char buffer[256];
-                snprintf(buffer, 256, "%16s: %-16s", model.column_name(i, ROLE_DISPLAY), model_get_data_with_access(model, data, row, i, user, ROLE_EDITOR).as_string);
+                snprintf(buffer, 256, "%16s: %-16s", model.column_name(i, ROLE_DISPLAY), model_get_data_with_access(model, data, row, i, user, ROLE_DISPLAY).as_string);
 
                 if (user->access <= model.write_access(data, row, i, user))
                 {

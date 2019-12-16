@@ -1,5 +1,5 @@
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "shop/users.h"
 #include "utils/assert.h"
@@ -252,7 +252,7 @@ Variant users_ModelGetData(UsersList *users, int row, int column, ModelRole role
         return vstring(user->lastname);
 
     case COL_USERS_PASSWORD:
-        if (role == ROLE_EDITOR)
+        if (role == ROLE_EDITOR || role == ROLE_DISPLAY)
         {
             return vstring("*****");
         }

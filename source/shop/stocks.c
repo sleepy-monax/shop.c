@@ -182,7 +182,7 @@ const char *stocks_ModelColumnName(int index, ModelRole role)
             return "Prix";
 
         case COL_ITEM_QUANTITY:
-            return "Quantitée";
+            return "En Stock";
 
         case COL_ITEM_CONSIGNED:
             return "Consigne";
@@ -266,7 +266,7 @@ Variant stocks_ModelGetData(StockList *stock, int row, int column, ModelRole rol
     switch (column)
     {
     case COL_ITEM_BARECODE:
-        if (role == ROLE_DATA)
+        if (role == ROLE_DATA || role == ROLE_EDITOR)
         {
             return vint(item->id);
         }
@@ -279,7 +279,7 @@ Variant stocks_ModelGetData(StockList *stock, int row, int column, ModelRole rol
         return vstring(item->label);
 
     case COL_ITEM_PRICE:
-        if (role == ROLE_DATA)
+        if (role == ROLE_DATA || role == ROLE_EDITOR)
         {
             return vfloat(item->price);
         }
@@ -289,7 +289,7 @@ Variant stocks_ModelGetData(StockList *stock, int row, int column, ModelRole rol
         }
 
     case COL_ITEM_QUANTITY:
-        if (role == ROLE_DATA)
+        if (role == ROLE_DATA || role == ROLE_EDITOR)
         {
             return vint(item->quantity);
         }
@@ -306,7 +306,7 @@ Variant stocks_ModelGetData(StockList *stock, int row, int column, ModelRole rol
         }
 
     case COL_ITEM_CONSIGNED:
-        if (role == ROLE_DATA)
+        if (role == ROLE_DATA || role == ROLE_EDITOR)
         {
             return vfloat(item->consignedValue);
         }
@@ -323,7 +323,7 @@ Variant stocks_ModelGetData(StockList *stock, int row, int column, ModelRole rol
         }
 
     case COL_ITEM_DISCOUNT:
-        if (role == ROLE_DATA)
+        if (role == ROLE_DATA || role == ROLE_EDITOR)
         {
             return vint(item->discount);
         }
@@ -339,7 +339,7 @@ Variant stocks_ModelGetData(StockList *stock, int row, int column, ModelRole rol
 
     case COL_ITEM_CATEGORY:
     {
-        if (role == ROLE_DATA)
+        if (role == ROLE_DATA || role == ROLE_EDITOR)
         {
             return vint(item->category);
         }
@@ -390,7 +390,15 @@ void stocks_ModelSetData(StockList *stock, int row, int column, Variant value, M
         break;
 
     case COL_ITEM_CATEGORY:
-        item->category = value.as_int;
+        if (__ITEM_CATEGORY_COUNT > value.as_int && value.as_int >= 0)
+        {
+            item->category = value.as_int;
+        }
+        else
+        {
+            item->category = 0;
+        }
+
         break;
 
     default:

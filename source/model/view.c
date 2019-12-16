@@ -1,7 +1,7 @@
 #include "model/view.h"
-#include "utils/terminal.h"
-#include "utils/renderer.h"
 #include "utils/math.h"
+#include "utils/renderer.h"
+#include "utils/terminal.h"
 
 void model_view_title(User *user, Surface *surface, const char *title)
 {
@@ -144,7 +144,7 @@ void model_view_list(User *user, Surface *surface, ModelViewState *state, Model 
 
             if (row == state->slected)
             {
-                surface_text(surface, value.as_string, column * column_width, row - state->scroll, column_width, style_inverted(model.column_style(column)));
+                surface_text(surface, value.as_string, column * column_width, row - state->scroll, column_width, style_with_foreground(style_with_background(model.column_style(column), COLOR_WHITE), COLOR_BLACK));
             }
             else
             {

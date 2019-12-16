@@ -17,11 +17,12 @@
     __ENTRY(ELECTRONIC)             \
     __ENTRY(TOYS)
 
-#define ITEM_ENUM_ENTRY(__x) __ITEM_##__x,
+#define ITEM_ENUM_ENTRY(__x) ITEM_##__x,
 
 typedef enum
 {
     ITEM_CATEGORY_LIST(ITEM_ENUM_ENTRY)
+        __ITEM_CATEGORY_COUNT
 } ItemCategory;
 
 #define ITEM_LABEL_SIZE 64
