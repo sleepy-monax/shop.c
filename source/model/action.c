@@ -164,7 +164,7 @@ void edit_ModelActionCallback(
                 else
                 {
                     char buffer[256];
-                    snprintf(buffer, 256, "%16s: %s", model.column_name(i, ROLE_DISPLAY), model_get_data_with_access(model, data, row, i, user, ROLE_DATA).as_string);
+                    snprintf(buffer, 256, "%16s: %s", model.column_name(i, ROLE_DISPLAY), model_get_data_with_access(model, data, row, i, user, ROLE_DISPLAY).as_string);
                     surface_text(surface, buffer, 0, i, surface_width(surface), DISABLED_DEFAULT_STYLE);
                 }
             }
@@ -216,7 +216,7 @@ void edit_ModelActionCallback(
                 }
                 else if (model.column_type(selected, ROLE_EDITOR) == VARIANT_FLOAT)
                 {
-                    float value;
+                    float value = 0;
                     sscanf(edited_value, "%f", &value);
                     model.set_data(data, row, selected, vfloat(value), ROLE_EDITOR);
                 }
